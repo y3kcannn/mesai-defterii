@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --config vite.config.ts --host 0.0.0.0",
-    "build": "rm -rf dist && cp -r public dist && rm -f dist/*.php",
+    "build": "node scripts/build.mjs && rm -f dist/*.php",
     "build:react": "vite build --config vite.config.ts",
     "build:pwa-css": "tailwindcss -i src/pwa.css -o public/tailwind.css --minify",
     "build:pwa-js": "cp node_modules/alpinejs/dist/cdn.min.js public/alpine.min.js",

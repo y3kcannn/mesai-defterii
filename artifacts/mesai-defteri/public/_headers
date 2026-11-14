@@ -1,2 +1,18 @@
+# HTML, service worker and version manifest: always revalidate with the server.
+/
+  Cache-Control: no-cache
+/index.html
+  Cache-Control: no-cache
 /sw.js
+  Cache-Control: no-cache, no-store, must-revalidate
+  Service-Worker-Allowed: /
+/version.json
+  Cache-Control: no-cache, no-store, must-revalidate
+/manifest.webmanifest
+  Cache-Control: no-cache
+# Asset names are not hashed; index.html references them with ?v=<version>,
+# and no-cache makes every load a cheap conditional request (ETag/304).
+/*.js
+  Cache-Control: no-cache
+/*.css
   Cache-Control: no-cache
