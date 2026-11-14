@@ -40,11 +40,16 @@ const bulut = (() => {
       if (flushing) return flushing;
       if (!on || !navigator.onLine || !queue.length) return Promise.resolve();
       return flushing = (async () => {
+        let single = false;
         while (queue.length) {
-          const { op, t, row, id } = queue[0];
-          const { error } = op === 'upsert' ? await db.from(t).upsert(row) : await db.from(t).delete().eq('id', id);
-          if (error && error.code !== '23503') throw error; // 23503: kişi başka cihazda silinmiş, kaydı atla
-          queue.shift(); saveQueue();
+          // Aynı tablo ve işlemdeki ardışık değişiklikleri tek istekte gönder
+          const { op, t } = queue[0];
+          const n = single ? 1 : (queue.findIndex(q => q.op !== op || q.t !== t) + 1 || queue.length + 1) - 1;
+          const batch = queue.slice(0, n);
+          const { error } = op === 'upsert' ? await db.from(t).upsert(batch.map(q => q.row)) : await db.from(t).delete().in('id', batch.map(q => q.id));
+          if (error?.code === '23503' && n > 1) { single = true; continue; } // kişi başka cihazda silinmiş: tek tek dene
+          if (error && error.code !== '23503') throw error;
+          queue.splice(0, n); saveQueue(); single = false;
         }
       })().finally(() => flushing = null);
     },
