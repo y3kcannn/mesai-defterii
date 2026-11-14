@@ -1,5 +1,5 @@
-const CACHE_NAME = 'mesai-defteri-shell-v2';
-const SHELL = ['/', '/tailwind.css', '/app.css', '/hesaplama.js', '/app.js', '/alpine.min.js', '/manifest.webmanifest', '/icon.svg'];
+const CACHE_NAME = 'mesai-defteri-shell-v3';
+const SHELL = ['/', '/tailwind.css', '/app.css', '/supabase.min.js', '/supabase-config.js', '/hesaplama.js', '/sync.js', '/app.js', '/alpine.min.js', '/manifest.webmanifest', '/icon.svg'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(SHELL)).then(() => self.skipWaiting()));
 });

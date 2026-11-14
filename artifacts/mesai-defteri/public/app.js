@@ -28,8 +28,10 @@ function mesaiDefteri() {
       if(savedPeople===null){this.people=demoPeople;this.entries=demoEntries;this.persist();}
       else {this.people=Array.isArray(savedPeople)?savedPeople:[];this.entries=Array.isArray(savedEntries)?savedEntries:[];}
       this.selectedId=this.people[0]?.id||null;
+      bulut.reset(this.people,this.entries);
+      if(bulut.on){this.sync();bulut.listen(()=>this.sync());}
       this.$watch('selectedId',()=>this.calculate()); this.$watch('month',()=>this.calculate()); this.$watch('year',()=>this.calculate());
-       window.addEventListener('online',()=>{this.online=true;this.calculate();});
+       window.addEventListener('online',()=>{this.online=true;this.sync();this.calculate();});
        window.addEventListener('offline',()=>{this.online=false;});
       this.calculate();
       if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
@@ -53,7 +55,20 @@ function mesaiDefteri() {
     formatHours(value){return Number(value||0).toLocaleString('tr-TR',{maximumFractionDigits:1});},
     money(value){if(value===null||value===undefined||!Number.isFinite(Number(value)))return '—';return new Intl.NumberFormat('tr-TR',{style:'currency',currency:'TRY',maximumFractionDigits:2}).format(Number(value));},
     initials(name){return (name||'').trim().split(/\s+/).slice(0,2).map(s=>s[0]||'').join('').toLocaleUpperCase('tr-TR');},
-    persist(){localStorage.setItem('mesai-defteri-people',JSON.stringify(this.people));localStorage.setItem('mesai-defteri-entries',JSON.stringify(this.entries));},
+    persist(){localStorage.setItem('mesai-defteri-people',JSON.stringify(this.people));localStorage.setItem('mesai-defteri-entries',JSON.stringify(this.entries));bulut.track(this.people,this.entries);},
+    async sync(){
+      if(!bulut.on)return;
+      try{
+        let data=await bulut.pull();
+        // Bu cihaz ilk kez bağlanıyor ve bulut boşsa: yerel kayıtları yükle
+        if(!data.people.length&&this.people.length&&!localStorage.getItem('mesai-defteri-bulut')){bulut.reset([],[]);bulut.track(this.people,this.entries);data=await bulut.pull();}
+        localStorage.setItem('mesai-defteri-bulut','1');
+        if(bulut.pending)return; // gönderilmeyi bekleyen değişiklik var; sonraki senkronda alınır
+        bulut.reset(data.people,data.entries);this.people=data.people;this.entries=data.entries;this.persist();
+        if(!this.people.some(p=>p.id===this.selectedId))this.selectedId=this.people[0]?.id||null;
+        this.calculate();
+      }catch(error){console.error('Senkron hatası:',error);}
+    },
     selectPerson(id){this.selectedId=id;this.view='ledger';}, onPersonChange(){this.calculate();},
     changeMonth(delta){const date=new Date(this.year,this.month+delta,1);this.month=date.getMonth();this.year=date.getFullYear();},
     goCurrentMonth(){this.month=this.today.getMonth();this.year=this.today.getFullYear();},
