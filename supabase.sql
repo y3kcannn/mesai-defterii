@@ -17,7 +17,8 @@ create table if not exists entries (
   person_id text not null references people(id) on delete cascade,
   date text not null,
   type text not null check (type in ('normal', 'holiday', 'bayram')),
-  hours numeric not null
+  hours numeric not null,
+  paid_month text -- devreden mesai: ödendiği ay (YYYY-MM)
 );
 
 -- Giriş yok: anahtarı (site) bilen herkes okuyup yazabilir.
@@ -31,3 +32,4 @@ alter publication supabase_realtime add table people, entries;
 
 -- Mevcut kurulumlar için (tablo önceden oluşturulduysa):
 alter table people add column if not exists rest_day smallint not null default 0;
+alter table entries add column if not exists paid_month text;

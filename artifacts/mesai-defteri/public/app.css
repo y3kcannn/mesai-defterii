@@ -100,3 +100,6 @@ select.form-input{background-image:linear-gradient(45deg,transparent 50%,#84948a
 .carry-form button{height:32px;padding:0 11px;border:1px solid var(--mint);background:var(--mint);color:#15211a;font:10px var(--mono);cursor:pointer}
 .app-footer,.calendar-footer .footer-divider+span+.footer-right{display:none}
 @media (orientation:landscape) and (max-height:540px){.carry-card{order:2}}
+.carry-form{grid-template-columns:58px minmax(0,1fr) auto}
+.carry-form .carry-day{grid-column:1/-1;color-scheme:dark}
+.carry-date{min-width:44px;font:10px var(--mono);color:#d0d9cf}
