@@ -103,3 +103,14 @@ select.form-input{background-image:linear-gradient(45deg,transparent 50%,#84948a
 .carry-form{grid-template-columns:58px minmax(0,1fr) auto}
 .carry-form .carry-day{grid-column:1/-1;color-scheme:dark}
 .carry-date{min-width:44px;font:10px var(--mono);color:#d0d9cf}
+/* İkonlar */
+.ic{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;vertical-align:-2px}
+.section-ic{width:15px;height:15px;color:#91b19b}
+.panel-topline>div:first-child,.manage-intro{gap:8px}
+.add-person-tab{gap:7px}.add-person-tab:first-letter{font-size:inherit}
+.edit-settings,.row-edit,.text-action,.danger-action,.delete-entry,.button-secondary,.button-primary,.carry-form button{display:inline-flex;align-items:center;gap:6px}
+.edit-settings .ic,.row-edit .ic{width:12px;height:12px}
+.delete-entry{justify-content:flex-start}
+/* Kaydırma çubuklarını gizle (kaydırma çalışmaya devam eder) */
+*{scrollbar-width:none}
+*::-webkit-scrollbar{display:none;width:0;height:0}

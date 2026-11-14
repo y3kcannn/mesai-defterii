@@ -1,7 +1,7 @@
 {
-  "name": "Mesai Defteri — Şantiye kayıtları",
+  "name": "Mesai Defteri — Fazla mesai takibi",
   "short_name": "Mesai Defteri",
-  "description": "Ekip, gün ve tahmini mesai hakedişi takibi.",
+  "description": "Personel bazında fazla mesai ve net ödeme takibi.",
   "lang": "tr",
   "start_url": "/",
   "scope": "/",
