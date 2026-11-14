@@ -1,7 +1,7 @@
 [build]
   base = "artifacts/mesai-defteri/public"
   publish = "."
-  command = ""
+  command = "echo Statik site, derleme gerekmiyor"
 
 [[headers]]
   for = "/sw.js"
