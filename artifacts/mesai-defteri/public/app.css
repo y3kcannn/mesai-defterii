@@ -7,3 +7,53 @@
 .months-year{font:9px var(--mono);color:#8b9b90;letter-spacing:.08em}.month-list{display:flex;flex-direction:column;gap:2px;margin:10px 0 8px}.month-list-item{width:100%;display:flex;align-items:center;justify-content:space-between;padding:5px 8px;border:1px solid transparent;background:transparent;color:#87958c;text-align:left;font:9px var(--mono);cursor:pointer;transition:background .15s,border-color .15s,color .15s}.month-list-item:hover{background:#1d2925;color:#d6e1d6}.month-list-item.selected{background:#20312a;border-color:#3d5747;color:var(--mint)}.month-label{display:flex;align-items:center;gap:8px}.month-label i{width:4px;height:4px;background:#596960;display:block}.month-list-item.selected .month-label i{background:var(--mint);box-shadow:0 0 0 3px #2c4134}.month-list-count{min-width:18px;text-align:right;color:#62736a;font-size:8px}.month-list-item.selected .month-list-count{color:#a7c6ad}.months-card .period-bottom{margin-top:9px}
 @media(max-width:760px){.months-card{grid-column:1/-1}.month-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:8px}.month-list-item{padding:7px 8px}}
 .calc-warning a{color:#c6ab72;text-decoration:underline;text-underline-offset:2px}.calc-warning a:hover{color:#e1c993}.live-dot.offline{background:var(--red);box-shadow:0 0 0 3px rgba(209,132,122,.18)}.year{margin-left:7px}
+/* Hafta sonu ve resmî tatil günleri */
+.day-cell.weekend:not(.outside){background:rgba(110,135,170,.08)}
+.day-cell.weekend:not(.outside) .day-number{color:#a3b6cf}
+.day-cell.special-resmi:not(.outside){background:rgba(209,174,113,.12);box-shadow:inset 0 2px 0 #d1ae71}
+.day-cell.special-resmi:not(.outside) .day-number,.special-resmi .special-label{color:#e2c48d}
+.day-cell.special-bayram:not(.outside){background:rgba(214,135,117,.13);box-shadow:inset 0 2px 0 #d68775}
+.day-cell.special-bayram:not(.outside) .day-number,.special-bayram .special-label{color:#eba896}
+.day-cell.special-arife:not(.outside){background:linear-gradient(135deg,rgba(25,36,36,.3) 50%,rgba(209,174,113,.13) 50%)}
+.day-cell.special-arife:not(.outside) .day-number,.special-arife .special-label{color:#d9be8c}
+.day-cell.day-cell:hover:not(:disabled){background:#24332d}
+.special-label{position:absolute;left:9px;right:6px;bottom:7px;font:7px var(--mono);letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.85}
+.legend-swatch{width:9px;height:9px;display:inline-block;margin-right:5px;vertical-align:-1px;border:1px solid}
+.legend-swatch.weekend{background:rgba(110,135,170,.25);border-color:#7189aa}
+.legend-swatch.resmi{background:rgba(209,174,113,.25);border-color:#d1ae71}
+.legend-swatch.bayram{background:rgba(214,135,117,.25);border-color:#d68775}
+@media(max-width:760px){.special-label{display:none}}
+
+/* Telefon yatay: tüm ekranı kullanan sıkı düzen */
+@media (orientation:landscape) and (max-height:540px){
+  html,body{height:100dvh;overflow:hidden;min-height:0}
+  .app-shell{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:44px minmax(0,1fr);height:100dvh;min-height:0;max-width:none;column-gap:14px;padding:0 max(12px,env(safe-area-inset-right)) 0 max(12px,env(safe-area-inset-left))}
+  .topbar{height:44px;gap:10px;border-bottom:1px solid var(--line)}
+  .brand-lockup{min-width:0;gap:8px}.brand-mark{width:28px;height:28px}.brand-name{font-size:12px}.brand-caption,.top-meta{display:none}
+  .top-action{padding:6px 9px;font-size:9px}.top-action>span:last-child{display:none}
+  .people-strip{height:44px;gap:10px;min-width:0}.tiny-kicker,.demo-tag{display:none}.strip-label{min-width:auto}
+  .person-tab{padding:0 8px;gap:6px}.person-initials{width:24px;height:24px}.person-tab-name{font-size:11px;max-width:120px}
+  .workspace{grid-column:1/-1;display:grid;grid-template-columns:46px minmax(0,1fr);gap:10px;padding:8px 0 max(6px,env(safe-area-inset-bottom));min-height:0;height:100%}
+  .rail{order:0;position:static;min-height:0;display:flex;flex-direction:column;justify-content:space-between;padding:0 8px 0 0;border:0;border-right:1px solid var(--line);background:none;backdrop-filter:none}
+  .rail-group,.rail-bottom{flex-direction:column;gap:4px}.rail-caption,.rail-footnote{display:none}
+  .rail-button{width:100%;padding:9px 0;justify-content:center;flex-direction:row}.rail-button>span:last-child{display:none}
+  .main-panel{order:0;display:flex;flex-direction:column;min-height:0;height:100%;overflow-y:auto}
+  .page-heading{margin:0 0 6px;align-items:center}.eyebrow,.heading-chip{display:none}.heading-row{margin:0}
+  h1{font-size:21px}.year{font-size:11px}
+  .icon-button{width:32px;height:28px}.month-current{height:28px;padding:0 10px;font-size:9px}.month-controls{gap:4px}
+  .ledger-layout{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:10px;align-items:stretch}
+  .calendar-panel{display:flex;flex-direction:column;min-height:0;padding:6px 8px 4px}
+  .calendar-panel>.panel-topline,.calendar-footer,.legend-note,.special-label,.today-label{display:none}
+  .calendar-wrap{flex:1;min-height:0;padding-top:0;display:flex;flex-direction:column}
+  .weekday-row div{padding:0 0 3px;font-size:8px}
+  .day-grid{flex:1;min-height:0;grid-auto-rows:minmax(0,1fr)}
+  .day-cell{height:auto;min-height:0;padding:3px 6px}
+  .day-number{font-size:10px}.day-total{margin-top:1px;font-size:9px}.day-markers{top:6px;right:5px}
+  .calendar-legend{flex-wrap:nowrap;gap:10px;padding:4px 0 0;overflow:hidden;white-space:nowrap}.calendar-legend>span{font-size:7px}
+  .summary-column{display:flex;flex-direction:column;gap:8px;min-height:0;overflow-y:auto;width:auto}
+  .pay-card{order:1;grid-row:auto}.quick-add{order:2;min-height:48px}.rate-card{order:3}.months-card{order:4;grid-column:auto}
+  .summary-card{padding:10px 12px}.net-value{font-size:20px}
+  .month-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px;column-gap:4px}.month-list-item{padding:5px 6px}
+  .app-footer{display:none}
+  .dialog{max-height:calc(100dvh - 16px);overflow-y:auto}
+}

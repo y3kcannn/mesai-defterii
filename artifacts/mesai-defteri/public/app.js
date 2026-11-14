@@ -17,6 +17,12 @@ function mesaiDefteri() {
     {id:'d11',personId:'demo-emre',date:sampleDay(17),type:'holiday',hours:4},{id:'d12',personId:'demo-emre',date:sampleDay(19),type:'bayram',hours:5},
     {id:'d13',personId:'demo-hasan',date:sampleDay(3),type:'holiday',hours:4},{id:'d14',personId:'demo-hasan',date:sampleDay(15),type:'normal',hours:2.5}
   ];
+  // Resmî tatiller: [tür, ad]. tür: resmi (millî), bayram (dinî bayram), arife (yarım gün)
+  const fixedHolidays = {'01-01':['resmi','Yılbaşı'],'04-23':['resmi','Ulusal Egemenlik ve Çocuk Bayramı'],'05-01':['resmi','Emek ve Dayanışma Günü'],'05-19':['resmi',"Atatürk'ü Anma, Gençlik ve Spor Bayramı"],'07-15':['resmi','Demokrasi ve Millî Birlik Günü'],'08-30':['resmi','Zafer Bayramı'],'10-28':['arife','Cumhuriyet Bayramı arifesi (yarım gün)'],'10-29':['resmi','Cumhuriyet Bayramı']};
+  const religious = [['Ramazan Bayramı','2025-03-30',3],['Kurban Bayramı','2025-06-06',4],['Ramazan Bayramı','2026-03-20',3],['Kurban Bayramı','2026-05-27',4],['Ramazan Bayramı','2027-03-09',3],['Kurban Bayramı','2027-05-16',4]];
+  const iso = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  const religiousDays = Object.fromEntries(religious.flatMap(([name,start,n]) => { const [y,m,d] = start.split('-').map(Number); return [[iso(new Date(y,m-1,d-1)),['arife',`${name} arifesi (yarım gün)`]], ...Array.from({length:n},(_,i)=>[iso(new Date(y,m-1,d+i)),['bayram',`${name} ${i+1}. gün`]])]; }));
+  const holidayOf = date => religiousDays[date] || fixedHolidays[date.slice(5)] || null;
   const read = (key, fallback) => { try { const value=localStorage.getItem(key); return value ? JSON.parse(value) : fallback; } catch { return fallback; } };
   return {
      today:new Date(), online:navigator.onLine, monthNames, view:'ledger', people:[], entries:[], selectedId:null, year:new Date().getFullYear(), month:new Date().getMonth(),
@@ -47,7 +53,7 @@ function mesaiDefteri() {
     get calendarCells(){
       const first=new Date(this.year,this.month,1), start=(first.getDay()+6)%7, days=this.monthDays, prevDays=new Date(this.year,this.month,0).getDate();
       const count=Math.ceil((start+days)/7)*7;
-      return Array.from({length:count},(_,i)=>{const day=i-start+1,current=day>0&&day<=days,actualDay=day<1?prevDays+day:day>days?day-days:day;const dt=current?new Date(this.year,this.month,day):new Date(this.year,this.month-1,actualDay);const key=`${dt.getFullYear()}-${dt.getMonth()}-${actualDay}`;const entries=current?this.monthEntries.filter(e=>e.date===this.dateKey(day)):[];return {key,day:current?day:actualDay,current,today:current&&this.isToday(day),entryCount:entries.length,hours:entries.reduce((s,e)=>s+Number(e.hours||0),0),hasHoliday:entries.some(e=>e.type==='holiday'),hasBayram:entries.some(e=>e.type==='bayram')};});
+      return Array.from({length:count},(_,i)=>{const day=i-start+1,current=day>0&&day<=days,actualDay=day<1?prevDays+day:day>days?day-days:day;const dt=current?new Date(this.year,this.month,day):new Date(this.year,this.month-1,actualDay);const key=`${dt.getFullYear()}-${dt.getMonth()}-${actualDay}`;const entries=current?this.monthEntries.filter(e=>e.date===this.dateKey(day)):[];const holiday=holidayOf(iso(dt));return {key,day:current?day:actualDay,current,weekend:dt.getDay()%6===0,special:holiday?.[0]||'',specialName:holiday?.[1]||'',today:current&&this.isToday(day),entryCount:entries.length,hours:entries.reduce((s,e)=>s+Number(e.hours||0),0),hasHoliday:entries.some(e=>e.type==='holiday'),hasBayram:entries.some(e=>e.type==='bayram')};});
     },
     dateKey(day){return `${this.year}-${String(this.month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;},
     isToday(day){return this.today.getFullYear()===this.year&&this.today.getMonth()===this.month&&this.today.getDate()===day;},
@@ -81,7 +87,7 @@ function mesaiDefteri() {
        catch(error){if(request===this.calcRequest){this.result=null;this.calcError=true;this.calcErrorMessage=error instanceof Error?error.message:'Hesaplama alınamadı';}console.error('Mesai hesaplama hatası:',error);}
       finally{if(request===this.calcRequest)this.calcLoading=false;}
     },
-    openEntry(day){if(!this.activePerson)return;const existing=this.monthEntries.find(entry=>Number(entry.date.slice(-2))===Number(day));if(existing){this.editEntry(existing);return;}this.editingEntry=null;this.entryForm={day,type:'normal',hours:2};this.modal='entry';},
+    openEntry(day){if(!this.activePerson)return;const existing=this.monthEntries.find(entry=>Number(entry.date.slice(-2))===Number(day));if(existing){this.editEntry(existing);return;}this.editingEntry=null;const special=holidayOf(this.dateKey(day))?.[0];this.entryForm={day,type:special==='bayram'?'bayram':special?'holiday':'normal',hours:2};this.modal='entry';},
     editEntry(entry){this.editingEntry=entry;this.entryForm={day:Number(entry.date.slice(-2)),type:entry.type,hours:Number(entry.hours)};this.modal='entry';},
     saveEntry(){if(!this.activePerson||!this.entryForm.hours||this.entryForm.hours<=0)return;const entry={id:this.editingEntry?.id||`m-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,personId:this.selectedId,date:this.dateKey(Number(this.entryForm.day)),type:this.entryForm.type,hours:Number(this.entryForm.hours)};if(this.editingEntry){this.entries=this.entries.map(e=>e.id===entry.id?entry:e);}else this.entries.push(entry);this.persist();this.closeModal();this.calculate();this.notify('Mesai kaydı kaydedildi');},
     deleteEntry(){if(!this.editingEntry)return;this.entries=this.entries.filter(e=>e.id!==this.editingEntry.id);this.persist();this.closeModal();this.calculate();this.notify('Mesai kaydı silindi');},
