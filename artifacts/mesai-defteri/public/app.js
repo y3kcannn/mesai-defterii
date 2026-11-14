@@ -62,7 +62,7 @@ function mesaiDefteri() {
        const request=++this.calcRequest;this.calcLoading=true;this.calcError=false;this.calcErrorMessage='';
       const entries=this.monthEntries.map(e=>({id:e.id,type:e.type,hours:Number(e.hours)}));
       const payload={netSalary:Number(person.netSalary)||0,daysInMonth:this.monthDays,dailyHours:Number(person.dailyHours)||8,cumulativeTaxBase:Number(person.cumulativeTaxBase)||0,entries};
-       try {const response=await fetch('/mesai-api/calculate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});if(!response.ok){const issue=await response.json().catch(()=>null);throw new Error(issue?.error||'Hesaplama servisi yanıt vermedi');}const data=await response.json();if(!data||typeof data.netTotal!=='number')throw new Error('Geçersiz hesaplama sonucu');if(request===this.calcRequest)this.result=data;}
+       try {const data=hesapla(payload);if(request===this.calcRequest)this.result=data;}
        catch(error){if(request===this.calcRequest){this.result=null;this.calcError=true;this.calcErrorMessage=error instanceof Error?error.message:'Hesaplama alınamadı';}console.error('Mesai hesaplama hatası:',error);}
       finally{if(request===this.calcRequest)this.calcLoading=false;}
     },

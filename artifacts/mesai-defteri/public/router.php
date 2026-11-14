@@ -22,5 +22,5 @@ if ($path !== '/') {
     }
 }
 
-require __DIR__ . '/index.php';
+readfile(__DIR__ . '/index.html');
 return true;
