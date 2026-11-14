@@ -25,7 +25,7 @@ function mesaiDefteri() {
   const holidayOf = date => religiousDays[date] || fixedHolidays[date.slice(5)] || null;
   const read = (key, fallback) => { try { const value=localStorage.getItem(key); return value ? JSON.parse(value) : fallback; } catch { return fallback; } };
   return {
-     today:new Date(), online:navigator.onLine, monthNames, view:'ledger', people:[], entries:[], selectedId:null, year:new Date().getFullYear(), month:new Date().getMonth(),
+     today:new Date(), online:navigator.onLine, syncPending:0, syncError:null, monthNames, view:'ledger', people:[], entries:[], selectedId:null, year:new Date().getFullYear(), month:new Date().getMonth(),
      result:null, calcLoading:false, calcError:false, calcErrorMessage:'', calcRequest:0, settingsSaved:false, modal:'', editingEntry:null, editingPerson:null,
      entryForm:{day:1,ym:'',carry:false,type:'normal',hours:2,hoursText:'2'}, hourPresets:[0.5,1,1.5,2,3,4], personForm:{name:'',role:'',netSalary:65000,dailyHours:7.5,restDay:0,cumulativeTaxBase:0}, toast:'', toastTimer:null,
      weekdays:['PZT','SAL','ÇAR','PER','CUM','CMT','PAZ'], dayNames:['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'], restDayOptions:[1,2,3,4,5,6,0], entryTypes:[{value:'normal',label:'Normal mesai',note:'Hafta içi veya hafta sonu'},{value:'holiday',label:'Resmî tatil',note:'Resmî tatil çalışması'},{value:'bayram',label:'Bayram',note:'Bayram çalışması'}],
@@ -35,6 +35,7 @@ function mesaiDefteri() {
       else {this.people=Array.isArray(savedPeople)?savedPeople:[];this.entries=Array.isArray(savedEntries)?savedEntries:[];}
       this.selectedId=this.people[0]?.id||null;
       bulut.reset(this.people,this.entries);
+      bulut.onChange=()=>{this.syncPending=bulut.pending;this.syncError=bulut.error;};bulut.onChange();
       if(bulut.on){this.sync();bulut.listen(()=>this.sync());}
       this.$watch('selectedId',()=>this.calculate()); this.$watch('month',()=>this.calculate()); this.$watch('year',()=>this.calculate());
        window.addEventListener('online',()=>{this.online=true;this.sync();this.calculate();});
@@ -43,6 +44,7 @@ function mesaiDefteri() {
       if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
     },
     get activePerson(){return this.people.find(p=>p.id===this.selectedId)||null;},
+    get syncLabel(){if(!this.online)return this.syncPending?`ÇEVRİMDIŞI · ${this.syncPending} BEKLİYOR`:'ÇEVRİMDIŞI';if(this.syncError)return 'KAYDEDİLEMEDİ · TEKRAR DENENİYOR';if(this.syncPending)return 'KAYDEDİLİYOR…';return bulut.on?'KAYDEDİLDİ':'ÇEVRİMİÇİ';},
     get monthName(){return monthNames[this.month];},
     get monthDays(){return new Date(this.year,this.month+1,0).getDate();},
     get todayLabel(){return new Intl.DateTimeFormat('tr-TR',{day:'2-digit',month:'short',year:'numeric'}).format(this.today).toLocaleUpperCase('tr-TR');},
@@ -65,10 +67,8 @@ function mesaiDefteri() {
     // Mesai penceresinin gösterdiği ay (devreden mesaide önceki aylar)
     formDate(day){const [y,m]=(this.entryForm.ym||this.monthKey).split('-').map(Number);return new Date(y,m-1,day);},
     get formMonthDays(){const d=this.formDate(1);return new Date(d.getFullYear(),d.getMonth()+1,0).getDate();},
-    get prevMonthKey(){const d=new Date(this.year,this.month-1,1);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;},
     get formMonthLabel(){const d=this.formDate(1);return monthNames[d.getMonth()]+' '+d.getFullYear();},
-    shiftFormMonth(delta){const d=this.formDate(1);d.setMonth(d.getMonth()+delta);const ym=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;if(ym>=this.monthKey)return;this.entryForm.ym=ym;this.entryForm.day=Math.min(this.entryForm.day,this.formMonthDays);},
-    openCarry(){if(!this.activePerson)return;const d=new Date(this.year,this.month,0);this.editingEntry=null;this.entryForm={day:d.getDate(),ym:`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`,carry:true,type:'normal',hours:0,hoursText:''};this.setHours(2);this.modal='entry';},
+    openCarry(){if(!this.activePerson)return;this.editingEntry=null;this.entryForm={day:0,ym:this.monthKey,carry:true,type:'normal',hours:0,hoursText:''};this.setHours(2);this.modal='entry';},
     formatHours(value){return Number(value||0).toLocaleString('tr-TR',{maximumFractionDigits:1});},
     money(value){if(value===null||value===undefined||!Number.isFinite(Number(value)))return '—';return new Intl.NumberFormat('tr-TR',{style:'currency',currency:'TRY',maximumFractionDigits:2}).format(Number(value));},
     initials(name){return (name||'').trim().split(/\s+/).slice(0,2).map(s=>s[0]||'').join('').toLocaleUpperCase('tr-TR');},
@@ -102,7 +102,7 @@ function mesaiDefteri() {
     setHours(h){this.entryForm.hours=h;this.entryForm.hoursText=String(h).replace('.',',');},
     parseHours(){this.entryForm.hours=Number(String(this.entryForm.hoursText).replace(',','.'))||0;},
     get restHours(){return Number(this.activePerson?.dailyHours)||7.5;},
-    get isRestDay(){return this.formDate(Number(this.entryForm.day)).getDay()===(this.activePerson?.restDay??0);},
+    get isRestDay(){return !this.entryForm.carry&&this.formDate(Number(this.entryForm.day)).getDay()===(this.activePerson?.restDay??0);},
     editEntry(entry){this.editingEntry=entry;this.entryForm={day:Number(entry.date.slice(-2)),ym:entry.date.slice(0,7),carry:!!entry.paidMonth,type:entry.type,hours:0,hoursText:''};this.setHours(Number(entry.hours));this.modal='entry';},
     saveEntry(){if(!this.activePerson||!this.entryForm.hours||this.entryForm.hours<=0)return;const entry={id:this.editingEntry?.id||`m-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,personId:this.selectedId,date:`${this.entryForm.ym}-${String(this.entryForm.day).padStart(2,'0')}`,type:this.entryForm.type,hours:Number(this.entryForm.hours),...(this.entryForm.carry&&{paidMonth:this.editingEntry?.paidMonth||this.monthKey})};if(this.editingEntry){this.entries=this.entries.map(e=>e.id===entry.id?entry:e);}else this.entries.push(entry);this.persist();this.closeModal();this.calculate();this.notify('Mesai kaydedildi');},
     deleteEntry(){if(!this.editingEntry)return;this.entries=this.entries.filter(e=>e.id!==this.editingEntry.id);this.persist();this.closeModal();this.calculate();this.notify('Mesai kaydı silindi');},

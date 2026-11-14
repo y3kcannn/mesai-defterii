@@ -132,3 +132,5 @@ select.form-input{background-image:linear-gradient(45deg,transparent 50%,#84948a
 @media(max-width:430px){.carry-empty{display:none}.carry-strip{gap:8px}}
 @media (orientation:landscape) and (max-height:540px){.carry-strip{min-height:0;padding:4px 0 0;gap:8px}.carry-empty{display:none}.carry-add,.carry-chip{padding:3px 7px}}
 .type-option{min-height:0;align-items:center;padding:12px 10px}.type-marker{margin-top:0}@media(max-width:430px){.type-option{min-height:0}}
+.carry-note{margin:0 0 4px;font-size:10px;line-height:1.6;color:#8d9a91}.carry-note span{color:#cfd9cf}
+.live-dot.pending{background:var(--amber);box-shadow:0 0 0 3px rgba(215,182,123,.18)}

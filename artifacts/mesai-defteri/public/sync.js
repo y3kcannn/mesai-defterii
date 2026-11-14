@@ -11,7 +11,7 @@ const bulut = (() => {
     entries: r => ({ id: r.id, personId: r.person_id, date: r.date, type: r.type, hours: +r.hours, ...(r.paid_month && { paidMonth: r.paid_month }) }),
   };
   const QKEY = 'mesai-defteri-kuyruk';
-  let queue = JSON.parse(localStorage.getItem(QKEY) || '[]'), last = null, flushing = null;
+  let queue = JSON.parse(localStorage.getItem(QKEY) || '[]'), last = null, flushing = null, retry = null;
   const saveQueue = () => localStorage.setItem(QKEY, JSON.stringify(queue));
   const index = (people, entries) => ({
     people: new Map(people.map(p => [p.id, JSON.stringify(toRow.people(p))])),
@@ -20,6 +20,8 @@ const bulut = (() => {
 
   return {
     on,
+    error: null,
+    onChange: () => {},
     get pending() { return queue.length; },
     // Karşılaştırma tabanını ayarlar (kuyruğa bir şey eklemeden)
     reset(people, entries) { last = index(people, entries); },
@@ -34,7 +36,8 @@ const bulut = (() => {
         saveQueue();
       }
       last = cur;
-      this.flush().catch(console.error);
+      this.onChange();
+      this.flush().catch(() => {});
     },
     flush() {
       if (flushing) return flushing;
@@ -49,9 +52,15 @@ const bulut = (() => {
           const { error } = op === 'upsert' ? await db.from(t).upsert(batch.map(q => q.row)) : await db.from(t).delete().in('id', batch.map(q => q.id));
           if (error?.code === '23503' && n > 1) { single = true; continue; } // kişi başka cihazda silinmiş: tek tek dene
           if (error && error.code !== '23503') throw error;
-          queue.splice(0, n); saveQueue(); single = false;
+          queue.splice(0, n); saveQueue(); single = false; this.onChange();
         }
-      })().finally(() => flushing = null);
+        this.error = null;
+      })().catch(error => {
+        // Gönderilemedi: kuyruk korunur, 10 sn sonra tekrar denenir
+        this.error = error?.message || 'Gönderilemedi';
+        clearTimeout(retry); retry = setTimeout(() => this.flush().catch(() => {}), 10000);
+        throw error;
+      }).finally(() => { flushing = null; this.onChange(); });
     },
     async pull() {
       await this.flush();
