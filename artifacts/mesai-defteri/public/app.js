@@ -49,7 +49,7 @@ function mesaiDefteri() {
     get monthDays(){return new Date(this.year,this.month+1,0).getDate();},
     get todayLabel(){return new Intl.DateTimeFormat('tr-TR',{day:'2-digit',month:'short',year:'numeric'}).format(this.today).toLocaleUpperCase('tr-TR');},
     get monthKey(){return `${this.year}-${String(this.month+1).padStart(2,'0')}`;},
-    // Devreden mesai (paidMonth) kendi tarihinin değil ödendiği ayın hesabına girer
+    // Eksik mesai (paidMonth) kendi tarihinin değil ödendiği ayın hesabına girer
     get monthEntries(){if(!this.activePerson)return [];return this.entries.filter(e=>e.personId===this.selectedId&&(e.paidMonth||e.date.slice(0,7))===this.monthKey);},
      monthEntryCount(index){if(!this.activePerson)return 0;const key=`${this.year}-${String(index+1).padStart(2,'0')}`;return this.entries.filter(e=>e.personId===this.selectedId&&(e.paidMonth||e.date.slice(0,7))===key).length;},
     get entryDayCount(){return new Set(this.monthEntries.filter(e=>!e.paidMonth).map(e=>e.date)).size;},
@@ -64,7 +64,7 @@ function mesaiDefteri() {
     dateKey(day){return `${this.year}-${String(this.month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;},
     isToday(day){return this.today.getFullYear()===this.year&&this.today.getMonth()===this.month&&this.today.getDate()===day;},
     weekdayFor(day){return this.weekdays[(this.formDate(day).getDay()+6)%7];},
-    // Mesai penceresinin gösterdiği ay (devreden mesaide önceki aylar)
+    // Mesai penceresinin gösterdiği ay (eksik mesai)
     formDate(day){const [y,m]=(this.entryForm.ym||this.monthKey).split('-').map(Number);return new Date(y,m-1,day);},
     get formMonthDays(){const d=this.formDate(1);return new Date(d.getFullYear(),d.getMonth()+1,0).getDate();},
     get formMonthLabel(){const d=this.formDate(1);return monthNames[d.getMonth()]+' '+d.getFullYear();},
