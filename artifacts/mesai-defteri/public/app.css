@@ -57,3 +57,4 @@
   .app-footer{display:none}
   .dialog{max-height:calc(100dvh - 16px);overflow-y:auto}
 }
+select.form-input{background-image:linear-gradient(45deg,transparent 50%,#84948a 50%),linear-gradient(135deg,#84948a 50%,transparent 50%);background-position:calc(100% - 15px) 17px,calc(100% - 11px) 17px;background-size:4px 4px;background-repeat:no-repeat}

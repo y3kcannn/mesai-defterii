@@ -6,6 +6,7 @@ create table if not exists people (
   role text not null default '',
   net_salary numeric not null default 65000,
   daily_hours numeric not null default 7.5,
+  rest_day smallint not null default 0, -- hafta tatili: 0=Pazar, 1=Pazartesi … 6=Cumartesi
   cumulative_tax_base numeric not null default 0,
   example boolean not null default false,
   created_at timestamptz not null default now()
@@ -27,3 +28,6 @@ create policy "herkese acik" on entries for all to anon using (true) with check 
 
 -- Anlık güncellemeler (bir cihazdaki değişiklik diğerlerinde hemen görünsün)
 alter publication supabase_realtime add table people, entries;
+
+-- Mevcut kurulumlar için (tablo önceden oluşturulduysa):
+alter table people add column if not exists rest_day smallint not null default 0;

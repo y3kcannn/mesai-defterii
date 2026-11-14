@@ -3,11 +3,11 @@ const bulut = (() => {
   const on = !!(SUPABASE_URL && SUPABASE_KEY);
   const db = on ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
   const toRow = {
-    people: p => ({ id: p.id, name: p.name, role: p.role || '', net_salary: Number(p.netSalary), daily_hours: Number(p.dailyHours), cumulative_tax_base: Number(p.cumulativeTaxBase), example: !!p.example }),
+    people: p => ({ id: p.id, name: p.name, role: p.role || '', net_salary: Number(p.netSalary), daily_hours: Number(p.dailyHours), rest_day: Number(p.restDay) || 0, cumulative_tax_base: Number(p.cumulativeTaxBase), example: !!p.example }),
     entries: e => ({ id: e.id, person_id: e.personId, date: e.date, type: e.type, hours: Number(e.hours) }),
   };
   const fromRow = {
-    people: r => ({ id: r.id, name: r.name, role: r.role, netSalary: +r.net_salary, dailyHours: +r.daily_hours, cumulativeTaxBase: +r.cumulative_tax_base, example: r.example }),
+    people: r => ({ id: r.id, name: r.name, role: r.role, netSalary: +r.net_salary, dailyHours: +r.daily_hours, restDay: r.rest_day ?? 0, cumulativeTaxBase: +r.cumulative_tax_base, example: r.example }),
     entries: r => ({ id: r.id, personId: r.person_id, date: r.date, type: r.type, hours: +r.hours }),
   };
   const QKEY = 'mesai-defteri-kuyruk';
