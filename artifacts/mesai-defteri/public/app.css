@@ -82,3 +82,21 @@ select.form-input{background-image:linear-gradient(45deg,transparent 50%,#84948a
 .rest-work b{display:block;font-size:10px;font-weight:600;color:#d8e3d7}
 .rest-work small{display:block;margin-top:3px;font:8px var(--mono);color:#7f8e85}
 .rest-work{position:relative}
+/* Hakediş: kesinti detayı katlanır */
+.deductions{border-top:1px solid #2b3836;margin-top:4px}
+.deductions summary{cursor:pointer;list-style:none;padding:9px 0 3px;font:8px var(--mono);letter-spacing:.08em;color:#7f8e85;text-transform:uppercase}
+.deductions summary::-webkit-details-marker{display:none}
+.deductions summary::after{content:"+";float:right;color:#8da795}.deductions[open] summary::after{content:"−"}
+/* Devreden mesai */
+.carry-sum{font:10px var(--mono);color:var(--mint)}
+.carry-desc{margin:6px 0 8px;font-size:9px;color:#7f8e85}
+.carry-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px solid #243130;font-size:9px;color:#a9b5ab}
+.carry-row i{width:5px;height:5px;border-radius:50%;background:#78ad86}.carry-row i.holiday{background:#d1ae71}.carry-row i.bayram{background:#d68775}
+.carry-row b{margin-left:auto;font:10px var(--mono);font-weight:400;color:#d0d9cf}
+.carry-row button{border:0;background:none;color:#a57e78;font-size:14px;cursor:pointer;padding:0 2px}
+.carry-form{display:grid;grid-template-columns:62px minmax(0,1fr) auto;gap:5px;margin-top:8px}
+.carry-form input,.carry-form select{height:32px;min-width:0;padding:0 8px;border:1px solid #35433f;background:#121a1a;color:#dbe4d9;border-radius:0;font:10px var(--mono);appearance:none}
+.carry-form input:focus,.carry-form select:focus{border-color:#75967d;outline:none}
+.carry-form button{height:32px;padding:0 11px;border:1px solid var(--mint);background:var(--mint);color:#15211a;font:10px var(--mono);cursor:pointer}
+.app-footer,.calendar-footer .footer-divider+span+.footer-right{display:none}
+@media (orientation:landscape) and (max-height:540px){.carry-card{order:2}}

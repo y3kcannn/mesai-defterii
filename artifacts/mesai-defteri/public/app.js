@@ -27,7 +27,7 @@ function mesaiDefteri() {
   return {
      today:new Date(), online:navigator.onLine, monthNames, view:'ledger', people:[], entries:[], selectedId:null, year:new Date().getFullYear(), month:new Date().getMonth(),
      result:null, calcLoading:false, calcError:false, calcErrorMessage:'', calcRequest:0, settingsSaved:false, modal:'', editingEntry:null, editingPerson:null,
-     entryForm:{day:1,type:'normal',hours:2,hoursText:'2'}, hourPresets:[0.5,1,1.5,2,3,4], personForm:{name:'',role:'',netSalary:65000,dailyHours:7.5,restDay:0,cumulativeTaxBase:0}, toast:'', toastTimer:null,
+     entryForm:{day:1,type:'normal',hours:2,hoursText:'2'}, hourPresets:[0.5,1,1.5,2,3,4], carryForm:{hoursText:'',type:'normal'}, personForm:{name:'',role:'',netSalary:65000,dailyHours:7.5,restDay:0,cumulativeTaxBase:0}, toast:'', toastTimer:null,
      weekdays:['PZT','SAL','ÇAR','PER','CUM','CMT','PAZ'], dayNames:['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'], restDayOptions:[1,2,3,4,5,6,0], entryTypes:[{value:'normal',label:'Normal mesai',note:'Hafta içi veya hafta sonu'},{value:'holiday',label:'Resmî tatil',note:'Resmî tatil çalışması'},{value:'bayram',label:'Bayram',note:'Bayram çalışması'}],
     init(){
       const savedPeople=read('mesai-defteri-people',null), savedEntries=read('mesai-defteri-entries',null);
@@ -48,7 +48,10 @@ function mesaiDefteri() {
     get todayLabel(){return new Intl.DateTimeFormat('tr-TR',{day:'2-digit',month:'short',year:'numeric'}).format(this.today).toLocaleUpperCase('tr-TR');},
     get monthEntries(){if(!this.activePerson)return [];const prefix=`${this.year}-${String(this.month+1).padStart(2,'0')}-`;return this.entries.filter(e=>e.personId===this.selectedId&&e.date.startsWith(prefix));},
      monthEntryCount(index){if(!this.activePerson)return 0;const prefix=`${this.year}-${String(index+1).padStart(2,'0')}-`;return this.entries.filter(e=>e.personId===this.selectedId&&e.date.startsWith(prefix)).length;},
-    get entryDayCount(){return new Set(this.monthEntries.map(e=>e.date)).size;},
+    get entryDayCount(){return new Set(this.monthEntries.filter(e=>!e.date.endsWith('-00')).map(e=>e.date)).size;},
+    get carryEntries(){return this.monthEntries.filter(e=>e.date.endsWith('-00'));},
+    addCarry(){const hours=Number(String(this.carryForm.hoursText).replace(',','.'));if(!this.activePerson||!(hours>0))return;this.entries.push({id:`c-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,personId:this.selectedId,date:`${this.year}-${String(this.month+1).padStart(2,'0')}-00`,type:this.carryForm.type,hours});this.carryForm.hoursText='';this.persist();this.calculate();this.notify('Devreden mesai eklendi');},
+    removeCarry(entry){this.entries=this.entries.filter(e=>e.id!==entry.id);this.persist();this.calculate();this.notify('Devreden mesai silindi');},
     get hasExamples(){return this.people.some(p=>p.example);},
     get calendarCells(){
       const first=new Date(this.year,this.month,1), start=(first.getDay()+6)%7, days=this.monthDays, prevDays=new Date(this.year,this.month,0).getDate();
