@@ -58,14 +58,16 @@
   .dialog{max-height:calc(100dvh - 16px);overflow-y:auto}
 }
 select.form-input{background-image:linear-gradient(45deg,transparent 50%,#84948a 50%),linear-gradient(135deg,#84948a 50%,transparent 50%);background-position:calc(100% - 15px) 17px,calc(100% - 11px) 17px;background-size:4px 4px;background-repeat:no-repeat}
-/* Mesai saati rozeti: gün numarasından ayrışsın */
-.day-total{position:absolute;left:8px;bottom:8px;margin:0;padding:2px 6px 2px 5px;border-left:2px solid #78ad86;background:rgba(120,173,134,.16);color:#d6eedb;font:600 10px var(--sans);letter-spacing:0;border-radius:0 2px 2px 0;white-space:nowrap}
-.day-total.holiday{border-color:#d1ae71;background:rgba(209,174,113,.17);color:#f0dcb4}
-.day-total.bayram{border-color:#d68775;background:rgba(214,135,117,.18);color:#f3c8bd}
+/* Mesai saati: temaya uygun mono yazı + hücre altında ince renk çizgisi */
+.day-total{position:absolute;right:9px;bottom:8px;margin:0;font:500 13px var(--mono);letter-spacing:-.02em;color:var(--mint)}
+.day-total::after{content:"SA";margin-left:3px;font-size:7px;letter-spacing:.08em;color:#6f8077}
+.day-total.holiday{color:#e2c48d}.day-total.bayram{color:#eba896}
+.day-cell.has-work::before{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:#78ad86;opacity:.75}
+.day-cell.has-holiday::before{background:#d1ae71}.day-cell.has-bayram::before{background:#d68775}
 .day-cell .day-number{opacity:.75}
 .day-cell.today .day-number,.day-cell[class*="special-"] .day-number{opacity:1}
-@media(max-width:430px){.day-total{left:3px;bottom:5px;padding:1px 3px;font-size:8px}}
-@media (orientation:landscape) and (max-height:540px){.day-total{left:auto;right:4px;top:4px;bottom:auto;padding:1px 4px;font-size:9px}}
+@media(max-width:430px){.day-total{right:4px;bottom:6px;font-size:11px}.day-total::after{display:none}}
+@media (orientation:landscape) and (max-height:540px){.day-total{right:5px;bottom:4px;font-size:11px}}
 .day-markers{display:none}
 /* Saat kısayolları ve hafta tatili tiki */
 .hour-presets{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
