@@ -114,3 +114,21 @@ select.form-input{background-image:linear-gradient(45deg,transparent 50%,#84948a
 /* Kaydırma çubuklarını gizle (kaydırma çalışmaya devam eder) */
 *{scrollbar-width:none}
 *::-webkit-scrollbar{display:none;width:0;height:0}
+/* Takvim altı: devreden mesai şeridi */
+.carry-strip{display:flex;align-items:center;gap:12px;min-height:44px;padding:8px 0;border-top:1px solid var(--line)}
+.carry-label{display:inline-flex;align-items:center;gap:6px;font:8px var(--mono);letter-spacing:.1em;color:#91b19b;white-space:nowrap}
+.carry-chips{flex:1;min-width:0;display:flex;gap:6px;overflow-x:auto}
+.carry-chip{display:inline-flex;align-items:center;gap:7px;padding:5px 8px;border:1px solid #303c38;border-left:2px solid #78ad86;background:#141d1d;color:#a7b4aa;font:9px var(--mono);white-space:nowrap;cursor:pointer}
+.carry-chip b{font-weight:500;color:var(--mint)}.carry-chip b::after{content:" SA";font-size:7px;color:#6f8077}
+.carry-chip.holiday{border-left-color:#d1ae71}.carry-chip.holiday b{color:#e2c48d}
+.carry-chip.bayram{border-left-color:#d68775}.carry-chip.bayram b{color:#eba896}
+.carry-chip:hover{border-color:#68786c}
+.carry-empty{font:8px var(--mono);color:#5f6f67;letter-spacing:.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.carry-add{display:inline-flex;align-items:center;gap:6px;padding:6px 9px;border:1px solid #3d5747;background:#1d2a25;color:var(--mint);font:9px var(--mono);white-space:nowrap;cursor:pointer}
+.carry-add:hover{background:#25382c}
+.date-month{display:inline-flex;align-items:center;gap:4px}
+.month-step{width:22px;height:22px;border:1px solid #34423d;background:#182221;color:#a1afa4;cursor:pointer;line-height:1}
+.month-step:disabled{opacity:.3;cursor:default}
+@media(max-width:430px){.carry-empty{display:none}.carry-strip{gap:8px}}
+@media (orientation:landscape) and (max-height:540px){.carry-strip{min-height:0;padding:4px 0 0;gap:8px}.carry-empty{display:none}.carry-add,.carry-chip{padding:3px 7px}}
+.type-option{min-height:0;align-items:center;padding:12px 10px}.type-marker{margin-top:0}@media(max-width:430px){.type-option{min-height:0}}
