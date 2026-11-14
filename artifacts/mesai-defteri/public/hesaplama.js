@@ -29,19 +29,25 @@ const hesapla = (() => {
     return [lo, Math.max(0, lo - 1)].sort((a, b) => d(a) - d(b) || a - b)[0];
   };
 
-  return ({ netSalary = 65000, daysInMonth, dailyHours = 7.5, cumulativeTaxBase = 0, entries = [] }) => {
+  // Bordro yöntemi (KSE bordrolarıyla doğrulandı): net saatlik = net maaş / (30 gün × günlük saat);
+  // net mesai = net saatlik × saat × katsayı. Brüt, o ayın gelir vergisi dilimine göre net'ten brütleştirilir.
+  const marginalRate = base => BRACKETS.find(([limit]) => base <= limit)[1];
+  return ({ netSalary = 65000, dailyHours = 7.5, cumulativeTaxBase = 0, entries = [] }) => {
     const cum = kurus(cumulativeTaxBase);
     const monthlyGross = grossForNet(kurus(netSalary), cum);
     const monthlyTaxable = monthlyGross - rate(monthlyGross, SGK);
-    const hourly = monthlyGross / (daysInMonth * dailyHours);
+    const r = marginalRate(cum + monthlyTaxable);
+    const netHourly = kurus(netSalary) / (30 * dailyHours);
+    const hourly = netHourly / (1 - SGK - (1 - SGK) * r - STAMP);
+    const weighted = entries.reduce((s, e) => s + MULT[e.type] * Number(e.hours), 0);
     const totalHours = entries.reduce((s, e) => s + Number(e.hours), 0);
-    const gross = Math.max(0, entries.reduce((s, e) => s + round(hourly * MULT[e.type] * Number(e.hours)), 0));
-    const sgk = rate(gross, SGK), taxBase = gross - sgk;
-    const incomeTax = taxOnAdditional(cum + monthlyTaxable, taxBase), stampTax = rate(gross, STAMP);
+    const net = round(netHourly * weighted);
+    const gross = entries.reduce((s, e) => s + round(hourly * MULT[e.type] * Number(e.hours)), 0);
+    const sgk = rate(gross, SGK), stampTax = rate(gross, STAMP), incomeTax = gross - sgk - stampTax - net;
     return {
       monthlyGrossSalary: tl(monthlyGross), hourlyGross: round(hourly) / 100, totalHours: round(totalHours * 100) / 100,
-      grossTotal: tl(gross), sgk: tl(sgk), incomeTaxBase: tl(taxBase), incomeTax: tl(incomeTax), stampTax: tl(stampTax),
-      netTotal: tl(gross - sgk - incomeTax - stampTax), taxYear: TAX_YEAR,
+      grossTotal: tl(gross), sgk: tl(sgk), incomeTaxBase: tl(gross - sgk), incomeTax: tl(incomeTax), stampTax: tl(stampTax),
+      netTotal: tl(net), taxRate: r, taxYear: TAX_YEAR,
     };
   };
 })();
