@@ -134,3 +134,35 @@ select.form-input{background-image:linear-gradient(45deg,transparent 50%,#84948a
 .type-option{min-height:0;align-items:center;padding:12px 10px}.type-marker{margin-top:0}@media(max-width:430px){.type-option{min-height:0}}
 .carry-note{margin:0 0 4px;font-size:10px;line-height:1.6;color:#8d9a91}.carry-note span{color:#cfd9cf}
 .live-dot.pending{background:var(--amber);box-shadow:0 0 0 3px rgba(215,182,123,.18)}
+/* ===== Ortak düğme sistemi (ay okları / BU AY ile aynı dil) ===== */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:33px;padding:0 12px;border:1px solid var(--line);background:var(--surface);color:#9caaa2;font:9px var(--mono);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;cursor:pointer;transition:border-color .15s,color .15s}
+.btn:hover:not(:disabled){border-color:#718b79;color:var(--mint)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn .ic{width:13px;height:13px}
+.btn-icon{width:33px;padding:0}
+.btn.danger{color:#b98179}.btn.danger:hover:not(:disabled){border-color:#93635c;color:#e29d91}
+/* Devreden şeridi düğmesi ve etiketleri aynı çizgide */
+.carry-add{height:28px;padding:0 10px;background:var(--surface);border-color:var(--line);color:#9caaa2}
+.carry-add:hover{background:var(--surface)}
+.carry-chip{height:28px;border-color:var(--line);background:var(--surface)}
+/* Ayarlar: veri kartı düğmeleri */
+.storage-card .btn{margin:4px 8px 0 0}
+/* Personel listesi */
+.person-row{gap:14px;min-height:0;padding:14px 16px}
+.person-info{min-width:0}
+.person-info b{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600}
+.person-info .example-badge{font-weight:400}
+.person-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:3px;font:9px var(--mono);color:#93a198}
+.person-meta i{font-style:normal;color:#56645d}
+.row-actions{display:flex;gap:6px;margin-left:auto}
+/* Kayıt durumu (ekip şeridinin sağında) */
+.sync-state{margin-left:auto;display:flex;align-items:center;gap:7px;font:8px var(--mono);letter-spacing:.08em;color:#75847c;white-space:nowrap}
+.sync-state .live-dot{margin:0}
+.people-strip{border-top:0}
+@media(max-width:760px){.sync-state span{display:none}.people-strip{padding-right:4px}}
+@media(max-width:430px){.add-person-tab span{display:none}.person-row{flex-wrap:nowrap}.person-rate{display:none}}
+/* Telefon dikey: alt menü eşit aralıklı */
+@media(max-width:760px) and (orientation:portrait){.rail{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}.rail-group,.rail-bottom{display:contents}.rail-button{width:100%}}
+/* Telefon yatay: başlık kalktığı için ekip şeridi tam satır */
+@media (orientation:landscape) and (max-height:540px){.app-shell{grid-template-columns:minmax(0,1fr)}.people-strip{grid-column:1/-1}}
+.person-info b{font-size:13px;color:var(--ink)}.person-info .example-badge{font-size:7px;padding:2px 4px;line-height:1;letter-spacing:.08em}
