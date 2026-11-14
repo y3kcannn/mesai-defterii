@@ -27,7 +27,7 @@ function mesaiDefteri() {
   return {
      today:new Date(), online:navigator.onLine, monthNames, view:'ledger', people:[], entries:[], selectedId:null, year:new Date().getFullYear(), month:new Date().getMonth(),
      result:null, calcLoading:false, calcError:false, calcErrorMessage:'', calcRequest:0, settingsSaved:false, modal:'', editingEntry:null, editingPerson:null,
-     entryForm:{day:1,type:'normal',hours:2}, personForm:{name:'',role:'',netSalary:65000,dailyHours:7.5,restDay:0,cumulativeTaxBase:0}, toast:'', toastTimer:null,
+     entryForm:{day:1,type:'normal',hours:2,hoursText:'2'}, hourPresets:[0.5,1,1.5,2,3,4], personForm:{name:'',role:'',netSalary:65000,dailyHours:7.5,restDay:0,cumulativeTaxBase:0}, toast:'', toastTimer:null,
      weekdays:['PZT','SAL','ÇAR','PER','CUM','CMT','PAZ'], dayNames:['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'], restDayOptions:[1,2,3,4,5,6,0], entryTypes:[{value:'normal',label:'Normal mesai',note:'Hafta içi veya hafta sonu'},{value:'holiday',label:'Resmî tatil',note:'Resmî tatil çalışması'},{value:'bayram',label:'Bayram',note:'Bayram çalışması'}],
     init(){
       const savedPeople=read('mesai-defteri-people',null), savedEntries=read('mesai-defteri-entries',null);
@@ -87,8 +87,12 @@ function mesaiDefteri() {
        catch(error){if(request===this.calcRequest){this.result=null;this.calcError=true;this.calcErrorMessage=error instanceof Error?error.message:'Hesaplama alınamadı';}console.error('Mesai hesaplama hatası:',error);}
       finally{if(request===this.calcRequest)this.calcLoading=false;}
     },
-    openEntry(day){if(!this.activePerson)return;const existing=this.monthEntries.find(entry=>Number(entry.date.slice(-2))===Number(day));if(existing){this.editEntry(existing);return;}this.editingEntry=null;const special=holidayOf(this.dateKey(day))?.[0];this.entryForm={day,type:special==='bayram'?'bayram':special?'holiday':'normal',hours:2};this.modal='entry';},
-    editEntry(entry){this.editingEntry=entry;this.entryForm={day:Number(entry.date.slice(-2)),type:entry.type,hours:Number(entry.hours)};this.modal='entry';},
+    openEntry(day){if(!this.activePerson)return;const existing=this.monthEntries.find(entry=>Number(entry.date.slice(-2))===Number(day));if(existing){this.editEntry(existing);return;}this.editingEntry=null;const special=holidayOf(this.dateKey(day))?.[0];this.entryForm={day,type:special==='bayram'?'bayram':special?'holiday':'normal',hours:0,hoursText:''};this.setHours(2);this.modal='entry';},
+    setHours(h){this.entryForm.hours=h;this.entryForm.hoursText=String(h).replace('.',',');},
+    parseHours(){this.entryForm.hours=Number(String(this.entryForm.hoursText).replace(',','.'))||0;},
+    get restHours(){return Number(this.activePerson?.dailyHours)||7.5;},
+    get isRestDay(){return new Date(this.year,this.month,Number(this.entryForm.day)).getDay()===(this.activePerson?.restDay??0);},
+    editEntry(entry){this.editingEntry=entry;this.entryForm={day:Number(entry.date.slice(-2)),type:entry.type,hours:0,hoursText:''};this.setHours(Number(entry.hours));this.modal='entry';},
     saveEntry(){if(!this.activePerson||!this.entryForm.hours||this.entryForm.hours<=0)return;const entry={id:this.editingEntry?.id||`m-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,personId:this.selectedId,date:this.dateKey(Number(this.entryForm.day)),type:this.entryForm.type,hours:Number(this.entryForm.hours)};if(this.editingEntry){this.entries=this.entries.map(e=>e.id===entry.id?entry:e);}else this.entries.push(entry);this.persist();this.closeModal();this.calculate();this.notify('Mesai kaydı kaydedildi');},
     deleteEntry(){if(!this.editingEntry)return;this.entries=this.entries.filter(e=>e.id!==this.editingEntry.id);this.persist();this.closeModal();this.calculate();this.notify('Mesai kaydı silindi');},
      openPersonForm(person=null){this.editingPerson=person;this.personForm=person?{restDay:0,...person}:{name:'',role:'',netSalary:65000,dailyHours:7.5,restDay:0,cumulativeTaxBase:0};this.modal='person';},
