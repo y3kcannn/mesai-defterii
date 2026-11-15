@@ -2,7 +2,9 @@
 // produces a byte-different sw.js, which is what makes browsers install it.
 const APP_VERSION = '__APP_VERSION__';
 const CACHE_NAME = 'mesai-defteri-shell-' + APP_VERSION;
-const SHELL = ['/', '/tailwind.css', '/app.css', '/supabase.min.js', '/supabase-config.js', '/hesaplama.js', '/sync.js', '/app.js', '/alpine.min.js', '/manifest.webmanifest', '/icon.svg'];
+// Yollar sw.js'in bulunduğu klasöre göre (Netlify kökü veya GitHub Pages alt klasörü)
+const BASE = new URL('./', self.location).pathname;
+const SHELL = ['', 'tailwind.css', 'app.css', 'supabase.min.js', 'supabase-config.js', 'hesaplama.js', 'sync.js', 'app.js', 'alpine.min.js', 'manifest.webmanifest', 'icon.svg'].map(f => BASE + f);
 
 self.addEventListener('install', event => {
   // cache: 'reload' bypasses the HTTP cache so the new shell is really new.
@@ -29,9 +31,9 @@ self.addEventListener('message', event => {
 self.addEventListener('fetch', event => {
   const req = event.request;
   const url = new URL(req.url);
-  if (req.method !== 'GET' || url.origin !== self.location.origin || url.pathname.startsWith('/api/')) return;
+  if (req.method !== 'GET' || url.origin !== self.location.origin || url.pathname.startsWith(BASE + 'api/')) return;
   // version.json must always come straight from the network.
-  if (url.pathname === '/version.json') {
+  if (url.pathname === BASE + 'version.json') {
     event.respondWith(fetch(req, { cache: 'no-store' }));
     return;
   }
@@ -42,12 +44,12 @@ self.addEventListener('fetch', event => {
     fetch(netReq).then(response => {
       if (response.ok && response.type === 'basic') {
         const copy = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(isNav ? '/' : req, copy));
+        caches.open(CACHE_NAME).then(cache => cache.put(isNav ? BASE : req, copy));
       }
       return response;
     }).catch(() =>
-      caches.match(isNav ? '/' : req, { ignoreSearch: true })
-        .then(cached => cached || (isNav ? caches.match('/') : undefined))
+      caches.match(isNav ? BASE : req, { ignoreSearch: true })
+        .then(cached => cached || (isNav ? caches.match(BASE) : undefined))
         .then(cached => cached || Response.error())
     )
   );

@@ -3,10 +3,10 @@
   "short_name": "Mesai Defteri",
   "description": "Personel bazında fazla mesai ve net ödeme takibi.",
   "lang": "tr",
-  "start_url": "/",
-  "scope": "/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#101718",
   "theme_color": "#101718",
-  "icons": [{"src":"/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+  "icons": [{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
 }

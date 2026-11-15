@@ -25,7 +25,8 @@ function contentHash(dir) {
 }
 
 function gitSha() {
-  if (process.env.COMMIT_REF) return process.env.COMMIT_REF.slice(0, 7);
+  const ref = process.env.COMMIT_REF || process.env.GITHUB_SHA;
+  if (ref) return ref.slice(0, 7);
   try { return execSync('git rev-parse --short HEAD', { cwd: root, stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim(); } catch { return ''; }
 }
 
@@ -46,7 +47,7 @@ writeFileSync(join(dist, 'version.json'), JSON.stringify({ version, builtAt }) +
 // index.html
 const idxPath = join(dist, 'index.html');
 let html = readFileSync(idxPath, 'utf8');
-html = html.replace(/(<(?:script|link)\b[^>]*?\s(?:src|href)=")(\/[^"?#]+\.(?:js|css))(")/g,
+html = html.replace(/(<(?:script|link)\b[^>]*?\s(?:src|href)=")((?:\.\/|\/)[^"?#]+\.(?:js|css))(")/g,
   (_, a, path, b) => `${a}${path}?v=${version}${b}`);
 
 const snippet = `<meta name="app-version" content="${version}">
@@ -58,12 +59,12 @@ window.APP_VERSION=${JSON.stringify(version)};window.APP_BUILT_AT=${JSON.stringi
   function check(){
     if(navigator.onLine===false)return;
     if(navigator.serviceWorker&&navigator.serviceWorker.getRegistration)navigator.serviceWorker.getRegistration().then(function(r){r&&r.update().catch(function(){});});
-    fetch('/version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(j){if(j&&j.version&&j.version!==V)reloadFor(j.version);}).catch(function(){});
+    fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(j){if(j&&j.version&&j.version!==V)reloadFor(j.version);}).catch(function(){});
   }
   if('serviceWorker' in navigator){
     var had=!!navigator.serviceWorker.controller;
     navigator.serviceWorker.addEventListener('controllerchange',function(){if(had)check();had=true;});
-    window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js',{updateViaCache:'none'}).catch(function(){});});
+    window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).catch(function(){});});
   }
   document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')check();});
   window.addEventListener('pageshow',function(e){if(e.persisted)check();});
