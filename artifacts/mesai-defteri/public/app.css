@@ -35,7 +35,6 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 [x-cloak]{display:none!important}
 
 /* Ortak mono etiket dili */
-.tiny-kicker,.section-title,.eyebrow,.rail-caption,.metric-label,.manage-intro,.input-unit,.optional,.field-label,.settings-form label,
 .date-field>span,.hours-input-wrap>span,.delete-entry,.example-badge,.sync-state,.deductions summary,.month-current,.btn,.button-primary{
   font-family:var(--mono);letter-spacing:0.06em;text-transform:uppercase
 }
@@ -60,20 +59,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 .app-shell{max-width:1680px;min-height:100dvh;margin:0 auto;padding:env(safe-area-inset-top) max(var(--shell-x),env(safe-area-inset-right)) 0 max(var(--shell-x),env(safe-area-inset-left));display:flex;flex-direction:column}
 
 /* Personel şeridi */
-.people-strip{height:72px;display:flex;align-items:center;gap:25px;border-bottom:1px solid var(--line);flex-shrink:0;overflow:hidden}
-.strip-label{display:flex;align-items:center;min-width:84px}
-.tiny-kicker{font-size:11px;color:var(--muted)}
-.person-tabs{height:100%;min-width:0;display:flex;align-items:stretch;gap:4px;overflow-x:auto;overflow-y:hidden;overscroll-behavior:contain;touch-action:pan-x;-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 18px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 18px),transparent);padding-right:14px}
-.person-tab,.add-person-tab{position:relative;display:flex;align-items:center;gap:9px;padding:0 14px;background:none;border:0;border-bottom:1px solid transparent;margin-bottom:-1px;white-space:nowrap;cursor:pointer;color:var(--soft);font:13px var(--sans);transition:color .24s,border-color .24s}
-.person-tab:hover,.person-tab.selected{color:var(--ink)}
-.person-tab.selected{border-color:var(--mint)}
 .person-initials{width:28px;height:28px;display:grid;place-items:center;border:1px solid var(--line-strong);background:var(--mint-wash);color:var(--mint-ink);font:12px var(--mono);flex-shrink:0}
-.person-tab.selected .person-initials{background:var(--mint-wash-2);border-color:var(--mint-line);color:var(--mint-ink)}
-.person-tab-name{max-width:130px;overflow:hidden;text-overflow:ellipsis}
-.tab-presence{width:5px;height:5px;border-radius:50%;background:var(--mint-soft)}
-.tab-presence.example-dot{background:var(--holiday)}
-.add-person-tab{gap:7px;color:var(--muted);padding:0 12px}
-.add-person-tab:hover{color:var(--mint)}
 .sync-state{margin-left:auto;display:flex;align-items:center;gap:7px;padding-left:12px;font-size:10px;color:var(--dim);white-space:nowrap}
 .live-dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--mint);box-shadow:0 0 0 3px var(--mint-wash-2);flex-shrink:0}
 .live-dot.pending{background:var(--amber);box-shadow:0 0 0 3px rgba(215,182,123,.18)}
@@ -319,14 +305,7 @@ h1{display:flex;align-items:baseline;gap:8px;font-size:29px;line-height:1.1;font
 /* Telefon (dikey): menü alta sabitlenir */
 @media (max-width:760px){
   :root{--pad:12px;--shell-x:16px;--nav-h:66px}
-  .people-strip{height:60px;gap:4px}
-  .strip-label{display:none}
-  .person-tab{padding:0 8px;gap:7px}
   .person-initials{width:26px;height:26px}
-  .person-tab-name{max-width:96px;font-size:13px}
-  .add-person-tab{padding:0 10px}
-  .add-person-tab span{display:none}
-  .add-person-tab .ic{width:16px;height:16px}
   .sync-state{padding:0 6px 0 10px}
   .sync-state span{display:none}
 
@@ -395,11 +374,7 @@ h1{display:flex;align-items:baseline;gap:8px;font-size:29px;line-height:1.1;font
   :root{--pad:10px;--shell-x:12px;--nav-h:0px}
   html,body{height:100dvh;overflow:hidden;min-height:0}
   .app-shell{display:flex;flex-direction:column;height:100dvh;min-height:0;max-width:none;padding:env(safe-area-inset-top) max(var(--shell-x),env(safe-area-inset-right)) 0 max(var(--shell-x),env(safe-area-inset-left))}
-  .people-strip{height:44px;gap:10px}
-  .strip-label{display:none}
-  .person-tab{padding:0 9px;gap:7px}
   .person-initials{width:26px;height:26px}
-  .person-tab-name{font-size:13px;max-width:120px}
   .workspace{flex:1;display:grid;grid-template-columns:48px minmax(0,1fr);gap:12px;padding:8px 0 max(6px,env(safe-area-inset-bottom));min-height:0}
   .rail{position:static;height:auto;min-height:0;display:flex;flex-direction:column;justify-content:space-between;padding:0 8px 0 0;border:0;border-right:1px solid var(--line);background:none;backdrop-filter:none;-webkit-backdrop-filter:none}
   .rail-group,.rail-bottom{display:flex;flex-direction:column;gap:4px}
@@ -496,3 +471,21 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .dlg-out{transition:opacity .2s ease,transform .2s ease}
 .dlg-from{opacity:0;transform:translateY(12px)}
 .dlg-to{opacity:1;transform:none}
+
+/* Kişi seçici (üst isim şeridinin yerine) */
+.control-group{display:flex;align-items:center;gap:inherit}
+.person-switch{position:relative}
+.person-switch .live-dot{position:absolute;top:4px;right:4px;width:6px;height:6px;margin:0;box-shadow:none}
+.picker-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:18px}
+.picker-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px}
+.picker-foot .sync-state{margin:0}
+.breakdown-title b{font-weight:500;color:var(--text);letter-spacing:0;text-transform:none;font-family:var(--sans)}
+@media(max-width:760px) and (orientation:portrait){
+  .page-heading:has(.month-controls){flex-direction:column;align-items:stretch;gap:10px}
+  .page-heading:has(.month-controls) .month-controls{justify-content:space-between}
+  .page-heading:has(.month-controls) .controls-sep{display:none}
+  .page-heading:has(.month-controls) h1{font-size:25px}
+  .page-heading:has(.month-controls) .year{font-size:13px}
+}
+@media(max-width:430px){.picker-list{grid-template-columns:1fr}}
+.picker-foot .sync-state span{display:inline}
