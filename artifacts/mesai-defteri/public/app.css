@@ -473,3 +473,6 @@ h1{font-size:29px;line-height:1.1;font-weight:500;letter-spacing:-.055em;margin:
 .pin-remove{display:flex;align-items:center;gap:7px;margin-top:8px;font:9px var(--mono);letter-spacing:.06em;color:var(--muted);cursor:pointer}
 @media(max-width:430px){.breakdown-head,.breakdown-row{grid-template-columns:minmax(0,1fr) 52px 52px}.breakdown-row{font-size:11px}}
 @media (orientation:landscape) and (max-height:540px){.breakdown{display:none}}
+
+/* iOS: yazarken ve döndürünce otomatik yakınlaşma/yazı büyümesi olmasın */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
