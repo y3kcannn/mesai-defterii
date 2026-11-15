@@ -69,7 +69,7 @@
           <section class="calendar-panel">
             <div class="panel-topline"><div><svg class="ic section-ic" aria-hidden="true"><use href="#i-calendar"/></svg><span class="section-title">MESAİ TAKVİMİ</span></div></div>
             <div class="calendar-wrap" x-show="activePerson">
-              <div class="weekday-row"><template x-for="day in weekdays" :key="day"><div x-text="day"></div></template></div>
+              <div class="weekday-row"><template x-for="(day, i) in weekdays" :key="day"><div :class="{rest: (i+1)%7===(activePerson?.restDay??0)}" x-text="day"></div></template></div>
               <div class="day-grid">
                 <template x-for="cell in calendarCells" :key="cell.key"><button class="day-cell" :class="{'outside':!cell.current,'today':cell.today,'has-work':cell.entryCount,'has-holiday':cell.hasHoliday,'has-bayram':cell.hasBayram,'weekend':cell.weekend,'special-resmi':cell.special==='resmi','special-bayram':cell.special==='bayram','special-arife':cell.special==='arife'}" :title="cell.specialName" @click="cell.current && openEntry(cell.day)" :disabled="!cell.current"><span class="day-number" x-text="cell.day"></span><template x-if="cell.current && cell.entryCount"><span class="day-total" :class="cell.hasBayram ? 'bayram' : cell.hasHoliday ? 'holiday' : ''" x-text="formatHours(cell.hours)"></span></template><template x-if="cell.current && !cell.entryCount && cell.today"><span class="today-label">BUGÜN</span></template><template x-if="cell.current && cell.special && !cell.entryCount"><span class="special-label" x-text="cell.specialName"></span></template></button></template>
               </div>
