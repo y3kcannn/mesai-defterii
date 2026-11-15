@@ -33,3 +33,4 @@ alter publication supabase_realtime add table people, entries;
 -- Mevcut kurulumlar için (tablo önceden oluşturulduysa):
 alter table people add column if not exists rest_day smallint not null default 0;
 alter table entries add column if not exists paid_month text;
+alter table people add column if not exists pin_hash text; -- maaş PIN'inin SHA-256 özeti
