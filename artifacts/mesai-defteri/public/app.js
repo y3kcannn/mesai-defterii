@@ -72,6 +72,9 @@ function mesaiDefteri() {
     // Eksik mesai (paidMonth) kendi tarihinin değil ödendiği ayın hesabına girer
     isLeave(type){return String(type||'').startsWith('izin-');},
     leaveLabel(type){return this.leaveTypes.find(t=>t.value===type)?.label||'İzin';},
+    // Resmî tatil / bayram gününde günlük çalışma saatini (7,5) aşan kısım normal fazla mesai (x1,5) sayılır.
+    // Eksik mesai kayıtları birden fazla günü kapsayabildiği için bölünmez.
+    get payEntries(){const daily=Number(this.activePerson?.dailyHours)||7.5;return this.workEntries.flatMap(e=>{const h=Number(e.hours)||0;if(e.paidMonth||e.type==='normal'||h<=daily)return [{id:e.id,type:e.type,hours:h,date:e.date,paidMonth:e.paidMonth,src:e}];return [{id:e.id,type:e.type,hours:daily,date:e.date,src:e},{id:e.id+'-asim',type:'normal',hours:Math.round((h-daily)*100)/100,date:e.date,src:e,overflow:true}];});},
     get workEntries(){return this.monthEntries.filter(e=>!this.isLeave(e.type));},
     get leaveEntries(){return this.monthEntries.filter(e=>this.isLeave(e.type));},
     get unpaidDays(){return this.leaveEntries.filter(e=>e.type==='izin-ucretsiz').length;},
@@ -81,9 +84,9 @@ function mesaiDefteri() {
      monthEntryCount(index){if(!this.activePerson)return 0;const key=`${this.year}-${String(index+1).padStart(2,'0')}`;return this.entries.filter(e=>e.personId===this.selectedId&&(e.paidMonth||e.date.slice(0,7))===key).length;},
     get entryDayCount(){return new Set(this.monthEntries.filter(e=>!e.paidMonth).map(e=>e.date)).size;},
     // Bordrodaki gibi döküm: hafta içi / hafta sonu (kişinin hafta tatili) / resmî tatil / bayram / eksik mesai
-    get breakdown(){const p=this.activePerson;if(!p)return [];const daily=Number(p.dailyHours)||7.5,rest=p.restDay??0;const rows=[['weekday','Hafta içi','normal'],['weekend','Hafta sonu','rest'],['holiday','Resmî tatil','holiday'],['bayram','Bayram','bayram']].map(([key,label,cls])=>({key,label,cls,hours:0}));const row=k=>rows.find(r=>r.key===k);
-      for(const e of this.workEntries){const h=Number(e.hours)||0;if(e.paidMonth)rows.push({key:'carry-'+e.id,label:'Eksik mesai'+(e.type==='normal'?'':' · '+(this.entryTypes.find(t=>t.value===e.type)?.label||'')),cls:e.type==='normal'?'normal':e.type,hours:h,entry:e});else if(e.type==='holiday')row('holiday').hours+=h;else if(e.type==='bayram')row('bayram').hours+=h;else{const [y,m,d]=e.date.split('-').map(Number);row(new Date(y,m-1,d).getDay()===rest?'weekend':'weekday').hours+=h;}}
-      const out=rows.map(r=>({...r,days:r.hours/daily}));
+    get breakdown(){const p=this.activePerson;if(!p)return [];const daily=Number(p.dailyHours)||7.5,rest=p.restDay??0;const rows=[['weekday','Hafta içi','normal'],['weekend','Hafta sonu','rest'],['holiday','Resmî tatil','holiday'],['bayram','Bayram','bayram'],['overflow','Tatil/bayram 7,5 sa üstü','normal']].map(([key,label,cls])=>({key,label,cls,hours:0}));const row=k=>rows.find(r=>r.key===k);
+      for(const e of this.payEntries){const h=Number(e.hours)||0;if(e.paidMonth)rows.push({key:'carry-'+e.id,label:'Eksik mesai'+(e.type==='normal'?'':' · '+(this.entryTypes.find(t=>t.value===e.type)?.label||'')),cls:e.type==='normal'?'normal':e.type,hours:h,entry:e.src});else if(e.overflow)row('overflow').hours+=h;else if(e.type==='holiday')row('holiday').hours+=h;else if(e.type==='bayram')row('bayram').hours+=h;else{const [y,m,d]=e.date.split('-').map(Number);row(new Date(y,m-1,d).getDay()===rest?'weekend':'weekday').hours+=h;}}
+      const out=rows.filter(r=>r.key!=='overflow'||r.hours).map(r=>({...r,days:r.hours/daily}));
       for(const t of this.leaveTypes){const n=this.leaveEntries.filter(e=>e.type===t.value).length;if(n)out.push({key:t.value,label:t.label,cls:'leave '+t.value,hours:0,days:n,leave:true});}
       return out;},
     get breakdownTotal(){return this.breakdown.reduce((s,r)=>s+(r.leave?0:r.hours),0);},
@@ -137,7 +140,7 @@ function mesaiDefteri() {
     async calculate(){
       const person=this.activePerson;if(!person){this.result=null;this.calcError=false;return;}
        const request=++this.calcRequest;this.calcLoading=true;this.calcError=false;this.calcErrorMessage='';
-      const entries=this.workEntries.map(e=>({id:e.id,type:e.type,hours:Number(e.hours)}));
+      const entries=this.payEntries.map(e=>({id:e.id,type:e.type,hours:e.hours}));
       const payload={netSalary:Number(person.netSalary)||0,daysInMonth:this.monthDays,dailyHours:Number(person.dailyHours)||7.5,cumulativeTaxBase:Number(person.cumulativeTaxBase)||0,entries};
        try {const data=hesapla(payload);if(request===this.calcRequest)this.result=data;}
        catch(error){if(request===this.calcRequest){this.result=null;this.calcError=true;this.calcErrorMessage=error instanceof Error?error.message:'Hesaplama alınamadı';}console.error('Mesai hesaplama hatası:',error);}
