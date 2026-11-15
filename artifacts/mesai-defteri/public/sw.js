@@ -4,7 +4,7 @@ const APP_VERSION = '__APP_VERSION__';
 const CACHE_NAME = 'mesai-defteri-shell-' + APP_VERSION;
 // Yollar sw.js'in bulunduğu klasöre göre (Netlify kökü veya GitHub Pages alt klasörü)
 const BASE = new URL('./', self.location).pathname;
-const SHELL = ['', 'tailwind.css', 'app.css', 'supabase.min.js', 'supabase-config.js', 'hesaplama.js', 'sync.js', 'app.js', 'alpine.min.js', 'manifest.webmanifest', 'icon.svg'].map(f => BASE + f);
+const SHELL = ['', 'tailwind.css', 'app.css', 'supabase.min.js', 'supabase-config.js', 'hesaplama.js', 'sync.js', 'app.js', 'alpine.min.js', 'manifest.webmanifest', 'icon.svg', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'].map(f => BASE + f);
 
 self.addEventListener('install', event => {
   // cache: 'reload' bypasses the HTTP cache so the new shell is really new.

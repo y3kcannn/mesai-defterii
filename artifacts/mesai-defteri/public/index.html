@@ -8,6 +8,11 @@
   <title>Mesai Defteri — Fazla mesai takibi</title>
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" type="image/svg+xml" href="./icon.svg">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Mesai Defteri">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -72,7 +77,7 @@
 
           <aside class="summary-column">
             <section class="summary-card pay-card"><div class="panel-topline"><div><svg class="ic section-ic" aria-hidden="true"><use href="#i-wallet"/></svg><span class="section-title">ÖDEME ÖZETİ</span></div><button class="btn btn-icon lock-button" x-show="activePerson?.pinHash && !salaryLocked" @click="lockSalary()" aria-label="Kilitle" title="Kilitle"><svg class="ic" aria-hidden="true"><use href="#i-unlock"/></svg></button></div>
-               <div class="pin-lock" x-show="salaryLocked"><div class="pin-icon"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg></div><b>Maaş bilgileri gizli</b><p x-text="(activePerson?.name||'')+' için 4 haneli PIN girin'"></p><input class="pin-input" :class="{error:pinError}" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="••••" x-model="pinInput" @input="tryUnlock()"><small class="pin-error" x-show="pinError">PIN hatalı</small></div>
+               <div class="pin-lock" x-show="salaryLocked" @keydown.window="pinKey($event)"><div class="pin-icon"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg></div><b>Maaş bilgileri gizli</b><p x-text="(activePerson?.name||'')+' için 4 haneli PIN girin'"></p><div class="pin-dots" :class="{error:pinError}"><template x-for="i in 4" :key="i"><i :class="{on:pinInput.length>=i}"></i></template></div><div class="pin-pad"><template x-for="d in [1,2,3,4,5,6,7,8,9]" :key="d"><button type="button" class="pin-key" @click="pinPress(String(d))" x-text="d"></button></template><span></span><button type="button" class="pin-key" @click="pinPress('0')">0</button><button type="button" class="pin-key pin-back" @click="pinBack()" aria-label="Sil"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11v12H9l-6-6z"/><path d="M12.5 9.5l5 5m0-5l-5 5"/></svg></button></div><small class="pin-error" x-show="pinError">PIN hatalı</small></div>
                <div x-show="!salaryLocked">
                <div class="net-block"><div class="metric-label">TOPLAM NET ÖDEME</div><div class="net-value" x-text="result && activePerson ? money(Number(activePerson.netSalary)+result.netTotal) : '—'"></div><div class="net-sub"><span class="status-square" :class="calcError ? 'status-error':''"></span><span x-text="calcError ? calcErrorMessage : 'Maaş + fazla mesai'"></span></div></div>
                <div class="metric-list"><div><span>Maaş (net)</span><b x-text="activePerson ? money(activePerson.netSalary) : '—'"></b></div><div><span>Fazla mesai (net)</span><b x-text="result ? money(result.netTotal) : '—'"></b></div><div><span>Fazla mesai süresi</span><b x-text="result ? formatHours(result.totalHours)+' sa' : '—'"></b></div></div>
