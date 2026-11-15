@@ -35,7 +35,7 @@ function mesaiDefteri() {
       const savedPeople=read('mesai-defteri-people',null), savedEntries=read('mesai-defteri-entries',null);
       if(savedPeople===null){this.people=demoPeople;this.entries=demoEntries;this.persist();}
       else {this.people=Array.isArray(savedPeople)?savedPeople:[];this.entries=Array.isArray(savedEntries)?savedEntries:[];}
-      this.selectedId=this.people[0]?.id||null;
+      this.selectedId=this.preferredId();
       bulut.reset(this.people,this.entries);
       bulut.onChange=()=>{this.syncPending=bulut.pending;this.syncError=bulut.error;if(bulut.reachable!==null)this.online=bulut.reachable;};bulut.onChange();
       bulut.onDrained=()=>this.sync(); // kuyruk boşalınca uzaktaki değişiklikleri al
@@ -46,12 +46,14 @@ function mesaiDefteri() {
       // Alpine: modal kapanırken yeniden açılınca iptal edilen x-show geçişi yakalanmamış hata olarak düşüyor; zararsız
       const cancelled=e=>{if((e.reason||e.error)?.isFromCancelledTransition)e.preventDefault();};window.addEventListener('unhandledrejection',cancelled);window.addEventListener('error',cancelled);
       window.addEventListener('focus',resume); window.addEventListener('pageshow',resume);
-      this.$watch('selectedId',()=>this.calculate()); this.$watch('month',()=>this.calculate()); this.$watch('year',()=>this.calculate());
+      this.$watch('selectedId',id=>{try{if(id)localStorage.setItem('mesai-defteri-secili',id);}catch{}this.calculate();}); this.$watch('month',()=>this.calculate()); this.$watch('year',()=>this.calculate());
        window.addEventListener('online',()=>{this.online=true;bulut.flush().catch(()=>{});this.sync();this.calculate();});
        window.addEventListener('offline',()=>{this.online=false;});
       this.calculate();
       if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
     },
+    // Bu cihazda en son seçilen kişi (her telefon kendi kişisini hatırlar)
+    preferredId(){let id=null;try{id=localStorage.getItem('mesai-defteri-secili');}catch{}return this.people.some(p=>p.id===id)?id:(this.people[0]?.id||null);},
     get activePerson(){return this.people.find(p=>p.id===this.selectedId)||null;},
     // Maaş gizliliği: PIN'li kişinin tutarları PIN girilene kadar gizli (oturum boyunca açık kalır)
     isLocked(person){return !!person?.pinHash&&!this.unlockedIds.includes(person.id);},
@@ -113,7 +115,7 @@ function mesaiDefteri() {
         this.persist();
         if(bulut.pending||bulut.version!==data.version)return;
         bulut.reset(data.people,data.entries);this.people=data.people;this.entries=data.entries;this.persist();
-        if(!this.people.some(p=>p.id===this.selectedId))this.selectedId=this.people[0]?.id||null;
+        if(!this.people.some(p=>p.id===this.selectedId))this.selectedId=this.preferredId();
         this.calculate();
       }catch(error){console.error('Senkron hatası:',error);}
     },
