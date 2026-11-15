@@ -496,3 +496,20 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 }
 @media(max-width:430px){.picker-list{grid-template-columns:1fr}}
 .picker-foot .sync-state span{display:inline}
+
+/* İzin günleri */
+:root{--leave-bg:rgba(166,179,172,.10);--leave-ink:#bcc6bf}
+.day-cell.has-leave:not(.outside){background:var(--leave-bg)}
+.day-cell.has-leave.leave-unpaid:not(.outside){background:var(--bayram-bg)}
+.leave-label{position:absolute;left:9px;right:6px;bottom:8px;font:9px var(--mono);letter-spacing:.04em;color:var(--leave-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.leave-unpaid .leave-label{color:var(--red-ink)}
+.breakdown-row.leave i{background:var(--leave-ink)}.breakdown-row.izin-ucretsiz i{background:var(--red)}
+.mode-switch{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:14px 0 4px}
+.mode-switch button{display:flex;align-items:center;justify-content:center;gap:8px;height:40px;border:1px solid var(--line-field);background:var(--field);color:var(--muted);font:12px var(--mono);letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:border-color .2s,color .2s,background .2s}
+.mode-switch button.chosen{border-color:var(--mint-line);background:var(--mint-wash);color:var(--mint-ink)}
+.leave-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.leave-option small{display:block;margin-top:2px;font-size:11px;color:var(--dim);font-weight:400}
+.leave-option .type-marker{background:var(--leave-ink)}.leave-option.izin-ucretsiz .type-marker{background:var(--red)}
+@media(max-width:430px){.leave-label{left:3px;right:2px;bottom:5px;font-size:7px;letter-spacing:0}}
+@media (orientation:landscape) and (max-height:540px){.leave-label{left:5px;bottom:3px;font-size:8px}}
+.leave-option{height:54px}
