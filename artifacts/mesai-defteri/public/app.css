@@ -14,13 +14,13 @@
   --ink:#e6ece6;--text:#dbe3dc;--soft:#bcc6bf;--muted:#a6b3ac;--dim:#8b9991;--faint:#6f8178;
   /* Mint = normal mesai, seçili, başarılı/eşitlendi */
   --mint:#a5d8b6;--mint-ink:#c3e3ca;--mint-mute:#afc6b6;--mint-soft:#78ad86;--mint-line:#759479;--mint-edge:#52705c;--mint-deep:#355a49;
-  --mint-wash:#1e2a25;--mint-wash-2:#293b31;--on-mint:#15211a;--today-bg:rgba(69,105,78,.2);--work-bg:rgba(120,173,134,.17);
+  --mint-wash:#1e2a25;--mint-wash-2:#293b31;--on-mint:#15211a;--today-bg:rgba(120,173,134,.07);--work-bg:rgba(120,173,134,.17);
   /* Amber = resmî tatil, bekleyen eşitleme */
-  --amber:#d7b67b;--holiday:var(--amber);--holiday-ink:#e2c48d;--holiday-line:#8f7a52;--holiday-bg:rgba(215,182,123,.11);--work-holiday-bg:rgba(215,182,123,.17);
+  --amber:#d7b67b;--holiday:var(--amber);--holiday-ink:#e2c48d;--holiday-line:#8f7a52;--holiday-bg:rgba(215,182,123,.10);--holiday-bg-half:rgba(215,182,123,.06);--work-holiday-bg:rgba(215,182,123,.17);
   /* Kırmızı = bayram, tehlike, çevrimdışı/hata */
-  --red:#d1847a;--bayram:var(--red);--red-ink:#eba896;--bayram-ink:var(--red-ink);--red-line:#9a665d;--bayram-bg:rgba(209,132,122,.12);--work-bayram-bg:rgba(209,132,122,.18);
+  --red:#d1847a;--bayram:var(--red);--red-ink:#eba896;--bayram-ink:var(--red-ink);--red-line:#9a665d;--bayram-bg:rgba(209,132,122,.09);--work-bayram-bg:rgba(209,132,122,.18);
   /* Arduvaz mavisi = haftalık izin günü (hafta tatili) */
-  --rest:#8fa9cc;--rest-ink:#c3d3ea;--rest-bg:rgba(124,154,196,.14);--rest-bg-dim:rgba(124,154,196,.05);
+  --rest:#8fa9cc;--rest-ink:#c3d3ea;--rest-bg:rgba(124,154,196,.11);--rest-bg-dim:rgba(124,154,196,.03);
   --mono:'DM Mono',ui-monospace,monospace;--sans:'Manrope',system-ui,sans-serif;
   --pad:18px;--shell-x:30px;--nav-h:0px
 }
@@ -60,10 +60,10 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 .app-shell{max-width:1680px;min-height:100dvh;margin:0 auto;padding:0 var(--shell-x);display:flex;flex-direction:column}
 
 /* Personel şeridi */
-.people-strip{height:72px;display:flex;align-items:center;gap:25px;border-bottom:1px solid var(--line);flex-shrink:0}
+.people-strip{height:72px;display:flex;align-items:center;gap:25px;border-bottom:1px solid var(--line);flex-shrink:0;overflow:hidden}
 .strip-label{display:flex;align-items:center;min-width:84px}
 .tiny-kicker{font-size:11px;color:var(--muted)}
-.person-tabs{height:100%;min-width:0;display:flex;align-items:stretch;gap:4px;overflow-x:auto;-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 18px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 18px),transparent);padding-right:14px}
+.person-tabs{height:100%;min-width:0;display:flex;align-items:stretch;gap:4px;overflow-x:auto;overflow-y:hidden;overscroll-behavior:contain;touch-action:pan-x;-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 18px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 18px),transparent);padding-right:14px}
 .person-tab,.add-person-tab{position:relative;display:flex;align-items:center;gap:9px;padding:0 14px;background:none;border:0;border-bottom:1px solid transparent;margin-bottom:-1px;white-space:nowrap;cursor:pointer;color:var(--soft);font:13px var(--sans);transition:color .24s,border-color .24s}
 .person-tab:hover,.person-tab.selected{color:var(--ink)}
 .person-tab.selected{border-color:var(--mint)}
@@ -118,11 +118,12 @@ h1{font-size:29px;line-height:1.1;font-weight:500;letter-spacing:-.055em;margin:
 .weekday-row,.day-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}
 .weekday-row{border-bottom:1px solid var(--line-field)}
 .weekday-row div{text-align:center;padding:0 0 10px;color:var(--dim);font:11px var(--mono);letter-spacing:0.06em}
-.weekday-row div.rest{color:var(--rest-ink);background:linear-gradient(transparent,var(--rest-bg));box-shadow:inset 0 -2px 0 var(--rest)}
+.weekday-row div.rest{color:var(--rest-ink);background:linear-gradient(transparent,var(--rest-bg))}
 .day-grid{border-left:1px solid var(--grid)}
 .day-cell{height:77px;min-width:0;position:relative;text-align:left;border:0;border-right:1px solid var(--grid);border-bottom:1px solid var(--grid);background:var(--cell-bg);padding:10px 10px 8px;color:var(--text);cursor:pointer;transition:background .24s,box-shadow .24s}
 .day-cell:hover:not(:disabled){background:var(--mint-wash-2);box-shadow:inset 0 0 0 1px var(--mint-edge);z-index:1}
 .day-cell.outside{background:rgba(15,22,23,.24);cursor:default}
+.day-cell.outside .day-total{opacity:.45}
 .day-number{position:absolute;left:10px;top:10px;font:13px var(--mono);color:var(--soft);opacity:.8}
 .day-cell.outside .day-number{color:var(--faint);opacity:1}
 .today-label{position:absolute;bottom:9px;right:8px;color:var(--mint-soft);font:9px var(--mono);letter-spacing:0.06em}
@@ -131,26 +132,30 @@ h1{font-size:29px;line-height:1.1;font-weight:500;letter-spacing:-.055em;margin:
 .day-total::after{content:"SA";margin-left:3px;font-size:9px;letter-spacing:0.06em;color:var(--dim)}
 .day-total.holiday{color:var(--holiday-ink)}
 .day-total.bayram{color:var(--bayram-ink)}
-/* Hafta tatili sütunu: arduvaz mavisi zemin + solda ince çizgi (bugün/tatil üstüne binse de çizgi kalır) */
+/* Hücre vurguları çizgi değil, kutunun tamamına yumuşak renk dolgusu.
+   Hafta tatili sütunu: arduvaz mavisi zemin + açık mavi gün numarası */
 .day-cell.weekend{background:var(--rest-bg-dim)}
 .day-cell.weekend:not(.outside){background:var(--rest-bg)}
-.day-cell.weekend::after{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--rest);opacity:.3}
-.day-cell.weekend:not(.outside)::after{opacity:.85}
 .day-cell.weekend:not(.outside) .day-number{color:var(--rest-ink);opacity:1}
 /* Resmî tatil / bayram / arife */
-.day-cell.special-resmi:not(.outside){background:var(--holiday-bg);box-shadow:inset 0 2px 0 var(--holiday)}
-.day-cell.special-bayram:not(.outside){background:var(--bayram-bg);box-shadow:inset 0 2px 0 var(--bayram)}
-.day-cell.special-arife:not(.outside){background:linear-gradient(135deg,var(--cell-bg) 50%,var(--holiday-bg) 50%)}
+.day-cell.special-resmi:not(.outside){background:var(--holiday-bg)}
+.day-cell.special-bayram:not(.outside){background:var(--bayram-bg)}
+.day-cell.special-arife:not(.outside){background:var(--holiday-bg-half)}
 .day-cell.special-resmi:not(.outside) .day-number,.special-resmi .special-label{color:var(--holiday-ink);opacity:1}
 .day-cell.special-bayram:not(.outside) .day-number,.special-bayram .special-label{color:var(--bayram-ink);opacity:1}
 .day-cell.special-arife:not(.outside) .day-number,.special-arife .special-label{color:var(--holiday-ink);opacity:1}
 .day-cell[class*="special-"]:hover:not(:disabled),.day-cell.weekend:hover:not(:disabled){background:var(--mint-wash-2)}
-.day-cell.today:not(.outside){background:var(--today-bg)}
+.day-cell.today:not(.outside){background:linear-gradient(var(--today-bg),var(--today-bg)) var(--cell-bg)}
+.day-cell.today.weekend:not(.outside){background:linear-gradient(var(--today-bg),var(--today-bg)) var(--rest-bg)}
 .day-cell.today:not(.outside) .day-number{color:var(--mint);opacity:1}
-/* Mesai girilmiş gün: alt çizgi yerine hücre zemini mesai türü renginde hafifçe dolar */
+/* Mesai girilmiş gün: kutu mesai türü renginde dolar; izin gününde dolgu mavi zeminin üstüne biner */
 .day-cell.has-work:not(.outside){background:var(--work-bg)}
 .day-cell.has-work.has-holiday:not(.outside){background:var(--work-holiday-bg)}
 .day-cell.has-work.has-bayram:not(.outside){background:var(--work-bayram-bg)}
+.day-cell.has-work.weekend:not(.outside){background:linear-gradient(var(--work-bg),var(--work-bg)) var(--rest-bg-dim)}
+.day-cell.has-work.has-holiday.weekend:not(.outside){background:linear-gradient(var(--work-holiday-bg),var(--work-holiday-bg)) var(--rest-bg-dim)}
+.day-cell.has-work.has-bayram.weekend:not(.outside){background:linear-gradient(var(--work-bayram-bg),var(--work-bayram-bg)) var(--rest-bg-dim)}
+.day-cell.has-work:hover:not(:disabled){filter:brightness(1.12)}
 .special-label{position:absolute;left:10px;right:6px;bottom:9px;font:9px var(--mono);letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.85}
 
 /* Eksik mesai şeridi */
@@ -426,7 +431,8 @@ h1{font-size:29px;line-height:1.1;font-weight:500;letter-spacing:-.055em;margin:
   .day-grid{flex:1;min-height:0;grid-auto-rows:minmax(0,1fr)}
   .day-cell{height:auto;min-height:0;padding:0}
   .day-number{left:6px;top:4px;font-size:12px}
-  .day-total{right:5px;bottom:4px;font-size:13px}
+  .day-total{right:5px;bottom:3px;font-size:12px}
+  .day-total::after{display:none}
   .carry-strip{min-height:0;padding:5px 0;gap:8px}
   .carry-label-text{display:none}
   .carry-chip,.carry-add{height:30px}
