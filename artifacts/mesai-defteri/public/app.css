@@ -36,7 +36,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 
 /* Ortak mono etiket dili */
 .tiny-kicker,.section-title,.eyebrow,.rail-caption,.metric-label,.manage-intro,.input-unit,.optional,.field-label,.settings-form label,
-.date-field>span,.hours-input-wrap>span,.delete-entry,.example-badge,.carry-label,.sync-state,.deductions summary,.month-current,.btn,.button-primary{
+.date-field>span,.hours-input-wrap>span,.delete-entry,.example-badge,.sync-state,.deductions summary,.month-current,.btn,.button-primary{
   font-family:var(--mono);letter-spacing:0.06em;text-transform:uppercase
 }
 
@@ -103,6 +103,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 h1{display:flex;align-items:baseline;gap:8px;font-size:29px;line-height:1.1;font-weight:500;letter-spacing:-.055em;margin:0;color:var(--ink);white-space:nowrap}
 .year{font:16px var(--mono);line-height:1;color:var(--dim);letter-spacing:0}
 .month-controls{display:flex;align-items:center;gap:5px;flex-shrink:0}
+.controls-sep{width:1px;height:17px;margin:0 3px;background:var(--line)}
 .month-current{padding:0 11px}
 
 /* Kart zemini (takvim, özet, personel, ayarlar) */
@@ -159,18 +160,6 @@ h1{display:flex;align-items:baseline;gap:8px;font-size:29px;line-height:1.1;font
 .special-label{position:absolute;left:10px;right:6px;bottom:9px;font:9px var(--mono);letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.85}
 
 /* Eksik mesai şeridi */
-.carry-strip{display:flex;align-items:center;gap:8px;margin:12px 0;padding:8px;background:rgba(26,35,40,.72);border:1px solid rgba(255,255,255,.05);border-radius:12px}
-.carry-strip .btn{border-radius:8px}
-.carry-label{display:inline-flex;align-items:center;gap:7px;padding-left:6px;font-size:10px;letter-spacing:0.06em;color:var(--mint-mute);white-space:nowrap}
-.carry-chips{flex:1;min-width:0;display:flex;align-items:center;gap:6px;overflow-x:auto;padding-right:12px;-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 14px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 14px),transparent)}
-.carry-chip{display:inline-flex;align-items:center;gap:7px;height:33px;padding:0 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--soft);font:12px var(--sans);white-space:nowrap;cursor:pointer;flex-shrink:0}
-.carry-chip:hover{border-color:var(--line-hover)}
-.carry-chip b{font-weight:500;color:var(--mint)}
-.carry-chip b::after{content:" SA";font-size:9px;color:var(--dim)}
-.carry-chip.holiday b{color:var(--holiday-ink)}
-.carry-chip.bayram b{color:var(--bayram-ink)}
-.carry-empty{font:12px var(--sans);color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.carry-add{flex-shrink:0}
 
 /* Boş durumlar */
 .calendar-empty,.empty-state{min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--text);padding:20px}
@@ -363,8 +352,6 @@ h1{display:flex;align-items:baseline;gap:8px;font-size:29px;line-height:1.1;font
   .day-total::after{display:none}
   .today-label{right:5px;bottom:7px;font-size:8px}
   .special-label{display:none}
-  .carry-strip{gap:10px}
-  .carry-label-text{display:none}
   .summary-column{width:100%}
   .metric-list>div{font-size:13px;padding:7px 0}
   .metric-list b{font-size:13px}
@@ -392,6 +379,9 @@ h1{display:flex;align-items:baseline;gap:8px;font-size:29px;line-height:1.1;font
   .toast{font-size:12px}
 }
 @media (max-width:430px){
+  .page-heading:has(.month-controls) h1{font-size:22px;gap:6px}
+  .page-heading:has(.month-controls) .year{font-size:12px}
+  .controls-sep{margin:0 1px}
   .month-controls{gap:4px}
   .icon-button,.month-current{height:34px}
   .icon-button{width:34px}
@@ -427,7 +417,7 @@ h1{display:flex;align-items:baseline;gap:8px;font-size:29px;line-height:1.1;font
   .icon-button{width:34px}
 
   .ledger-layout{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:10px;align-items:stretch}
-  .calendar-panel{display:flex;flex-direction:column;min-height:0;padding:6px 8px 0}
+  .calendar-panel{display:flex;flex-direction:column;min-height:0;padding:6px 8px 8px}
   .calendar-panel>.panel-topline,.special-label,.today-label{display:none}
   .calendar-wrap{flex:1;min-height:0;padding-top:0;display:flex;flex-direction:column}
   .weekday-row div{padding:0 0 3px;font-size:10px}
@@ -436,9 +426,6 @@ h1{display:flex;align-items:baseline;gap:8px;font-size:29px;line-height:1.1;font
   .day-number{left:6px;top:4px;font-size:12px}
   .day-total{right:5px;bottom:3px;font-size:12px}
   .day-total::after{display:none}
-  .carry-strip{min-height:0;margin:6px 0 4px;padding:4px;gap:6px}
-  .carry-label-text{display:none}
-  .carry-chip,.carry-add{height:30px}
   .summary-column{min-height:0;overflow-y:auto}
   .net-block{padding:12px 0 10px;margin-top:10px}
   .net-value{font-size:20px}
@@ -457,7 +444,7 @@ h1{display:flex;align-items:baseline;gap:8px;font-size:29px;line-height:1.1;font
 .app-version{display:block;margin-top:14px;font:10px var(--mono);letter-spacing:0.06em;color:var(--dim)}
 
 /* ===== Mesai dökümü (bordro gibi gün / saat) ===== */
-.breakdown{border-top:1px solid var(--line);padding:6px 0 2px}
+.breakdown{margin-top:var(--pad);border-top:1px solid var(--line);padding:6px 0 2px}
 .breakdown-head,.breakdown-row{display:grid;grid-template-columns:minmax(0,1fr) 64px 64px;align-items:center;gap:8px}
 .breakdown-head{padding:6px 0 4px;font:10px var(--mono);letter-spacing:0.06em;color:var(--dim)}
 .breakdown-head span:not(:first-child),.breakdown-row b{text-align:right}
@@ -466,6 +453,9 @@ h1{display:flex;align-items:baseline;gap:8px;font-size:29px;line-height:1.1;font
 .breakdown-row i{width:5px;height:5px;border-radius:50%;background:var(--mint-soft);flex-shrink:0}
 .breakdown-row.rest i{background:var(--rest)}.breakdown-row.holiday i{background:var(--holiday)}.breakdown-row.bayram i{background:var(--bayram)}
 .breakdown-row b{font:400 12px var(--mono);color:var(--text)}
+.breakdown-row.editable{cursor:pointer}
+.breakdown-row.editable:hover{color:var(--mint)}
+.row-edit-ic{width:11px;height:11px;color:var(--dim)}
 .breakdown-row.empty{color:var(--dim)}.breakdown-row.empty b{color:var(--dim)}
 .breakdown-row.total{border-top-color:var(--line);font:11px var(--mono);letter-spacing:0.06em;text-transform:uppercase;color:var(--muted)}
 .breakdown-row.total b{color:var(--mint)}

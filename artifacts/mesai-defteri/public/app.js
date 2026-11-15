@@ -69,9 +69,9 @@ function mesaiDefteri() {
      monthEntryCount(index){if(!this.activePerson)return 0;const key=`${this.year}-${String(index+1).padStart(2,'0')}`;return this.entries.filter(e=>e.personId===this.selectedId&&(e.paidMonth||e.date.slice(0,7))===key).length;},
     get entryDayCount(){return new Set(this.monthEntries.filter(e=>!e.paidMonth).map(e=>e.date)).size;},
     // Bordrodaki gibi döküm: hafta içi / hafta sonu (kişinin hafta tatili) / resmî tatil / bayram / eksik mesai
-    get breakdown(){const p=this.activePerson;if(!p)return [];const daily=Number(p.dailyHours)||7.5,rest=p.restDay??0;const rows=[['weekday','Hafta içi','normal'],['weekend','Hafta sonu','rest'],['holiday','Resmî tatil','holiday'],['bayram','Bayram','bayram'],['carry','Eksik mesai','normal']].map(([key,label,cls])=>({key,label,cls,hours:0}));const row=k=>rows.find(r=>r.key===k);
-      for(const e of this.monthEntries){const h=Number(e.hours)||0;if(e.paidMonth)row('carry').hours+=h;else if(e.type==='holiday')row('holiday').hours+=h;else if(e.type==='bayram')row('bayram').hours+=h;else{const [y,m,d]=e.date.split('-').map(Number);row(new Date(y,m-1,d).getDay()===rest?'weekend':'weekday').hours+=h;}}
-      return rows.filter(r=>r.key!=='carry'||r.hours).map(r=>({...r,days:r.hours/daily}));},
+    get breakdown(){const p=this.activePerson;if(!p)return [];const daily=Number(p.dailyHours)||7.5,rest=p.restDay??0;const rows=[['weekday','Hafta içi','normal'],['weekend','Hafta sonu','rest'],['holiday','Resmî tatil','holiday'],['bayram','Bayram','bayram']].map(([key,label,cls])=>({key,label,cls,hours:0}));const row=k=>rows.find(r=>r.key===k);
+      for(const e of this.monthEntries){const h=Number(e.hours)||0;if(e.paidMonth)rows.push({key:'carry-'+e.id,label:'Eksik mesai'+(e.type==='normal'?'':' · '+(this.entryTypes.find(t=>t.value===e.type)?.label||'')),cls:e.type==='normal'?'normal':e.type,hours:h,entry:e});else if(e.type==='holiday')row('holiday').hours+=h;else if(e.type==='bayram')row('bayram').hours+=h;else{const [y,m,d]=e.date.split('-').map(Number);row(new Date(y,m-1,d).getDay()===rest?'weekend':'weekday').hours+=h;}}
+      return rows.map(r=>({...r,days:r.hours/daily}));},
     get breakdownTotal(){return this.breakdown.reduce((s,r)=>s+r.hours,0);},
     get carryEntries(){return this.monthEntries.filter(e=>e.paidMonth).sort((a,b)=>a.date.localeCompare(b.date));},
     shortDate(date){return new Intl.DateTimeFormat('tr-TR',{day:'numeric',month:'short'}).format(new Date(date+'T12:00'));},
