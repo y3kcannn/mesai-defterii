@@ -513,3 +513,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 @media(max-width:430px){.leave-label{left:3px;right:2px;bottom:5px;font-size:7px;letter-spacing:0}}
 @media (orientation:landscape) and (max-height:540px){.leave-label{left:5px;bottom:3px;font-size:8px}}
 .leave-option{height:54px}
+
+/* Kesinti detayı her zaman açık: başlık düz etiket */
+.deductions summary{pointer-events:none;cursor:default}
+.deductions summary::after{display:none}
