@@ -102,9 +102,11 @@ const bulut = (() => {
     async pull() {
       await this.flush();
       const v = version; // bu andan sonra yapılan yerel değişiklik, gelen veriyi bayatlatır
-      const [p, e] = await withTimeout(Promise.all([db.from('people').select('*').order('created_at'), db.from('entries').select('*')]));
-      if (p.error || e.error) { if (!(p.error || e.error).code) this.reachable = false; throw p.error || e.error; }
-      this.reachable = true;
+      let p, e;
+      try { [p, e] = await withTimeout(Promise.all([db.from('people').select('*').order('created_at'), db.from('entries').select('*')])); }
+      catch (error) { this.reachable = false; this.onChange(); throw error; } // zaman aşımı / ağ hatası
+      if (p.error || e.error) { if (!(p.error || e.error).code) this.reachable = false; this.onChange(); throw p.error || e.error; }
+      this.reachable = true; this.onChange(); // durum göstergesi başarılı okumadan sonra da güncellensin
       return { people: p.data.map(fromRow.people), entries: e.data.map(fromRow.entries), version: v };
     },
     listen(cb) {

@@ -14,11 +14,11 @@
   --ink:#e6ece6;--text:#dbe3dc;--soft:#bcc6bf;--muted:#a6b3ac;--dim:#8b9991;--faint:#6f8178;
   /* Mint = normal mesai, seçili, başarılı/eşitlendi */
   --mint:#a5d8b6;--mint-ink:#c3e3ca;--mint-mute:#afc6b6;--mint-soft:#78ad86;--mint-line:#759479;--mint-edge:#52705c;--mint-deep:#355a49;
-  --mint-wash:#1e2a25;--mint-wash-2:#293b31;--on-mint:#15211a;--today-bg:rgba(69,105,78,.2);
+  --mint-wash:#1e2a25;--mint-wash-2:#293b31;--on-mint:#15211a;--today-bg:rgba(69,105,78,.2);--work-bg:rgba(120,173,134,.17);
   /* Amber = resmî tatil, bekleyen eşitleme */
-  --amber:#d7b67b;--holiday:var(--amber);--holiday-ink:#e2c48d;--holiday-line:#8f7a52;--holiday-bg:rgba(215,182,123,.11);
+  --amber:#d7b67b;--holiday:var(--amber);--holiday-ink:#e2c48d;--holiday-line:#8f7a52;--holiday-bg:rgba(215,182,123,.11);--work-holiday-bg:rgba(215,182,123,.17);
   /* Kırmızı = bayram, tehlike, çevrimdışı/hata */
-  --red:#d1847a;--bayram:var(--red);--red-ink:#eba896;--bayram-ink:var(--red-ink);--red-line:#9a665d;--bayram-bg:rgba(209,132,122,.12);
+  --red:#d1847a;--bayram:var(--red);--red-ink:#eba896;--bayram-ink:var(--red-ink);--red-line:#9a665d;--bayram-bg:rgba(209,132,122,.12);--work-bayram-bg:rgba(209,132,122,.18);
   /* Arduvaz mavisi = haftalık izin günü (hafta tatili) */
   --rest:#8fa9cc;--rest-ink:#c3d3ea;--rest-bg:rgba(124,154,196,.14);--rest-bg-dim:rgba(124,154,196,.05);
   --mono:'DM Mono',ui-monospace,monospace;--sans:'Manrope',system-ui,sans-serif;
@@ -131,9 +131,6 @@ h1{font-size:29px;line-height:1.1;font-weight:500;letter-spacing:-.055em;margin:
 .day-total::after{content:"SA";margin-left:3px;font-size:9px;letter-spacing:0.06em;color:var(--dim)}
 .day-total.holiday{color:var(--holiday-ink)}
 .day-total.bayram{color:var(--bayram-ink)}
-.day-cell.has-work::before{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--mint-soft);opacity:.75}
-.day-cell.has-holiday::before{background:var(--holiday)}
-.day-cell.has-bayram::before{background:var(--bayram)}
 /* Hafta tatili sütunu: arduvaz mavisi zemin + solda ince çizgi (bugün/tatil üstüne binse de çizgi kalır) */
 .day-cell.weekend{background:var(--rest-bg-dim)}
 .day-cell.weekend:not(.outside){background:var(--rest-bg)}
@@ -150,6 +147,10 @@ h1{font-size:29px;line-height:1.1;font-weight:500;letter-spacing:-.055em;margin:
 .day-cell[class*="special-"]:hover:not(:disabled),.day-cell.weekend:hover:not(:disabled){background:var(--mint-wash-2)}
 .day-cell.today:not(.outside){background:var(--today-bg)}
 .day-cell.today:not(.outside) .day-number{color:var(--mint);opacity:1}
+/* Mesai girilmiş gün: alt çizgi yerine hücre zemini mesai türü renginde hafifçe dolar */
+.day-cell.has-work:not(.outside){background:var(--work-bg)}
+.day-cell.has-work.has-holiday:not(.outside){background:var(--work-holiday-bg)}
+.day-cell.has-work.has-bayram:not(.outside){background:var(--work-bayram-bg)}
 .special-label{position:absolute;left:10px;right:6px;bottom:9px;font:9px var(--mono);letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.85}
 
 /* Eksik mesai şeridi */
