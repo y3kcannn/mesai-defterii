@@ -20,7 +20,7 @@
   /* Kırmızı = bayram, tehlike, çevrimdışı/hata */
   --red:#d1847a;--bayram:var(--red);--red-ink:#eba896;--bayram-ink:var(--red-ink);--red-line:#9a665d;--bayram-bg:rgba(209,132,122,.09);--work-bayram-bg:rgba(209,132,122,.18);
   /* Arduvaz mavisi = haftalık izin günü (hafta tatili) */
-  --rest:#8fa9cc;--rest-ink:#c3d3ea;--rest-bg:rgba(124,154,196,.11);--rest-bg-dim:rgba(124,154,196,.03);
+  --rest:#a99be0;--rest-ink:#d3cbf5;--rest-bg:rgba(160,145,220,.12);--rest-bg-dim:rgba(160,145,220,.04);
   --mono:'DM Mono',ui-monospace,monospace;--sans:'Manrope',system-ui,sans-serif;
   --pad:18px;--shell-x:30px;--nav-h:0px
 }
