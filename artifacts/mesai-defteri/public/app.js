@@ -133,11 +133,16 @@ function mesaiDefteri() {
     openCarry(){if(!this.activePerson)return;this.editingEntry=null;this.entryForm={day:0,ym:this.monthKey,carry:true,mode:'work',type:'normal',hours:0,hoursText:''};this.setHours(2);this.modal='entry';},
     formatHours(value){return Number(value||0).toLocaleString('tr-TR',{maximumFractionDigits:1});},
     money(value){if(value===null||value===undefined||!Number.isFinite(Number(value)))return '—';return new Intl.NumberFormat('tr-TR',{style:'currency',currency:'TRY',maximumFractionDigits:2}).format(Number(value));},
-    // Kişiye özgü, sabit 5×5 simetrik desen (id'den türetilir)
+    // Kişiye özgü, sabit minimal portre (id'den türetilir): ten, saç/baret, sakal, gömlek rengi
     avatar(p,size=''){const s=String(p?.id||'')+'|'+(p?.name||'');let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}
-      const tone=h%6+1,bits=(Math.imul(h^(h>>>15),2654435761)>>>0);let r='';
-      for(let y=0;y<5;y++)for(let x=0;x<3;x++){if(!(((bits>>>(y*3+x))&1)||(x===2&&y===2)))continue;r+=`<rect x="${x}" y="${y}" width="1" height="1"/>`;if(x<2)r+=`<rect x="${4-x}" y="${y}" width="1" height="1"/>`;}
-      return `<span class="avatar c${tone} ${size}" aria-hidden="true"><svg viewBox="0 0 5 5">${r}</svg></span>`;},
+      const pick=(n,k)=>Math.floor(h/k)%n,tone=pick(6,1)+1,skin=['#ecc9aa','#d9aa86','#b98661'][pick(3,7)],hairC=['#2a2421','#4b3425','#6e5846'][pick(3,23)],style=pick(5,61),beard=pick(3,311)===0;
+      const hair=[`<path fill="${hairC}" d="M10 13.6c0-4.1 2.7-6.7 6-6.7s6 2.6 6 6.7c-1.5-1.9-3.6-2.8-6-2.8s-4.5.9-6 2.8z"/>`,
+        `<path fill="${hairC}" d="M9.9 14.2c-.3-4.7 2.6-7.4 6.4-7.4 3.5 0 6 2.4 5.8 6.6-2.7-.4-5.5-1.7-7.1-3.7-1.1 2-3 3.5-5.1 4.5z"/>`,
+        `<path fill="#e3b64c" d="M9.6 13.1a6.4 6.4 0 0 1 12.8 0z"/><path fill="#c99a30" d="M8 13h16v1.8H8zM15.3 6.8h1.4v6.3h-1.4z"/>`,
+        `<path fill="${hairC}" d="M10.1 12.6a5.9 5.9 0 0 1 11.8 0c-1.7-.9-3.8-1.4-5.9-1.4s-4.2.5-5.9 1.4z"/>`,
+        `<g fill="${hairC}"><circle cx="11.6" cy="10.6" r="2.4"/><circle cx="14.6" cy="8.6" r="2.5"/><circle cx="17.8" cy="8.7" r="2.5"/><circle cx="20.5" cy="10.8" r="2.3"/></g>`];
+      const b=beard?`<path fill="${hairC}" opacity=".9" d="M10.2 15.6c.5 3.8 2.9 5.7 5.8 5.7s5.3-1.9 5.8-5.7c-1.1.7-2.3 1.1-3.4 1.1-.8-.7-1.6-1-2.4-1s-1.6.3-2.4 1c-1.1 0-2.3-.4-3.4-1.1z"/>`:'';
+      return `<span class="avatar c${tone} ${size}" aria-hidden="true"><svg viewBox="0 0 32 32"><path class="av-body" d="M5 32c0-6.3 4.8-10 11-10s11 3.7 11 10z"/><path fill="${skin}" d="M13.6 18.5h4.8v4.6h-4.8z"/><circle fill="${skin}" cx="16" cy="14.2" r="6"/>${b}${hair[style]}</svg></span>`;},
     firstName(name){return (name||'').trim().split(/\s+/)[0]||'';},
     setTheme(t){const apply=()=>{this.theme=t;try{localStorage.setItem('mesai-tema',t);}catch{}if(t==='current')delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=t;document.querySelector('meta[name=theme-color]')?.setAttribute('content',{current:'#101718',dark:'#0a0c0d',light:'#eef1ed'}[t]);};if(document.startViewTransition&&!matchMedia('(prefers-reduced-motion: reduce)').matches)document.startViewTransition(apply);else apply();},
     initials(name){return (name||'').trim().split(/\s+/).slice(0,2).map(s=>s[0]||'').join('').toLocaleUpperCase('tr-TR');},

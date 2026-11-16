@@ -334,9 +334,11 @@ h1{display:flex;align-items:baseline;gap:8px;font-size:29px;line-height:1.1;font
 .cg-cell.leave{background:color-mix(in srgb,var(--surface),var(--soft) 14%);color:var(--soft)}
 .cg-cell:active{background:var(--surface-3)}
 @media (hover:hover){.cg-cell:hover{outline:1px solid var(--mint-line);outline-offset:-1px}}
-/* Avatar: kişiye özgü 5×5 simetrik desen, köşeli kare */
+/* Avatar: kişiye özgü minimal portre, köşeli kare */
 .avatar{--av:var(--av-1);display:grid;place-items:center;flex-shrink:0;width:28px;height:28px;background:color-mix(in srgb,var(--surface),var(--av) 14%);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--line),var(--av) 35%);color:var(--av)}
-.avatar svg{width:62%;height:62%;display:block;fill:currentColor;shape-rendering:crispEdges}
+.avatar{overflow:hidden;place-items:end center}
+.avatar svg{width:100%;height:100%;display:block}
+.avatar .av-body{fill:var(--av)}
 .avatar.c2{--av:var(--av-2)}.avatar.c3{--av:var(--av-3)}.avatar.c4{--av:var(--av-4)}.avatar.c5{--av:var(--av-5)}.avatar.c6{--av:var(--av-6)}
 .avatar.large{width:38px;height:38px}
 .avatar.small{width:24px;height:24px}
@@ -489,11 +491,9 @@ select.form-input{padding-right:32px;background-image:linear-gradient(45deg,tran
 .theme-switch{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
 .theme-switch button{display:flex;align-items:center;gap:10px;height:48px;padding:0 12px;border:1px solid var(--line-field);background:var(--field);color:var(--muted);font-size:13px;cursor:pointer}
 .theme-switch button.on{border-color:var(--mint-line);color:var(--ink);background:var(--mint-wash)}
-.theme-switch .sw{display:grid;grid-template-columns:repeat(3,7px);box-shadow:0 0 0 1px var(--line-strong);flex-shrink:0}
-.theme-switch .sw i{height:18px}
-.sw.current i:nth-child(1){background:#101718}.sw.current i:nth-child(2){background:#151e1f}.sw.current i:nth-child(3){background:#a5d8b6}
-.sw.dark i:nth-child(1){background:#0a0c0d}.sw.dark i:nth-child(2){background:#161a1b}.sw.dark i:nth-child(3){background:#a5d8b6}
-.sw.light i:nth-child(1){background:#eef1ed}.sw.light i:nth-child(2){background:#ffffff}.sw.light i:nth-child(3){background:#2b7a4c}
+.theme-switch .ic{width:17px;height:17px;color:var(--dim);transition:color .2s,transform .3s var(--ease)}
+.theme-switch button.on .ic{color:var(--mint);transform:rotate(-12deg) scale(1.05)}
+.theme-switch button{justify-content:center}
 
 /* Hareket: kısa, yumuşak, tek eğri */
 :root{--ease:cubic-bezier(.22,1,.36,1)}
