@@ -133,16 +133,17 @@ function mesaiDefteri() {
     openCarry(){if(!this.activePerson)return;this.editingEntry=null;this.entryForm={day:0,ym:this.monthKey,carry:true,mode:'work',type:'normal',hours:0,hoursText:''};this.setHours(2);this.modal='entry';},
     formatHours(value){return Number(value||0).toLocaleString('tr-TR',{maximumFractionDigits:1});},
     money(value){if(value===null||value===undefined||!Number.isFinite(Number(value)))return '—';return new Intl.NumberFormat('tr-TR',{style:'currency',currency:'TRY',maximumFractionDigits:2}).format(Number(value));},
-    // Kişiye özgü, sabit minimal portre (id'den türetilir): ten, saç/baret, sakal, gömlek rengi
+    // Kişiye özgü, sabit portre (id'den türetilir): ten, saç/baret, sakal, gömlek rengi
     avatar(p,size=''){const s=String(p?.id||'')+'|'+(p?.name||'');let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}
-      const pick=(n,k)=>Math.floor(h/k)%n,tone=pick(6,1)+1,skin=['#ecc9aa','#d9aa86','#b98661'][pick(3,7)],hairC=['#2a2421','#4b3425','#6e5846'][pick(3,23)],style=pick(5,61),beard=pick(3,311)===0;
-      const hair=[`<path fill="${hairC}" d="M10 13.6c0-4.1 2.7-6.7 6-6.7s6 2.6 6 6.7c-1.5-1.9-3.6-2.8-6-2.8s-4.5.9-6 2.8z"/>`,
-        `<path fill="${hairC}" d="M9.9 14.2c-.3-4.7 2.6-7.4 6.4-7.4 3.5 0 6 2.4 5.8 6.6-2.7-.4-5.5-1.7-7.1-3.7-1.1 2-3 3.5-5.1 4.5z"/>`,
-        `<path fill="#e3b64c" d="M9.6 13.1a6.4 6.4 0 0 1 12.8 0z"/><path fill="#c99a30" d="M8 13h16v1.8H8zM15.3 6.8h1.4v6.3h-1.4z"/>`,
-        `<path fill="${hairC}" d="M10.1 12.6a5.9 5.9 0 0 1 11.8 0c-1.7-.9-3.8-1.4-5.9-1.4s-4.2.5-5.9 1.4z"/>`,
-        `<g fill="${hairC}"><circle cx="11.6" cy="10.6" r="2.4"/><circle cx="14.6" cy="8.6" r="2.5"/><circle cx="17.8" cy="8.7" r="2.5"/><circle cx="20.5" cy="10.8" r="2.3"/></g>`];
-      const b=beard?`<path fill="${hairC}" opacity=".9" d="M10.2 15.6c.5 3.8 2.9 5.7 5.8 5.7s5.3-1.9 5.8-5.7c-1.1.7-2.3 1.1-3.4 1.1-.8-.7-1.6-1-2.4-1s-1.6.3-2.4 1c-1.1 0-2.3-.4-3.4-1.1z"/>`:'';
-      return `<span class="avatar c${tone} ${size}" aria-hidden="true"><svg viewBox="0 0 32 32"><path class="av-body" d="M5 32c0-6.3 4.8-10 11-10s11 3.7 11 10z"/><path fill="${skin}" d="M13.6 18.5h4.8v4.6h-4.8z"/><circle fill="${skin}" cx="16" cy="14.2" r="6"/>${b}${hair[style]}</svg></span>`;},
+      const pick=(n,k)=>Math.floor(h/k)%n,tone=pick(6,1)+1,sk=[['#f0cfb2','#dcae8f'],['#dcab87','#c4916c'],['#b88360','#9c6a49']][pick(3,7)],hc=['#2a2421','#4b3425','#6e5846','#8a8580'][pick(4,23)],style=pick(6,61),beard=pick(3,311)===0;
+      const hair=[`<path fill="${hc}" d="M10.1 14.2c-.4-4.4 2.2-7.2 5.9-7.2s6.3 2.8 5.9 7.2c-.5-1.7-1.3-2.9-2.3-3.6-2.1.9-5.4.9-7.2 0-1 .7-1.8 1.9-2.3 3.6z"/>`,
+        `<path fill="${hc}" d="M10 14.6c-.6-4.8 2.3-7.7 6.2-7.7 3.7 0 6.4 2.6 5.9 7.3-.4-1.6-1-2.7-1.8-3.4-2.8.2-5.6-.6-7.3-2.1-.6 1.9-1.6 3.8-3 5.9z"/>`,
+        `<path fill="${hc}" d="M10.2 15.6c-.2-1.4.1-2.6.6-3.4l.8 3zM21.8 15.6c.2-1.4-.1-2.6-.6-3.4l-.8 3z"/><path fill="#e8bb4f" d="M9.5 12.8a6.5 6.5 0 0 1 13 0z"/><path fill="#cf9f34" d="M8.2 12.4h15.6v1.7H8.2zM15.3 6.4h1.4v6h-1.4z"/>`,
+        `<path fill="${hc}" d="M9.6 16.2c-1-5.6 1.9-9.6 6.4-9.6s7.4 4 6.4 9.6c-.4-2.2-.9-3.6-1.6-4.6-1.6.7-3.4 1-4.8 1s-3.2-.3-4.8-1c-.7 1-1.2 2.4-1.6 4.6z"/>`,
+        `<g fill="${hc}"><circle cx="11.2" cy="11.4" r="2.2"/><circle cx="13.6" cy="9" r="2.4"/><circle cx="16.4" cy="8.2" r="2.5"/><circle cx="19.1" cy="9.1" r="2.4"/><circle cx="21" cy="11.5" r="2.1"/></g>`,
+        `<path fill="${hc}" d="M10.1 15.8c-.4-1.8-.2-3.6.6-4.7l.9 4.2zM21.9 15.8c.4-1.8.2-3.6-.6-4.7l-.9 4.2z"/>`];
+      const b=beard?`<path fill="${hc}" d="M10.3 15.9c.3 3.9 2.7 6.2 5.7 6.2s5.4-2.3 5.7-6.2c-.6 1.3-1.4 2-2.2 2.2-.9-.9-2.1-1.3-3.5-1.3s-2.6.4-3.5 1.3c-.8-.2-1.6-.9-2.2-2.2z"/>`:'';
+      return `<span class="avatar c${tone} ${size}" aria-hidden="true"><svg viewBox="0 0 32 32"><path class="av-body" d="M4.5 32c0-6 4.6-9.4 11.5-9.4s11.5 3.4 11.5 9.4z"/><path fill="${sk[1]}" d="M13.7 18.8h4.6v4.4L16 25.4l-2.3-2.2z"/><circle fill="${sk[1]}" cx="10.3" cy="15.2" r="1.35"/><circle fill="${sk[1]}" cx="21.7" cy="15.2" r="1.35"/><ellipse fill="${sk[0]}" cx="16" cy="14.6" rx="5.8" ry="6.5"/>${b}<g fill="#2a2421"><circle cx="13.8" cy="15" r=".8"/><circle cx="18.2" cy="15" r=".8"/></g><path fill="none" stroke="${hc}" stroke-width=".85" stroke-linecap="round" d="M12.7 13.1h2.2M17.1 13.1h2.2"/><path fill="none" stroke="${sk[1]}" stroke-width=".8" stroke-linecap="round" d="M16 15.6v1.5"/><path fill="none" stroke="${beard?'#e9c6ad':'#9a5a48'}" stroke-width=".85" stroke-linecap="round" d="M14.6 18.3q1.4 1 2.8 0"/>${hair[style]}</svg></span>`;},
     firstName(name){return (name||'').trim().split(/\s+/)[0]||'';},
     setTheme(t){const apply=()=>{this.theme=t;try{localStorage.setItem('mesai-tema',t);}catch{}if(t==='current')delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=t;document.querySelector('meta[name=theme-color]')?.setAttribute('content',{current:'#101718',dark:'#0a0c0d',light:'#eef1ed'}[t]);};if(document.startViewTransition&&!matchMedia('(prefers-reduced-motion: reduce)').matches)document.startViewTransition(apply);else apply();},
     initials(name){return (name||'').trim().split(/\s+/).slice(0,2).map(s=>s[0]||'').join('').toLocaleUpperCase('tr-TR');},
