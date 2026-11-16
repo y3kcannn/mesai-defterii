@@ -29,7 +29,7 @@ function mesaiDefteri() {
   return {
      today:new Date(), online:navigator.onLine, syncPending:0, syncError:null, monthNames, view:'ledger', people:[], entries:[], selectedId:null, year:new Date().getFullYear(), month:new Date().getMonth(),
      result:null, calcLoading:false, calcError:false, calcErrorMessage:'', calcRequest:0, settingsSaved:false, modal:'', editingEntry:null, editingPerson:null,
-     entryForm:{day:1,ym:'',carry:false,mode:'work',type:'normal',hours:2,hoursText:'2'}, hourPresets:[0.5,1,1.5,2,3,4], personForm:{name:'',role:'',netSalary:65000,dailyHours:7.5,restDay:0,cumulativeTaxBase:0,startDate:'',leaveCarry:0}, toast:'', toastTimer:null, chartOpen:false, chartShow:{normal:true,holiday:true,bayram:true,leave:true,rest:true}, payroll:null, unlockedIds:[], pinInput:'', pinError:false, newPin:'', removePin:false,
+     entryForm:{day:1,ym:'',carry:false,mode:'work',type:'normal',hours:2,hoursText:'2'}, hourPresets:[0.5,1,1.5,2,3,4], personForm:{name:'',role:'',netSalary:65000,dailyHours:7.5,restDay:0,cumulativeTaxBase:0,startDate:'',leaveCarry:0}, toast:'', toastTimer:null, chartShow:{weekday:true,weekend:true,holiday:true,bayram:true,leave:true}, payroll:null, unlockedIds:[], pinInput:'', pinError:false, newPin:'', removePin:false,
      weekdays:['PZT','SAL','ÇAR','PER','CUM','CMT','PAZ'], dayNames:['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'], restDayOptions:[1,2,3,4,5,6,0], leaveTypes:[{value:'izin-yillik',label:'Yıllık izin',short:'YILLIK'},{value:'izin-ucretsiz',label:'Ücretsiz izin',short:'ÜCRETSİZ'},{value:'izin-rapor',label:'Raporlu',short:'RAPOR'},{value:'izin-mazeret',label:'Mazeret izni',short:'MAZERET'}], entryTypes:[{value:'normal',label:'Normal',note:'Hafta içi veya hafta sonu'},{value:'holiday',label:'Resmî tatil',note:'Resmî tatil çalışması'},{value:'bayram',label:'Bayram',note:'Bayram çalışması'}],
     init(){
       const savedPeople=read('mesai-defteri-people',null), savedEntries=read('mesai-defteri-entries',null);
@@ -101,9 +101,9 @@ function mesaiDefteri() {
     get chartDays(){return Array.from({length:this.monthDays},(_,i)=>{const d=i+1,h=holidayOf(this.dateKey(d));return {day:d,cls:h?'hol-'+h[0]:''};});},
     get chartRows(){const short={'izin-yillik':'Y','izin-ucretsiz':'Ü','izin-rapor':'R','izin-mazeret':'M'};return this.people.map(p=>{const rest=p.restDay??0;let total=0;
       const own=this.entries.filter(e=>e.personId===p.id&&(e.paidMonth||e.date.slice(0,7))===this.monthKey);
-      const show=this.chartShow;for(const e of own)if(!this.isLeave(e.type)&&show[e.type])total+=Number(e.hours)||0;
-      const cells=Array.from({length:this.monthDays},(_,i)=>{const d=i+1,key=this.dateKey(d),e=own.find(x=>!x.paidMonth&&x.date===key),dt=new Date(this.year,this.month,d);const cls=[show.rest&&dt.getDay()===rest?'rest':''];let text='';
-        if(e){if(this.isLeave(e.type)){if(show.leave){cls.push('leave');text=short[e.type]||'İ';}}else if(show[e.type]){cls.push(e.type);text=this.formatHours(e.hours);}}return {day:d,cls:cls.join(' '),text};});
+      const show=this.chartShow;const cat=e=>{if(e.type!=='normal')return e.type;if(e.paidMonth)return 'weekday';const [y,m,d]=e.date.split('-').map(Number);return new Date(y,m-1,d).getDay()===rest?'weekend':'weekday';};for(const e of own)if(!this.isLeave(e.type)&&show[cat(e)])total+=Number(e.hours)||0;
+      const cells=Array.from({length:this.monthDays},(_,i)=>{const d=i+1,key=this.dateKey(d),e=own.find(x=>!x.paidMonth&&x.date===key),dt=new Date(this.year,this.month,d);const cls=[dt.getDay()===rest?'rest':''];let text='';
+        if(e){if(this.isLeave(e.type)){if(show.leave){cls.push('leave');text=short[e.type]||'İ';}}else{const c=cat(e);if(show[c]){cls.push(c==='weekend'?'weekend':e.type);text=this.formatHours(e.hours);}}}return {day:d,cls:cls.join(' '),text};});
       return {id:p.id,name:p.name,initials:this.initials(p.name),cells,total:total?this.formatHours(total):'—'};});},
     get unpaidDays(){return this.leaveEntries.filter(e=>e.type==='izin-ucretsiz').length;},
     // Bordrodaki gibi: ücretsiz izin günü başına net maaş / 30 kesilir
