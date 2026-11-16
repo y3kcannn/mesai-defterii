@@ -28,9 +28,9 @@ function mesaiDefteri() {
   const read = (key, fallback) => { try { const value=localStorage.getItem(key); return value ? JSON.parse(value) : fallback; } catch { return fallback; } };
   return {
      today:new Date(), online:navigator.onLine, syncPending:0, syncError:null, monthNames, view:'ledger', people:[], entries:[], selectedId:null, year:new Date().getFullYear(), month:new Date().getMonth(),
-     result:null, calcLoading:false, calcError:false, calcErrorMessage:'', calcRequest:0, settingsSaved:false, modal:'', editingEntry:null, editingPerson:null,
-     entryForm:{day:1,ym:'',carry:false,mode:'work',type:'normal',hours:2,hoursText:'2'}, hourPresets:[0.5,1,1.5,2,3,4], personForm:{name:'',role:'',netSalary:65000,dailyHours:7.5,restDay:0,cumulativeTaxBase:0,startDate:'',leaveCarry:0}, toast:'', toastTimer:null, chartShow:{weekday:true,weekend:true,holiday:true,bayram:true,leave:true}, payroll:null, unlockedIds:[], pinInput:'', pinError:false, newPin:'', removePin:false,
-     weekdays:['PZT','SAL','ÇAR','PER','CUM','CMT','PAZ'], dayNames:['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'], restDayOptions:[1,2,3,4,5,6,0], leaveTypes:[{value:'izin-yillik',label:'Yıllık izin',short:'YILLIK'},{value:'izin-ucretsiz',label:'Ücretsiz izin',short:'ÜCRETSİZ'},{value:'izin-rapor',label:'Raporlu',short:'RAPOR'},{value:'izin-mazeret',label:'Mazeret izni',short:'MAZERET'}], entryTypes:[{value:'normal',label:'Normal',note:'Hafta içi veya hafta sonu'},{value:'holiday',label:'Resmî tatil',note:'Resmî tatil çalışması'},{value:'bayram',label:'Bayram',note:'Bayram çalışması'}],
+     result:null, calcError:false, calcErrorMessage:'', calcRequest:0, modal:'', editingEntry:null, editingPerson:null,
+     entryForm:{day:1,ym:'',carry:false,mode:'work',type:'normal',hours:2,hoursText:'2'}, hourPresets:[0.5,1,1.5,2,3,4], personForm:{name:'',role:'',netSalary:65000,dailyHours:7.5,restDay:0,cumulativeTaxBase:0,startDate:'',leaveCarry:0}, toast:'', toastTimer:null, chartShow:{weekday:true,weekend:true,holiday:true,bayram:true,leave:true}, unlockedIds:[], pinInput:'', pinError:false, newPin:'', removePin:false,
+     weekdays:['PZT','SAL','ÇAR','PER','CUM','CMT','PAZ'], dayNames:['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'], restDayOptions:[1,2,3,4,5,6,0], leaveTypes:[{value:'izin-yillik',label:'Yıllık izin',short:'YILLIK'},{value:'izin-ucretsiz',label:'Ücretsiz izin',short:'ÜCRETSİZ'},{value:'izin-rapor',label:'Raporlu',short:'RAPOR'},{value:'izin-mazeret',label:'Mazeret izni',short:'MAZERET'}], entryTypes:[{value:'normal',label:'Normal'},{value:'holiday',label:'Resmî tatil'},{value:'bayram',label:'Bayram'}],
     init(){
       const savedPeople=read('mesai-defteri-people',null), savedEntries=read('mesai-defteri-entries',null);
       if(savedPeople===null){this.people=demoPeople;this.entries=demoEntries;this.persist();}
@@ -70,7 +70,6 @@ function mesaiDefteri() {
     get syncLabel(){if(!this.online)return this.syncPending?`ÇEVRİMDIŞI · ${this.syncPending} BEKLİYOR`:'ÇEVRİMDIŞI';if(this.syncError)return 'KAYDEDİLEMEDİ · TEKRAR DENENİYOR';if(this.syncPending)return 'KAYDEDİLİYOR…';return bulut.on?'KAYDEDİLDİ':'ÇEVRİMİÇİ';},
     get monthName(){return monthNames[this.month];},
     get monthDays(){return new Date(this.year,this.month+1,0).getDate();},
-    get todayLabel(){return new Intl.DateTimeFormat('tr-TR',{day:'2-digit',month:'short',year:'numeric'}).format(this.today).toLocaleUpperCase('tr-TR');},
     get monthKey(){return `${this.year}-${String(this.month+1).padStart(2,'0')}`;},
     // Eksik mesai (paidMonth) kendi tarihinin değil ödendiği ayın hesabına girer
     isLeave(type){return String(type||'').startsWith('izin-');},
@@ -80,8 +79,6 @@ function mesaiDefteri() {
     get payEntries(){const daily=Number(this.activePerson?.dailyHours)||7.5;return this.workEntries.flatMap(e=>{const h=Number(e.hours)||0;if(e.paidMonth||e.type==='normal'||h<=daily)return [{id:e.id,type:e.type,hours:h,date:e.date,paidMonth:e.paidMonth,src:e}];return [{id:e.id,type:e.type,hours:daily,date:e.date,src:e},{id:e.id+'-asim',type:'normal',hours:Math.round((h-daily)*100)/100,date:e.date,src:e,overflow:true}];});},
     get workEntries(){return this.monthEntries.filter(e=>!this.isLeave(e.type));},
     get leaveEntries(){return this.monthEntries.filter(e=>this.isLeave(e.type));},
-    // Yıl içindeki kaçıncı çalışma ayı (asgari ücret istisnası kümülatifi işe girişten başlar)
-    get payrollMonthIndex(){const sd=String(this.activePerson?.startDate||'');const [y,m]=sd.split('-').map(Number);if(y===this.year&&m)return Math.max(1,this.month+2-m);return this.month+1;},
     // Net ödeme dökümü: fazla mesai satırları net tutarla (net maaş / (30 × günlük saat) × saat × katsayı)
     get netSlip(){const p=this.activePerson;if(!p||!this.result)return null;const rest=p.restDay??0,daily=Number(p.dailyHours)||7.5,nh=(Number(p.netSalary)||0)/(30*daily),r2=x=>Math.round(x*100)/100;
       const MULT={normal:1.5,holiday:1,bayram:2};const ot={weekday:['Hafta içi',0,0],weekend:['Hafta sonu',0,0],holiday:['Resmî tatil',0,0],bayram:['Bayram',0,0]};
@@ -94,7 +91,7 @@ function mesaiDefteri() {
       const [sy,sm,sdd]=sd.split('-').map(Number),start=new Date(sy,sm-1,sdd),now=this.today;let years=now.getFullYear()-sy;if(new Date(now.getFullYear(),sm-1,sdd)>now)years--;
       const yearStart=years>=1?new Date(sy+years,sm-1,sdd):start,next=new Date(sy+Math.max(years,0)+1,sm-1,sdd);
       const entitled=years<1?0:years<5?14:years<15?20:26,carry=Number(p.leaveCarry)||0;
-      const ys=iso(yearStart),used=this.entries.filter(e=>e.personId===p.id&&e.type==='izin-yillik'&&e.date>=ys).length;
+      const ys=iso(yearStart),ye=iso(next),used=this.entries.filter(e=>e.personId===p.id&&e.type==='izin-yillik'&&e.date>=ys&&e.date<ye).length;
       const fmt=d=>new Intl.DateTimeFormat('tr-TR',{day:'numeric',month:'long',year:'numeric'}).format(d);
       return {years,entitled,carry,used,left:entitled+carry-used,from:fmt(yearStart),next:fmt(next)};},
     // Ekip grafiği: kişi × gün tablosu (görüntülenen ay)
@@ -109,8 +106,6 @@ function mesaiDefteri() {
     // Bordrodaki gibi: ücretsiz izin günü başına net maaş / 30 kesilir
     get unpaidDeduction(){return Math.round((Number(this.activePerson?.netSalary)||0)/30*this.unpaidDays*100)/100;},
     get monthEntries(){if(!this.activePerson)return [];return this.entries.filter(e=>e.personId===this.selectedId&&(e.paidMonth||e.date.slice(0,7))===this.monthKey);},
-     monthEntryCount(index){if(!this.activePerson)return 0;const key=`${this.year}-${String(index+1).padStart(2,'0')}`;return this.entries.filter(e=>e.personId===this.selectedId&&(e.paidMonth||e.date.slice(0,7))===key).length;},
-    get entryDayCount(){return new Set(this.monthEntries.filter(e=>!e.paidMonth).map(e=>e.date)).size;},
     // Bordrodaki gibi döküm: hafta içi / hafta sonu (kişinin hafta tatili) / resmî tatil / bayram / eksik mesai
     get breakdown(){const p=this.activePerson;if(!p)return [];const daily=Number(p.dailyHours)||7.5,rest=p.restDay??0;const rows=[['weekday','Hafta içi','normal'],['weekend','Hafta sonu','rest'],['holiday','Resmî tatil','holiday'],['bayram','Bayram','bayram'],['overflow','Tatil/bayram 7,5 sa üstü','normal']].map(([key,label,cls])=>({key,label,cls,hours:0}));const row=k=>rows.find(r=>r.key===k);
       for(const e of this.payEntries){const h=Number(e.hours)||0;if(e.paidMonth)rows.push({key:'carry-'+e.id,label:'Eksik mesai'+(e.type==='normal'?'':' · '+(this.entryTypes.find(t=>t.value===e.type)?.label||'')),cls:e.type==='normal'?'normal':e.type,hours:h,entry:e.src});else if(e.overflow)row('overflow').hours+=h;else if(e.type==='holiday')row('holiday').hours+=h;else if(e.type==='bayram')row('bayram').hours+=h;else{const [y,m,d]=e.date.split('-').map(Number);row(new Date(y,m-1,d).getDay()===rest?'weekend':'weekday').hours+=h;}}
@@ -119,7 +114,6 @@ function mesaiDefteri() {
       return out;},
     get breakdownTotal(){return this.breakdown.reduce((s,r)=>s+(r.leave?0:r.hours),0);},
     get carryEntries(){return this.monthEntries.filter(e=>e.paidMonth).sort((a,b)=>a.date.localeCompare(b.date));},
-    shortDate(date){return new Intl.DateTimeFormat('tr-TR',{day:'numeric',month:'short'}).format(new Date(date+'T12:00'));},
     get hasExamples(){return this.people.some(p=>p.example);},
     get calendarCells(){
       const first=new Date(this.year,this.month,1), start=(first.getDay()+6)%7, days=this.monthDays, prevDays=new Date(this.year,this.month,0).getDate();
@@ -162,17 +156,16 @@ function mesaiDefteri() {
         this.calculate();
       }catch(error){console.error('Senkron hatası:',error);}
     },
-    selectPerson(id){this.selectedId=id;this.view='ledger';}, onPersonChange(){this.calculate();},
+    selectPerson(id){this.selectedId=id;this.view='ledger';},
     changeMonth(delta){const date=new Date(this.year,this.month+delta,1);this.month=date.getMonth();this.year=date.getFullYear();},
     goCurrentMonth(){this.month=this.today.getMonth();this.year=this.today.getFullYear();},
     async calculate(){
       const person=this.activePerson;if(!person){this.result=null;this.calcError=false;return;}
-       const request=++this.calcRequest;this.calcLoading=true;this.calcError=false;this.calcErrorMessage='';
+       const request=++this.calcRequest;this.calcError=false;this.calcErrorMessage='';
       const entries=this.payEntries.map(e=>({id:e.id,type:e.type,hours:e.hours}));
       const payload={netSalary:Number(person.netSalary)||0,daysInMonth:this.monthDays,dailyHours:Number(person.dailyHours)||7.5,cumulativeTaxBase:Number(person.cumulativeTaxBase)||0,entries};
        try {const data=hesapla(payload);if(request===this.calcRequest)this.result=data;}
        catch(error){if(request===this.calcRequest){this.result=null;this.calcError=true;this.calcErrorMessage=error instanceof Error?error.message:'Hesaplama alınamadı';}console.error('Mesai hesaplama hatası:',error);}
-      finally{if(request===this.calcRequest)this.calcLoading=false;}
     },
     openEntry(day){if(!this.activePerson)return;const existing=this.monthEntries.find(entry=>!entry.paidMonth&&entry.date===this.dateKey(day));if(existing){this.editEntry(existing);return;}this.editingEntry=null;const special=holidayOf(this.dateKey(day))?.[0];this.entryForm={day,ym:this.monthKey,carry:false,mode:'work',type:special==='bayram'?'bayram':special?'holiday':'normal',hours:0,hoursText:''};this.setHours(2);this.modal='entry';},
     setMode(mode){this.entryForm.mode=mode;this.entryForm.type=mode==='leave'?(this.isLeave(this.entryForm.type)?this.entryForm.type:'izin-yillik'):(this.isLeave(this.entryForm.type)?'normal':this.entryForm.type);},
@@ -208,7 +201,6 @@ function mesaiDefteri() {
      openPersonForm(person=null){this.editingPerson=person;this.newPin='';this.removePin=false;this.personForm=person?{restDay:0,...person}:{name:'',role:'',netSalary:65000,dailyHours:7.5,restDay:0,cumulativeTaxBase:0,startDate:'',leaveCarry:0};this.modal='person';},
     async savePerson(){const name=String(this.personForm.name||'').trim();if(!name)return;const pin=String(this.newPin||'').trim();if(pin&&!/^\d{4}$/.test(pin)){this.notify('PIN 4 haneli rakam olmalı');return;}const locked=!!this.editingPerson&&this.isLocked(this.editingPerson);const wasEditing=!!this.editingPerson;const record={id:this.editingPerson?.id||`p-${Date.now()}-${Math.random().toString(36).slice(2,6)}`,name,role:String(this.personForm.role||'').trim(),netSalary:Number(this.personForm.netSalary)||65000,dailyHours:Number(this.personForm.dailyHours)||7.5,restDay:Number(this.personForm.restDay)||0,cumulativeTaxBase:Number(this.personForm.cumulativeTaxBase)||0,startDate:String(this.personForm.startDate||''),leaveCarry:Number(this.personForm.leaveCarry)||0,example:false};if(locked){record.netSalary=this.editingPerson.netSalary;record.cumulativeTaxBase=this.editingPerson.cumulativeTaxBase;}const keep=this.editingPerson?.pinHash;if(pin&&!locked){record.pinHash=await this.hashPin(record.id,pin);if(!this.unlockedIds.includes(record.id))this.unlockedIds.push(record.id);}else if(keep&&!(this.removePin&&!locked))record.pinHash=keep;if(this.editingPerson){this.people=this.people.map(p=>p.id===record.id?record:p);}else{this.people.push(record);this.selectedId=record.id;}this.persist();this.closeModal();this.view='ledger';this.calculate();this.notify(wasEditing?'Personel bilgileri güncellendi':'Personel eklendi');},
     removePerson(person){if(!confirm(`${person.name} ve bu kişiye ait tüm mesai kayıtları silinsin mi?`))return;this.people=this.people.filter(p=>p.id!==person.id);this.entries=this.entries.filter(e=>e.personId!==person.id);if(this.selectedId===person.id)this.selectedId=this.people[0]?.id||null;this.persist();this.calculate();this.notify('Personel ve kayıtları silindi');},
-    savePersonSettings(){if(!this.activePerson)return;this.activePerson.netSalary=Number(this.activePerson.netSalary)||0;this.activePerson.restDay=Number(this.activePerson.restDay)||0;this.activePerson.cumulativeTaxBase=Number(this.activePerson.cumulativeTaxBase)||0;this.activePerson.startDate=String(this.activePerson.startDate||'');this.activePerson.leaveCarry=Number(this.activePerson.leaveCarry)||0;this.persist();this.calculate();this.settingsSaved=true;setTimeout(()=>this.settingsSaved=false,2200);},
     clearExamples(){if(!this.hasExamples)return;if(!confirm('Örnek personel ve mesai kayıtları silinsin mi?'))return;const ids=this.people.filter(p=>p.example).map(p=>p.id);this.people=this.people.filter(p=>!p.example);this.entries=this.entries.filter(e=>!ids.includes(e.personId));if(ids.includes(this.selectedId))this.selectedId=this.people[0]?.id||null;this.persist();this.calculate();this.notify('Örnek veriler silindi');},
     exportData(){const blob=new Blob([JSON.stringify({people:this.people,entries:this.entries,...(bulut.failed?.length&&{unsent:bulut.failed}),exportedAt:new Date().toISOString()},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='mesai-defteri-yedek.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);this.notify('Yedek indirildi');},
     closeModal(){this.modal='';this.editingEntry=null;this.editingPerson=null;},

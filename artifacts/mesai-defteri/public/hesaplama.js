@@ -52,30 +52,3 @@ const hesapla = (() => {
   };
 })();
 
-// Tam bordro (KSE bordrolarıyla doğrulandı: Nisan/Mayıs/Temmuz/Ağustos 2026, en fazla 4 kuruş fark).
-// Gelir vergisinden asgari ücret istisnası, damga vergisinden asgari ücret tutarı düşülür.
-const bordroHesapla = (() => {
-  const BR = [[190000, .15], [400000, .20], [1500000, .27], [5300000, .35], [Infinity, .40]];
-  const ASGARI_BRUT = 33030, SGK = .15, DV = .00759;
-  const r2 = x => Math.round(x * 100) / 100;
-  const vergi = (cum, add) => { let t = 0, prev = 0; for (const [lim, r] of BR) { const a = Math.max(cum, prev), b = Math.min(cum + add, lim); if (b > a) t += (b - a) * r; prev = lim; } return t; };
-  const hesap = (G, cum, ay) => {
-    const sgk = r2(G * SGK), matrah = r2(G - sgk), asgariMatrah = ASGARI_BRUT * (1 - SGK);
-    const istisna = r2(vergi(asgariMatrah * (ay - 1), asgariMatrah));
-    const gv = Math.max(0, r2(r2(vergi(cum, matrah)) - istisna));
-    const dv = r2(Math.max(0, G - ASGARI_BRUT) * DV);
-    return { brut: r2(G), sgk, matrah, gelirVergisi: gv, damga: dv, net: r2(G - sgk - gv - dv), istisna, kumulatifSonra: r2(cum + matrah) };
-  };
-  const brutBul = (net, cum, ay) => {
-    if (net <= 0) return 0;
-    let lo = net, hi = net * 3;
-    for (let i = 0; i < 80; i++) { const m = (lo + hi) / 2; hesap(m, cum, ay).net < net ? lo = m : hi = m; }
-    return [Math.floor(hi * 100) / 100, Math.ceil(hi * 100) / 100].sort((a, b) => Math.abs(hesap(a, cum, ay).net - net) - Math.abs(hesap(b, cum, ay).net - net))[0];
-  };
-  // maasNet: ücretsiz izin düşülmüş net maaş; mesaiNet: net fazla mesai; ay: yıl içinde kaçıncı çalışma ayı (asgari ücret istisnası kümülatifi)
-  return ({ maasNet, mesaiNet = 0, kumulatif = 0, ay = 1 }) => {
-    const toplam = hesap(brutBul(r2(maasNet + mesaiNet), kumulatif, ay), kumulatif, ay);
-    const normalBrut = brutBul(r2(maasNet), kumulatif, ay);
-    return { ...toplam, normalBrut, mesaiBrut: r2(toplam.brut - normalBrut), kesinti: r2(toplam.sgk + toplam.gelirVergisi + toplam.damga) };
-  };
-})();
