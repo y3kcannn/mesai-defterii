@@ -119,11 +119,11 @@
     <div class="chart-rotate"><svg class="ic" aria-hidden="true"><use href="#i-rotate"/></svg><b>Telefonu yan çevirin</b><p>Herkesin aylık mesaisi yatay ekranda görünür.</p><button class="btn" @click="chartOpen=false">Kapat</button></div>
     <div class="chart-wrap">
       <div class="chart-top"><b x-text="monthName+' '+year"></b><div class="month-controls"><button class="icon-button" @click="changeMonth(-1)" aria-label="Önceki ay"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button><button class="icon-button" @click="changeMonth(1)" aria-label="Sonraki ay"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button><button class="btn btn-icon" @click="chartOpen=false" aria-label="Kapat"><svg class="ic" aria-hidden="true"><use href="#i-close"/></svg></button></div></div>
-      <div class="chart-grid" :style="'--days:'+monthDays">
-        <div class="cg-row cg-head"><span class="cg-name"></span><template x-for="c in chartDays" :key="c.day"><span class="cg-day" :class="c.cls" x-text="c.day"></span></template><span class="cg-total">SA</span></div>
+      <div class="chart-grid" :style="'--days:'+monthDays+';--rows:'+(people.length+1)">
+        <div class="cg-row cg-head"><span class="cg-name"></span><template x-for="c in chartDays" :key="c.day"><span class="cg-day" :class="c.cls" x-text="c.day"></span></template><span class="cg-total">TOPLAM</span></div>
         <template x-for="r in chartRows" :key="r.id"><div class="cg-row"><button class="cg-name" @click="selectPerson(r.id);chartOpen=false;view='ledger'" :title="r.name" x-text="r.initials"></button><template x-for="c in r.cells" :key="c.day"><span class="cg-cell" :class="c.cls" x-text="c.text"></span></template><span class="cg-total" x-text="r.total"></span></div></template>
       </div>
-      <div class="chart-legend"><span><i class="normal"></i>Normal</span><span><i class="holiday"></i>Resmî tatil</span><span><i class="bayram"></i>Bayram</span><span><i class="leave"></i>İzin</span><span><i class="rest"></i>Hafta tatili</span></div>
+      <div class="chart-legend" role="group" aria-label="Gösterilecek türler"><template x-for="t in [['normal','Normal'],['holiday','Resmî tatil'],['bayram','Bayram'],['leave','İzin'],['rest','Hafta tatili']]" :key="t[0]"><button type="button" class="chart-toggle" :class="[t[0], chartShow[t[0]] ? 'on' : '']" :aria-pressed="chartShow[t[0]]" @click="chartShow[t[0]]=!chartShow[t[0]]"><i></i><span x-text="t[1]"></span></button></template></div>
     </div>
   </div>
   <div class="modal-backdrop" x-show="modal==='entry' || modal==='person' || modal==='picker' || modal==='leave'" x-transition.opacity.duration.300ms @click.self="closeModal()" x-cloak>
