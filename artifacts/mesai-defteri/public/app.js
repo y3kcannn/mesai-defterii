@@ -79,6 +79,21 @@ function mesaiDefteri() {
     get leaveEntries(){return this.monthEntries.filter(e=>this.isLeave(e.type));},
     // Yıl içindeki kaçıncı çalışma ayı (asgari ücret istisnası kümülatifi işe girişten başlar)
     get payrollMonthIndex(){const sd=String(this.activePerson?.startDate||'');const [y,m]=sd.split('-').map(Number);if(y===this.year&&m)return Math.max(1,this.month+2-m);return this.month+1;},
+    // Bordro görünümü: kazanç günleri (30 gün esası) ve fazla çalışma satırları, KSE bordro düzeniyle
+    get payslip(){const p=this.activePerson,pr=this.payroll;if(!p||!pr)return null;const rest=p.restDay??0,daily=Number(p.dailyHours)||7.5;
+      let ht=0,rt=0;for(let d=1;d<=this.monthDays;d++){const dt=new Date(this.year,this.month,d);if(holidayOf(iso(dt)))rt++;else if(dt.getDay()===rest)ht++;}
+      const cnt=t=>this.leaveEntries.filter(e=>e.type===t).length,unpaid=cnt('izin-ucretsiz'),paidLeave=cnt('izin-yillik')+cnt('izin-mazeret'),rapor=cnt('izin-rapor');
+      const paidDays=Math.max(1,30-unpaid),dayGross=pr.normalBrut/paidDays,r2=x=>Math.round(x*100)/100;
+      const normalDays=Math.max(0,30-ht-rt-unpaid-paidLeave);
+      const earn=[['Normal',normalDays],['Hafta tatili',ht],['Resmî tatil',rt],['Ücretli izin',paidLeave]].map(([label,days])=>({label,days,amount:r2(days*dayGross)}));
+      earn[0].amount=r2(pr.normalBrut-earn.slice(1).reduce((s,x)=>s+x.amount,0));
+      const info=[['Ücretsiz izin',unpaid],['Rapor',rapor]].filter(x=>x[1]).map(([label,days])=>({label,days}));
+      const MULT={normal:1.5,holiday:1,bayram:2};const ot={weekday:['Hafta içi',0,0],weekend:['Hafta sonu',0,0],holiday:['Resmî tatil',0,0],bayram:['Bayram',0,0]};
+      for(const e of this.payEntries){const h=Number(e.hours)||0;let k=e.type==='holiday'?'holiday':e.type==='bayram'?'bayram':'weekday';if(k==='weekday'&&!e.paidMonth){const [y,m,d]=e.date.split('-').map(Number);if(new Date(y,m-1,d).getDay()===rest)k='weekend';}ot[k][1]+=h;ot[k][2]+=h*MULT[e.type==='bayram'?'bayram':e.type==='holiday'?'holiday':'normal'];}
+      const W=Object.values(ot).reduce((s,x)=>s+x[2],0),rate=W?pr.mesaiBrut/W:0;
+      const overtime=Object.values(ot).filter(x=>x[1]).map(([label,hours,w])=>({label,hours,days:hours/daily,amount:r2(w*rate)}));
+      if(overtime.length){const diff=r2(pr.mesaiBrut-overtime.reduce((s,x)=>s+x.amount,0));overtime[0].amount=r2(overtime[0].amount+diff);}
+      return {earn:earn.filter(x=>x.days||x.label==='Normal'),info,overtime,sigortaGunu:paidDays};},
     get unpaidDays(){return this.leaveEntries.filter(e=>e.type==='izin-ucretsiz').length;},
     // Bordrodaki gibi: ücretsiz izin günü başına net maaş / 30 kesilir
     get unpaidDeduction(){return Math.round((Number(this.activePerson?.netSalary)||0)/30*this.unpaidDays*100)/100;},
