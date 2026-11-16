@@ -4,7 +4,10 @@ const APP_VERSION = '__APP_VERSION__';
 const CACHE_NAME = 'mesai-defteri-shell-' + APP_VERSION;
 // Yollar sw.js'in bulunduğu klasöre göre (Netlify kökü veya GitHub Pages alt klasörü)
 const BASE = new URL('./', self.location).pathname;
-const SHELL = ['', 'tailwind.css', 'app.css', 'supabase.min.js', 'supabase-config.js', 'hesaplama.js', 'sync.js', 'app.js', 'alpine.min.js', 'manifest.webmanifest', 'icon.svg', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'].map(f => BASE + f);
+const SHELL = ['', 'app.css', 'supabase.min.js', 'supabase-config.js', 'hesaplama.js', 'sync.js', 'app.js', 'alpine.min.js', 'manifest.webmanifest', 'icon.svg', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png', 'icon-maskable-512.png', 'favicon-32.png'].map(f => BASE + f);
+// Ağ bu kadar sürede yanıt vermezse ve önbellekte tam eşleşen kopya varsa o sunulur
+// (iOS'ta zayıf/kesik bağlantıda beyaz ekranda takılmasın). Ağ yanıtı arka planda önbelleği yine günceller.
+const SLOW_MS = 5000;
 
 self.addEventListener('install', event => {
   // cache: 'reload' bypasses the HTTP cache so the new shell is really new.
@@ -19,13 +22,9 @@ self.addEventListener('install', event => {
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys()
-      .then(keys => Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))))
+      .then(keys => Promise.all(keys.filter(key => key.startsWith('mesai-defteri-') && key !== CACHE_NAME).map(key => caches.delete(key))))
       .then(() => self.clients.claim())
   );
-});
-
-self.addEventListener('message', event => {
-  if (event.data === 'SKIP_WAITING') self.skipWaiting();
 });
 
 self.addEventListener('fetch', event => {
@@ -38,19 +37,39 @@ self.addEventListener('fetch', event => {
     return;
   }
   const isNav = req.mode === 'navigate';
+  const key = isNav ? BASE : req;
+  // Sürümlü dosya (index.html'de ?v=<sürüm>): içeriği o sürüm için sabit → önbellekte varsa ağa hiç gidilmez
+  if (!isNav && url.searchParams.has('v')) {
+    event.respondWith(caches.match(req).then(cached => cached || networkFirst(event, req, url, false, req)));
+    return;
+  }
+  event.respondWith(networkFirst(event, req, url, isNav, key));
+});
+
+function networkFirst(event, req, url, isNav, key) {
   // Network-first with HTTP revalidation (cache: 'no-cache' -> conditional GET / 304).
   const netReq = isNav ? new Request(url.href, { cache: 'no-cache', credentials: 'same-origin' }) : new Request(req, { cache: 'no-cache' });
-  event.respondWith(
-    fetch(netReq).then(response => {
-      if (response.ok && response.type === 'basic') {
-        const copy = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(isNav ? BASE : req, copy));
-      }
-      return response;
-    }).catch(() =>
-      caches.match(isNav ? BASE : req, { ignoreSearch: true })
-        .then(cached => cached || (isNav ? caches.match(BASE) : undefined))
-        .then(cached => cached || Response.error())
-    )
-  );
-});
+  const network = fetch(netReq).then(response => {
+    if (response.ok && response.type === 'basic') {
+      const copy = response.clone();
+      event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.put(key, copy)).catch(() => {}));
+    }
+    return response;
+  });
+  event.waitUntil(network.catch(() => {}));
+  // Çevrimdışı: önce tam eşleşme (?v= aynı sürüm), yoksa sorgusuz eşleşme, gezinmede uygulama kabuğu
+  const offline = () => caches.match(key)
+    .then(cached => cached || caches.match(key, { ignoreSearch: true }))
+    .then(cached => cached || (isNav ? caches.match(BASE) : undefined))
+    .then(cached => cached || Response.error());
+  return new Promise(resolve => {
+    let done = false;
+    const finish = r => { if (r && !done) { done = true; resolve(r); } };
+    // Yavaş ağ: yalnız tam eşleşen kopya (farklı sürümden dosya karışmasın); yoksa ağı beklemeye devam
+    const slow = setTimeout(() => caches.match(key).then(finish, () => {}), SLOW_MS);
+    network.then(
+      r => { clearTimeout(slow); finish(r); },
+      () => { clearTimeout(slow); offline().then(finish, () => finish(Response.error())); }
+    );
+  });
+}

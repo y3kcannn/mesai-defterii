@@ -76,5 +76,18 @@ if (!html.includes('</head>')) throw new Error('index.html has no </head>');
 html = html.replace('</head>', snippet + '</head>');
 writeFileSync(idxPath, html);
 
+// Every local file referenced by index.html and precached by sw.js must exist in dist
+// (a removed/renamed file would otherwise only show up as a broken offline install).
+const swSrc = readFileSync(swPath, 'utf8');
+const shellList = swSrc.match(/const SHELL = \[([^\]]*)\]/);
+if (!shellList) throw new Error('sw.js: SHELL list not found');
+const refs = [
+  ...[...html.matchAll(/\s(?:src|href)="\.\/([^"?#]+)/g)].map(m => m[1]),
+  ...[...shellList[1].matchAll(/'([^']*)'/g)].map(m => m[1]).filter(Boolean),
+];
+const missing = [...new Set(refs)].filter(f => !existsSync(join(dist, f)));
+if (missing.length) throw new Error('referenced but missing in dist: ' + missing.join(', '));
+if (swSrc.includes('__APP_VERSION__')) throw new Error('sw.js: version placeholder not replaced');
+
 console.log(`built dist/ version=${version} builtAt=${builtAt}`);
 if (!existsSync(join(dist, 'version.json'))) process.exit(1);

@@ -8,6 +8,7 @@
   <title>Mesai Defteri — Fazla mesai takibi</title>
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" type="image/svg+xml" href="./icon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png">
   <link rel="apple-touch-icon" href="./apple-touch-icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
@@ -15,8 +16,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./tailwind.css">
+  <!-- Yazı tipleri boyamayı engellemez: yavaş/kesik ağda (veya çevrimdışı) uygulama yine hemen açılır -->
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="./app.css">
   <script defer src="./supabase.min.js"></script>
   <script defer src="./supabase-config.js"></script>
@@ -26,7 +27,7 @@
   <script defer src="./alpine.min.js"></script>
   <script>try{['mesai-renkler','mesai-renk'].forEach(function(k){localStorage.removeItem(k)});var t=localStorage.getItem('mesai-tema');if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t;document.querySelector('meta[name=theme-color]').content=t==='dark'?'#101718':'#e1ded5';var sb=document.querySelector('meta[name=apple-mobile-web-app-status-bar-style]');if(sb)sb.content=t==='dark'?'black-translucent':'default';}catch(e){}</script>
 </head>
-<body class="antialiased" x-data="mesaiDefteri()" @keydown.escape.window="closeModal()">
+<body x-data="mesaiDefteri()" @keydown.escape.window="closeModal()">
   <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
 <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="1.5"/><path d="M8 3v4M16 3v4M3.5 9.5h17M7.5 13.5h2M11 13.5h2M14.5 13.5h2M7.5 16.75h2M11 16.75h2"/></symbol>
 <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M17 4.5H5.5A1.5 1.5 0 0 0 4 6v12.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V9a1.5 1.5 0 0 0-1.5-1.5H4"/><path d="M20 11.5h-4a2 2 0 0 0 0 4h4"/><path d="M16.25 13.5h.5"/></symbol>
@@ -42,7 +43,7 @@
 <symbol id="i-close" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></symbol>
 <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.25"/><path d="M12 7.5V12l2.75 1.75"/></symbol>
 </defs></svg>
-  <div class="app-shell min-h-screen">
+  <div class="app-shell">
 
     <div class="workspace">
       <nav class="rail" aria-label="Ana gezinme">

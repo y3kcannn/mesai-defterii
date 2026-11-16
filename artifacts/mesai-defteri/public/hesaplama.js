@@ -1,4 +1,4 @@
-// HesaplamaEngine.php'nin tarayıcı sürümü. Tutarlar kuruş cinsinden, her kesinti en yakın kuruşa yuvarlanır.
+// Net mesai hesabı. Tutarlar kuruş cinsinden, her kesinti en yakın kuruşa yuvarlanır.
 const hesapla = (() => {
   const TAX_YEAR = 2026, SGK = 0.15, STAMP = 0.00759;
   const BRACKETS = [[19_000_000, 0.15], [40_000_000, 0.20], [150_000_000, 0.27], [530_000_000, 0.35], [Infinity, 0.40]];

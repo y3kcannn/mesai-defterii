@@ -1,9 +1,33 @@
 /* =====================================================================
-   Mesai Defteri — tek tema: "Kâğıt"
-   Açık: kırık, hafif kumlu kâğıt zemin (beyaz yok → parlama yok). Koyu: yeşil-siyah gece zemini, adaçayı yeşili vurgu,
-   ince sıcak gri çizgiler, yumuşak katman gölgeleri. DM Mono etiketler, Manrope metin.
-   Metin kontrastı (#f8f7f2 üzerinde): ink 15.1 · text 13.2 · soft 9.4 · muted 6.7 · dim 4.8 · faint yalnız süs.
+   Mesai Defteri — iki tema
+   Açık "Kâğıt" (varsayılan, :root): kırık, hafif kumlu kâğıt zemin (beyaz yok → parlama yok), sıcak gri çizgiler.
+   Koyu (html[data-theme="dark"]): yeşil-siyah gece zemini, adaçayı yeşili vurgu, yumuşak katman gölgeleri.
+   Tema index.html'deki satır içi betikle (localStorage 'mesai-tema' / sistem tercihi) ilk boyamadan önce seçilir.
+   DM Mono etiketler, Manrope metin.
+   Metin kontrastı — açık (--bg üzerinde): ink 11.7 · text 10 · soft 7.4 · muted 5.2 · dim 4.3 · faint yalnız süs;
+   koyu: ink 15.1 · text 13.8 · soft 10.3 · muted 8.3 · dim 6.1 · faint 4.4.
    ===================================================================== */
+/* Tarayıcı sıfırlaması (Tailwind v4 Preflight'ın kullanılan kısmı). Katman içinde: aşağıdaki tüm kurallar bunu ezer. */
+@layer base{
+*,:after,:before,::backdrop{box-sizing:border-box;border:0 solid;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%;tab-size:4;line-height:1.5;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue","Noto Sans",Arial,sans-serif;-webkit-tap-highlight-color:transparent}
+h1,h2{font-size:inherit;font-weight:inherit}
+b{font-weight:bolder}
+small{font-size:80%}
+:-moz-focusring:where(:not(iframe)){outline:auto}
+svg{vertical-align:middle;display:block}
+button,input,select{font:inherit;font-feature-settings:inherit;font-variation-settings:inherit;letter-spacing:inherit;color:inherit;opacity:1;background-color:#0000;border-radius:0}
+::placeholder{opacity:1}
+@supports (not (-webkit-appearance:-apple-pay-button)) or (contain-intrinsic-size:1px){::placeholder{color:currentColor}@supports (color:color-mix(in lab,red,red)){::placeholder{color:color-mix(in oklab,currentcolor 50%,transparent)}}}
+::-webkit-date-and-time-value{min-height:1lh;text-align:inherit}
+::-webkit-datetime-edit{display:inline-flex;padding-block:0}
+::-webkit-datetime-edit-fields-wrapper,::-webkit-datetime-edit-year-field,::-webkit-datetime-edit-month-field,::-webkit-datetime-edit-day-field{padding-block:0}
+::-webkit-calendar-picker-indicator{line-height:1}
+:-moz-ui-invalid{box-shadow:none}
+button{appearance:button}
+::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}
+[hidden]:where(:not([hidden=until-found])){display:none!important}
+}
 :root{
   color-scheme:light;
   /* Zeminler: sayfa < kart < yükseltilmiş; alanlar karttan bir tık içeride */
@@ -61,7 +85,7 @@ html[data-theme="dark"]{
 *::-webkit-scrollbar{display:none;width:0;height:0}
 /* iOS: döndürünce yazı büyümesi olmasın */
 html{min-width:320px;background:var(--bg);-webkit-text-size-adjust:100%;text-size-adjust:100%}
-body{margin:0;min-height:100dvh;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;-webkit-font-smoothing:antialiased}
+body{margin:0;min-height:100dvh;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 button,input,select{font:inherit}
 button{color:inherit}
 button:focus-visible,input:focus-visible,select:focus-visible{outline:1px solid var(--mint);outline-offset:3px}
@@ -92,7 +116,6 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:1px solid 
 .app-shell{max-width:1680px;min-height:100dvh;margin:0 auto;padding:env(safe-area-inset-top) max(var(--shell-x),env(safe-area-inset-right)) 0 max(var(--shell-x),env(safe-area-inset-left));display:flex;flex-direction:column}
 
 /* Kişi kısaltması, eşitleme durumu */
-.person-initials{width:28px;height:28px;display:grid;place-items:center;border:1px solid var(--line-strong);background:var(--mint-wash);color:var(--mint-ink);font:12px var(--mono);flex-shrink:0}
 .sync-state{display:flex;align-items:center;gap:7px;padding-left:3px;font-size:10px;color:var(--dim);white-space:nowrap}
 .live-dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--mint);box-shadow:0 0 0 3px var(--mint-wash-2);flex-shrink:0}
 .live-dot.pending{background:var(--amber);box-shadow:0 0 0 3px var(--amber-ring)}
@@ -272,7 +295,6 @@ html[data-theme="dark"] .day-cell.has-work:hover:not(:disabled){filter:brightnes
 .person-list{border-top:0}
 .person-row{display:flex;align-items:center;gap:14px;padding:14px var(--pad);border-bottom:1px solid var(--line-soft)}
 .person-row:last-child{border-bottom:0}
-.person-initials.large{width:38px;height:38px;font-size:13px}
 .person-info{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1}
 .person-info>b{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--ink)}
 .person-info>b>span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -428,7 +450,6 @@ select.form-input{padding-right:32px;background-image:linear-gradient(45deg,tran
 .picker-list{margin-top:18px}
 .multi-person{display:flex;align-items:center;gap:8px;min-width:0;height:44px;padding:0 10px;background:var(--field);border:1px solid var(--line-field);color:var(--soft);font-size:13px;text-align:left;cursor:pointer}
 .multi-person>span:nth-child(2){min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.multi-person .person-initials{width:24px;height:24px;font-size:11px}
 .multi-person:hover{border-color:var(--line-hover)}
 .multi-person.chosen{border-color:var(--mint-line);background:var(--mint-wash);color:var(--ink)}
 .picker-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px}

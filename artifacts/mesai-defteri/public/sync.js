@@ -23,8 +23,10 @@ const bulut = (() => {
   };
   const QKEY = 'mesai-defteri-kuyruk', FKEY = 'mesai-defteri-gonderilemeyen';
   const load = k => { try { const v = JSON.parse(localStorage.getItem(k) || '[]'); return Array.isArray(v) ? v : []; } catch { return []; } };
+  // Bozuk kuyruk öğesi (null, eksik alan) flush'ı sonsuza dek hata verip kuyruğu kilitlemesin
+  const validItem = q => !!q && (q.t === 'people' || q.t === 'entries') && (q.op === 'upsert' ? !!q.row?.id : q.op === 'delete' && q.id != null);
   const store = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { console.error('Kuyruk kaydedilemedi:', e); } };
-  let queue = load(QKEY), failed = load(FKEY), last = null, flushing = null, retry = null, version = 0;
+  let queue = load(QKEY).filter(validItem), failed = load(FKEY), last = null, flushing = null, retry = null, version = 0;
   const saveQueue = () => store(QKEY, queue);
   const index = (people, entries) => ({
     people: new Map(people.map(p => [p.id, JSON.stringify(toRow.people(p))])),
@@ -111,7 +113,10 @@ const bulut = (() => {
     },
     listen(cb) {
       let timer;
-      db.channel('mesai').on('postgres_changes', { event: '*', schema: 'public' }, () => { clearTimeout(timer); timer = setTimeout(cb, 300); }).subscribe();
+      const later = () => { clearTimeout(timer); timer = setTimeout(cb, 300); };
+      // Bağlantı koptuğunda kaçırılan değişiklikler tekrar gönderilmez: yeniden bağlanınca bir kez çek
+      let joined = false;
+      db.channel('mesai').on('postgres_changes', { event: '*', schema: 'public' }, later).subscribe(status => { if (status !== 'SUBSCRIBED') return; if (joined) later(); joined = true; });
     },
   };
   // Kuyruk boşalana kadar düzenli dene (zamanlayıcı iOS'ta dondurulsa bile sayfa geri gelince çalışır)
