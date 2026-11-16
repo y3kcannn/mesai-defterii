@@ -27,7 +27,7 @@ function mesaiDefteri() {
   const save = (key, value) => { try { localStorage.setItem(key, JSON.stringify(value)); } catch (error) { console.error('Yerel kayıt yazılamadı:', error); } };
   const read = (key, fallback) => { try { const value=localStorage.getItem(key); return value ? JSON.parse(value) : fallback; } catch { return fallback; } };
   return {
-     today:new Date(), online:navigator.onLine, syncPending:0, syncError:null, monthNames, view:'ledger', people:[], entries:[], selectedId:null, year:new Date().getFullYear(), month:new Date().getMonth(),
+     today:new Date(), online:navigator.onLine, syncPending:0, syncError:null, monthNames, view:'ledger', people:[], entries:[], selectedId:null, chartPrev:null, year:new Date().getFullYear(), month:new Date().getMonth(),
      result:null, calcError:false, calcErrorMessage:'', calcRequest:0, modal:'', editingEntry:null, editingPerson:null,
      entryForm:{day:1,ym:'',carry:false,mode:'work',type:'normal',hours:2,hoursText:'2'}, hourPresets:[0.5,1,1.5,2,3,4], personForm:{name:'',role:'',netSalary:65000,dailyHours:7.5,restDay:0,cumulativeTaxBase:0,startDate:'',leaveCarry:0}, toast:'', toastTimer:null, chartShow:{weekday:true,weekend:true,holiday:true,bayram:true,leave:true}, unlockedIds:[], pinInput:'', pinError:false, newPin:'', removePin:false,
      weekdays:['PZT','SAL','ÇAR','PER','CUM','CMT','PAZ'], dayNames:['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'], restDayOptions:[1,2,3,4,5,6,0], leaveTypes:[{value:'izin-yillik',label:'Yıllık izin',short:'YILLIK'},{value:'izin-ucretsiz',label:'Ücretsiz izin',short:'ÜCRETSİZ'},{value:'izin-rapor',label:'Raporlu',short:'RAPOR'},{value:'izin-mazeret',label:'Mazeret izni',short:'MAZERET'}], entryTypes:[{value:'normal',label:'Normal'},{value:'holiday',label:'Resmî tatil'},{value:'bayram',label:'Bayram'}],
@@ -46,7 +46,7 @@ function mesaiDefteri() {
       // Alpine: modal kapanırken yeniden açılınca iptal edilen x-show geçişi yakalanmamış hata olarak düşüyor; zararsız
       const cancelled=e=>{if((e.reason||e.error)?.isFromCancelledTransition)e.preventDefault();};window.addEventListener('unhandledrejection',cancelled);window.addEventListener('error',cancelled);
       window.addEventListener('focus',resume); window.addEventListener('pageshow',resume);
-      this.$watch('selectedId',id=>{try{if(id)localStorage.setItem('mesai-defteri-secili',id);}catch{}this.calculate();}); this.$watch('month',()=>this.calculate()); this.$watch('year',()=>this.calculate());
+      this.$watch('selectedId',id=>{try{if(id&&this.chartPrev===null)localStorage.setItem('mesai-defteri-secili',id);}catch{}this.calculate();}); this.$watch('month',()=>{this.calculate();if(this.view==='chart')this.chartScroll();});this.$watch('view',v=>{if(v==='chart')this.chartScroll();});addEventListener('resize',()=>{if(this.view==='chart')this.chartScroll();}); this.$watch('year',()=>this.calculate());
        window.addEventListener('online',()=>{this.online=true;bulut.flush().catch(()=>{});this.sync();this.calculate();});
        window.addEventListener('offline',()=>{this.online=false;});
       this.calculate();
@@ -95,11 +95,12 @@ function mesaiDefteri() {
       const fmt=d=>new Intl.DateTimeFormat('tr-TR',{day:'numeric',month:'long',year:'numeric'}).format(d);
       return {years,entitled,carry,used,left:entitled+carry-used,from:fmt(yearStart),next:fmt(next)};},
     // Ekip grafiği: kişi × gün tablosu (görüntülenen ay)
-    get chartDays(){return Array.from({length:this.monthDays},(_,i)=>{const d=i+1,h=holidayOf(this.dateKey(d));return {day:d,cls:h?'hol-'+h[0]:''};});},
+    get chartTodayDay(){const t=this.today;return t.getFullYear()===this.year&&t.getMonth()===this.month?t.getDate():0;},
+    get chartDays(){const wd=['Pz','Pt','Sa','Ça','Pe','Cu','Ct'];return Array.from({length:this.monthDays},(_,i)=>{const d=i+1,h=holidayOf(this.dateKey(d));return {day:d,wd:wd[new Date(this.year,this.month,d).getDay()],cls:[h?'hol-'+h[0]:'',d===this.chartTodayDay?'today':''].join(' ')};});},
     get chartRows(){const short={'izin-yillik':'Y','izin-ucretsiz':'Ü','izin-rapor':'R','izin-mazeret':'M'};return this.people.map(p=>{const rest=p.restDay??0;let total=0;
       const own=this.entries.filter(e=>e.personId===p.id&&(e.paidMonth||e.date.slice(0,7))===this.monthKey);
       const show=this.chartShow;const cat=e=>{if(e.type!=='normal')return e.type;if(e.paidMonth)return 'weekday';const [y,m,d]=e.date.split('-').map(Number);return new Date(y,m-1,d).getDay()===rest?'weekend':'weekday';};for(const e of own)if(!this.isLeave(e.type)&&show[cat(e)])total+=Number(e.hours)||0;
-      const cells=Array.from({length:this.monthDays},(_,i)=>{const d=i+1,key=this.dateKey(d),e=own.find(x=>!x.paidMonth&&x.date===key),dt=new Date(this.year,this.month,d);const cls=[dt.getDay()===rest?'rest':''];let text='';
+      const cells=Array.from({length:this.monthDays},(_,i)=>{const d=i+1,key=this.dateKey(d),e=own.find(x=>!x.paidMonth&&x.date===key),dt=new Date(this.year,this.month,d);const cls=[dt.getDay()===rest?'rest':'',d===this.chartTodayDay?'today':''];let text='';
         if(e){if(this.isLeave(e.type)){if(show.leave){cls.push('leave');text=short[e.type]||'İ';}}else{const c=cat(e);if(show[c]){cls.push(c==='weekend'?'weekend':e.type);text=this.formatHours(e.hours);}}}return {day:d,cls:cls.join(' '),text};});
       return {id:p.id,name:p.name,initials:this.initials(p.name),cells,total:total?this.formatHours(total):'—'};});},
     get unpaidDays(){return this.leaveEntries.filter(e=>e.type==='izin-ucretsiz').length;},
@@ -157,6 +158,11 @@ function mesaiDefteri() {
       }catch(error){console.error('Senkron hatası:',error);}
     },
     selectPerson(id){this.selectedId=id;this.view='ledger';},
+    // Tablodan hücreye dokununca o kişinin o günü açılır; kapanınca seçili kişi geri döner
+    chartCell(id,day){if(this.chartPrev===null)this.chartPrev=this.selectedId||'';this.selectedId=id;this.openEntry(day);},
+    // Gün sütunları görünen alana tam sığacak genişlikte; yarım sütun kalmaz
+    chartFit(){const g=document.querySelector('.chart-grid'),t=g&&g.querySelector('.cg-table');if(!g||!g.clientWidth)return;const w=g.clientWidth-56-68-2,n=Math.max(1,Math.min(this.monthDays,Math.floor((w+1)/41)));t.style.setProperty('--col',((w-(n-1))/n).toFixed(2)+'px');},
+    chartScroll(){setTimeout(()=>{this.chartFit();const g=document.querySelector('.chart-grid'),c=g&&g.querySelector('.cg-day.today');if(!g||!g.clientWidth)return;g.scrollLeft=c?Math.max(0,c.offsetLeft-57-Math.floor((g.clientWidth-126)/2/c.offsetWidth)*(c.offsetWidth+1)):0;},60);},
     changeMonth(delta){const date=new Date(this.year,this.month+delta,1);this.month=date.getMonth();this.year=date.getFullYear();},
     goCurrentMonth(){this.month=this.today.getMonth();this.year=this.today.getFullYear();},
     async calculate(){
@@ -203,7 +209,7 @@ function mesaiDefteri() {
     removePerson(person){if(!confirm(`${person.name} ve bu kişiye ait tüm mesai kayıtları silinsin mi?`))return;this.people=this.people.filter(p=>p.id!==person.id);this.entries=this.entries.filter(e=>e.personId!==person.id);if(this.selectedId===person.id)this.selectedId=this.people[0]?.id||null;this.persist();this.calculate();this.notify('Personel ve kayıtları silindi');},
     clearExamples(){if(!this.hasExamples)return;if(!confirm('Örnek personel ve mesai kayıtları silinsin mi?'))return;const ids=this.people.filter(p=>p.example).map(p=>p.id);this.people=this.people.filter(p=>!p.example);this.entries=this.entries.filter(e=>!ids.includes(e.personId));if(ids.includes(this.selectedId))this.selectedId=this.people[0]?.id||null;this.persist();this.calculate();this.notify('Örnek veriler silindi');},
     exportData(){const blob=new Blob([JSON.stringify({people:this.people,entries:this.entries,...(bulut.failed?.length&&{unsent:bulut.failed}),exportedAt:new Date().toISOString()},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='mesai-defteri-yedek.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);this.notify('Yedek indirildi');},
-    closeModal(){this.modal='';this.editingEntry=null;this.editingPerson=null;},
+    closeModal(){if(this.chartPrev!==null){this.selectedId=this.chartPrev;this.chartPrev=null;}this.modal='';this.editingEntry=null;this.editingPerson=null;},
     notify(message){this.toast=message;clearTimeout(this.toastTimer);this.toastTimer=setTimeout(()=>this.toast='',2600);}
   };
 }
