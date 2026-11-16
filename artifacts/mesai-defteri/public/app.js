@@ -54,6 +54,9 @@ function mesaiDefteri() {
     },
     // Bu cihazda en son seçilen kişi (her telefon kendi kişisini hatırlar)
     preferredId(){let id=null;try{id=localStorage.getItem('mesai-defteri-secili');}catch{}return this.people.some(p=>p.id===id)?id:(this.people[0]?.id||null);},
+    // Türkçe tutar girişi: '65.000,50', '65000,50', '65000.50' hepsi 65000.5
+    parseMoney(v){let t=String(v??'').replace(/[^\d.,]/g,'');if(t.includes(',')){t=t.replace(/\./g,'').replace(',','.');}else if((t.match(/\./g)||[]).length>1||/\.\d{3}$/.test(t)){t=t.replace(/\./g,'');}const n=Math.round(parseFloat(t)*100)/100;return Number.isFinite(n)?n:0;},
+    moneyInput(v){const n=Number(v);return Number.isFinite(n)&&n?n.toLocaleString('tr-TR',{minimumFractionDigits:n%1?2:0,maximumFractionDigits:2}):'';},
     get activePerson(){return this.people.find(p=>p.id===this.selectedId)||null;},
     // Maaş gizliliği: PIN'li kişinin tutarları PIN girilene kadar gizli (oturum boyunca açık kalır)
     isLocked(person){return !!person?.pinHash&&!this.unlockedIds.includes(person.id);},
