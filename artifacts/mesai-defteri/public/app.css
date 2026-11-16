@@ -31,28 +31,29 @@
   /* --ctl: tüm düğmelerin ortak yüksekliği (dokunmatik ekranda 36px) */
   --pad:18px;--shell-x:30px;--nav-h:0px;--ctl:33px
 }
-/* ===== Temalar: Mevcut (varsayılan) · Koyu · Açık ===== */
-html[data-theme="dark"]{
-  --bg:#0a0c0d;--surface:#111415;--surface-2:#161a1b;--surface-3:#1e2224;--surface-raised:#131718;--field:#0d1011;--cell-bg:rgba(22,26,27,.45);
-  --line:#252a2c;--line-soft:#1b1f21;--grid:#1f2426;--line-field:#2c3234;--line-strong:#363d40;--line-hover:#5f6a6e;
-  --ink:#eef1f0;--text:#e0e4e3;--soft:#bfc6c5;--muted:#a3acab;--dim:#869091;--faint:#687274;
-  --mint-wash:#132019;--mint-wash-2:#1b2c22;
-  --backdrop:rgba(0,0,0,.8);--shadow:rgba(0,0,0,.55);--rail-bg:rgba(17,20,21,.96);--fade-0:rgba(10,12,13,0);--outside-bg:rgba(0,0,0,.28)
-}
-html[data-theme="light"]{
-  color-scheme:light;
-  --bg:#eef1ed;--surface:#fbfcfa;--surface-2:#f3f6f2;--surface-3:#e6ebe5;--surface-raised:#ffffff;--field:#f4f7f3;--cell-bg:rgba(255,255,255,.7);
-  --line:#d5dcd5;--line-soft:#e4e9e3;--grid:#dee4dd;--line-field:#cdd5cd;--line-strong:#bfc9c0;--line-hover:#879789;
-  --ink:#111915;--text:#1d2822;--soft:#36433c;--muted:#4f5d56;--dim:#66746c;--faint:#8b978f;
-  --mint:#2b7a4c;--mint-ink:#21663d;--mint-mute:#4c7a5e;--mint-soft:#58a473;--mint-line:#79ad8a;--mint-edge:#98c3a5;--mint-deep:#79ad8a;
-  --mint-wash:#e2f0e5;--mint-wash-2:#d1e7d7;--on-mint:#ffffff;--today-bg:rgba(43,122,76,.07);--work-bg:rgba(88,164,115,.2);
-  --amber:#b07c1f;--holiday-ink:#8a6113;--holiday-line:#d2b277;--holiday-bg:rgba(176,124,31,.1);--holiday-bg-half:rgba(176,124,31,.06);--work-holiday-bg:rgba(176,124,31,.18);
-  --red:#bd4c3f;--red-ink:#9f3a2e;--red-line:#dc988e;--bayram-bg:rgba(189,76,63,.09);--work-bayram-bg:rgba(189,76,63,.17);
-  --rest:#7361c6;--rest-ink:#5745ab;--rest-bg:rgba(115,97,198,.1);--rest-bg-dim:rgba(115,97,198,.05);
-  --leave-bg:rgba(79,93,86,.1);--leave-ink:#36433c;
-  --av-1:#3f9463;--av-2:#7563c6;--av-3:#b5841f;--av-4:#c45a4c;--av-5:#3d7fb5;--av-6:#2f918a;
-  --backdrop:rgba(28,38,32,.38);--shadow:rgba(20,32,26,.16);--rail-bg:rgba(251,252,250,.94);--fade-0:rgba(238,241,237,0);--outside-bg:rgba(0,0,0,.025);
-  --amber-ring:rgba(176,124,31,.18);--red-ring:rgba(189,76,63,.18)
+/* ===== Özel renkler: kullanıcı 5 ana rengi seçer, gerisi bunlardan türetilir =====
+   JS html'e --bg, --ink, --mint, --rest, --amber, --red, --on-mint yazar ve .custom ekler. */
+html.custom{
+  --surface:color-mix(in srgb,var(--bg),var(--ink) 4%);--surface-2:color-mix(in srgb,var(--bg),var(--ink) 6.5%);--surface-3:color-mix(in srgb,var(--bg),var(--ink) 10%);
+  --surface-raised:color-mix(in srgb,var(--bg),var(--ink) 5.5%);--field:color-mix(in srgb,var(--bg),var(--ink) 2%);--cell-bg:color-mix(in srgb,var(--surface),transparent 55%);
+  --line:color-mix(in srgb,var(--bg),var(--ink) 15%);--line-soft:color-mix(in srgb,var(--bg),var(--ink) 10%);--grid:color-mix(in srgb,var(--bg),var(--ink) 12%);
+  --line-field:color-mix(in srgb,var(--bg),var(--ink) 18%);--line-strong:color-mix(in srgb,var(--bg),var(--ink) 23%);--line-hover:color-mix(in srgb,var(--bg),var(--ink) 45%);
+  --text:color-mix(in srgb,var(--ink),var(--bg) 6%);--soft:color-mix(in srgb,var(--ink),var(--bg) 20%);--muted:color-mix(in srgb,var(--ink),var(--bg) 30%);
+  --dim:color-mix(in srgb,var(--ink),var(--bg) 42%);--faint:color-mix(in srgb,var(--ink),var(--bg) 55%);
+  --mint-ink:color-mix(in srgb,var(--mint),var(--ink) 35%);--mint-mute:color-mix(in srgb,var(--mint),var(--muted) 45%);--mint-soft:color-mix(in srgb,var(--mint),var(--bg) 22%);
+  --mint-line:color-mix(in srgb,var(--mint),var(--bg) 38%);--mint-edge:color-mix(in srgb,var(--mint),var(--bg) 55%);--mint-deep:color-mix(in srgb,var(--mint),var(--bg) 66%);
+  --mint-wash:color-mix(in srgb,var(--bg),var(--mint) 10%);--mint-wash-2:color-mix(in srgb,var(--bg),var(--mint) 17%);
+  --today-bg:color-mix(in srgb,var(--mint-soft),transparent 92%);--work-bg:color-mix(in srgb,var(--mint-soft),transparent 82%);
+  --holiday-ink:color-mix(in srgb,var(--amber),var(--ink) 30%);--holiday-line:color-mix(in srgb,var(--amber),var(--bg) 40%);
+  --holiday-bg:color-mix(in srgb,var(--amber),transparent 90%);--holiday-bg-half:color-mix(in srgb,var(--amber),transparent 94%);--work-holiday-bg:color-mix(in srgb,var(--amber),transparent 82%);
+  --red-ink:color-mix(in srgb,var(--red),var(--ink) 30%);--red-line:color-mix(in srgb,var(--red),var(--bg) 40%);
+  --bayram-bg:color-mix(in srgb,var(--red),transparent 91%);--work-bayram-bg:color-mix(in srgb,var(--red),transparent 82%);
+  --rest-ink:color-mix(in srgb,var(--rest),var(--ink) 40%);--rest-bg:color-mix(in srgb,var(--rest),transparent 88%);--rest-bg-dim:color-mix(in srgb,var(--rest),transparent 96%);
+  --leave-bg:color-mix(in srgb,var(--soft),transparent 90%);--leave-ink:var(--soft);
+  --av-1:var(--mint);--av-2:var(--rest);--av-3:var(--amber);--av-4:var(--red);--av-5:color-mix(in srgb,var(--mint),var(--rest));--av-6:color-mix(in srgb,var(--mint),var(--amber));
+  --backdrop:color-mix(in srgb,color-mix(in srgb,var(--bg),#000 45%),transparent 25%);--shadow:rgba(0,0,0,.3);--rail-bg:color-mix(in srgb,var(--surface),transparent 5%);
+  --fade-0:color-mix(in srgb,var(--bg),transparent 100%);--outside-bg:color-mix(in srgb,var(--bg),var(--ink) 1.5%);
+  --amber-ring:color-mix(in srgb,var(--amber),transparent 82%);--red-ring:color-mix(in srgb,var(--red),transparent 82%)
 }
 @media (pointer:coarse){:root{--ctl:36px}}
 *{box-sizing:border-box}
@@ -485,22 +486,25 @@ select.form-input{padding-right:32px;background-image:linear-gradient(45deg,tran
   .form-input,.date-field select{font-size:16px}
 }
 
-/* Tema seçici */
+/* Renk sayfası */
 .theme-row{margin-top:22px}
-.theme-row .field-label{display:block;margin:0 0 8px}
-.theme-switch{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
-.theme-switch button{display:flex;align-items:center;gap:10px;height:48px;padding:0 12px;border:1px solid var(--line-field);background:var(--field);color:var(--muted);font-size:13px;cursor:pointer}
-.theme-switch button.on{border-color:var(--mint-line);color:var(--ink);background:var(--mint-wash)}
-.theme-switch .ic{width:17px;height:17px;color:var(--dim);transition:color .2s,transform .3s var(--ease)}
-.theme-switch button.on .ic{color:var(--mint);transform:rotate(-12deg) scale(1.05)}
-.theme-switch button{justify-content:center}
+.theme-row-head{display:flex;align-items:center;justify-content:space-between;margin:0 0 8px}
+.theme-row-head .field-label{margin:0}
+.color-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.color-slot{position:relative;display:flex;flex-direction:column;gap:7px;padding:6px 6px 8px;border:1px solid var(--line-field);background:var(--field);color:var(--muted);font-size:11px;text-align:center;cursor:pointer;transition:border-color .2s,transform .14s var(--ease)}
+.color-slot:active{transform:scale(.97)}
+.color-slot:hover{border-color:var(--line-hover)}
+.color-chip{display:block;height:38px;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--ink),transparent 82%)}
+.color-slot span:last-of-type{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.color-slot input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:0;padding:0}
+.reset-colors{height:30px;padding:0 10px;font-size:10px}
 
 /* Hareket: kısa, yumuşak, tek eğri */
 :root{--ease:cubic-bezier(.22,1,.36,1)}
-.btn,.icon-button,.button-primary,.chart-toggle,.theme-switch button,.multi-person,.mode-switch button{transition:transform .14s var(--ease),background .2s,border-color .2s,color .2s}
-.btn:active,.icon-button:active,.button-primary:active,.chart-toggle:active,.theme-switch button:active,.multi-person:active,.mode-switch button:active{transform:scale(.97)}
+.btn,.icon-button,.button-primary,.chart-toggle,.multi-person,.mode-switch button{transition:transform .14s var(--ease),background .2s,border-color .2s,color .2s}
+.btn:active,.icon-button:active,.button-primary:active,.chart-toggle:active,.multi-person:active,.mode-switch button:active{transform:scale(.97)}
 .day-cell:active:not(.outside){filter:brightness(1.15)}
-html[data-theme="light"] .day-cell:active:not(.outside){filter:brightness(.96)}
+html.light-bg .day-cell:active:not(.outside){filter:brightness(.96)}
 .rail-button{position:relative}
 .rail-button .rail-icon{transition:transform .3s var(--ease)}
 .rail-button.active .rail-icon{transform:scale(1.06)}
@@ -531,7 +535,7 @@ html[data-theme="light"] .day-cell:active:not(.outside){filter:brightness(.96)}
   .rail-icon,.rail-icon svg{width:18px;height:18px}
   .rail-button::before{left:30%;right:30%;top:-1px;bottom:auto;width:auto;height:2px;transform:scaleX(0)}
   .rail-button.active::before{transform:scaleX(1)}
-  .theme-switch button{padding:0 9px;gap:8px}
+  .color-slot{padding:5px 5px 7px;font-size:10px}
 
   .page-heading{margin-bottom:16px;gap:12px}
   .heading-row{gap:9px;margin-top:8px}
