@@ -260,11 +260,26 @@ h1{display:flex;align-items:baseline;gap:8px;font-size:29px;line-height:1.1;font
 
 /* ---------- Tablo (kişi × gün) ---------- */
 .chart-panel{min-width:0}
-.chart-rotate{display:none;margin:12vh auto 0;flex-direction:column;align-items:center;gap:10px;text-align:center;color:var(--muted)}
-.chart-rotate .ic{width:44px;height:44px;color:var(--mint);animation:rot-hint 2.4s ease-in-out infinite}
-.chart-rotate b{color:var(--ink);font-size:15px;font-weight:600}
-.chart-rotate p{margin:0 0 6px;font-size:12px}
-@keyframes rot-hint{0%,30%{transform:rotate(0)}60%,100%{transform:rotate(-90deg)}}
+.chart-rotate{display:none;min-height:calc(100dvh - var(--nav-h) - 40px - env(safe-area-inset-top) - env(safe-area-inset-bottom) - max(8px,env(safe-area-inset-bottom)));flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:0 32px;text-align:center;color:var(--muted)}
+.chart-rotate b{margin-top:14px;color:var(--ink);font-size:17px;font-weight:600;letter-spacing:-.01em}
+.chart-rotate p{margin:0;max-width:240px;font-size:13px;line-height:1.5}
+.rot-anim{width:132px;height:132px;overflow:visible}
+.rot-anim *{vector-effect:non-scaling-stroke}
+.rot-track{fill:none;stroke:var(--line);stroke-width:1}
+.rot-arc{fill:none;stroke:var(--mint);stroke-width:2;stroke-linecap:round;stroke-dasharray:79;stroke-dashoffset:79;animation:rot-arc 3.2s cubic-bezier(.65,0,.35,1) infinite}
+.rot-arrow{fill:none;stroke:var(--mint);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;opacity:0;animation:rot-arrow 3.2s cubic-bezier(.65,0,.35,1) infinite}
+.rot-phone{transform-origin:60px 60px;transform-box:view-box;animation:rot-phone 3.2s cubic-bezier(.65,0,.35,1) infinite}
+.rot-phone>rect:first-child{fill:var(--surface);stroke:var(--soft);stroke-width:1.6}
+.rot-screen{fill:var(--field)}
+.rot-notch{fill:var(--line-strong)}
+.rot-grid rect{fill:var(--grid)}
+.rot-grid rect.on{fill:var(--mint-soft);opacity:0;animation:rot-cells 3.2s ease infinite}
+.rot-grid rect.on.b{fill:var(--holiday);animation-delay:.08s}.rot-grid rect.on.c{fill:var(--rest);animation-delay:.16s}
+@keyframes rot-phone{0%,18%{transform:rotate(0)}48%,82%{transform:rotate(90deg)}100%{transform:rotate(0)}}
+@keyframes rot-arc{0%,12%{stroke-dashoffset:79;opacity:1}46%{stroke-dashoffset:0;opacity:1}70%,100%{stroke-dashoffset:0;opacity:0}}
+@keyframes rot-arrow{0%,38%{opacity:0}46%,66%{opacity:1}74%,100%{opacity:0}}
+@keyframes rot-cells{0%,46%{opacity:0}56%,82%{opacity:.95}92%,100%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.rot-phone,.rot-arc,.rot-arrow,.rot-grid rect.on{animation:none}.rot-arc,.rot-arrow{opacity:1;stroke-dashoffset:0}.rot-grid rect.on{opacity:.95}}
 .chart-wrap{min-width:0;display:flex;flex-direction:column}
 .chart-grid{flex:0 1 auto;min-height:0;overflow:auto;border:1px solid var(--line);background:var(--grid)}
 .cg-row{display:grid;grid-template-columns:48px repeat(var(--days),minmax(34px,1fr)) 64px;gap:1px;background:var(--grid);min-width:max-content}

@@ -38,7 +38,6 @@
 <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="9.5" rx="1"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></symbol>
 <symbol id="i-unlock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="9.5" rx="1"/><path d="M8 10.5V8a4 4 0 0 1 7.6-1.7"/></symbol>
 <symbol id="i-user-switch" viewBox="0 0 24 24"><circle cx="10" cy="8" r="3.5"/><path d="M3.5 20v-1a6.5 6.5 0 0 1 10.5-5.1"/><path d="M16 15h5l-2-2m2 6h-5l2 2"/></symbol>
-<symbol id="i-rotate" viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M20.5 12a8.5 8.5 0 0 1-6 8.1M3.5 12a8.5 8.5 0 0 1 6-8.1"/><path d="m12.5 18.5 2 1.6-1.6 2"/></symbol>
 <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
 <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
 </defs></svg>
@@ -99,7 +98,17 @@
       </main>
 
       <main class="main-panel chart-panel" x-show="view==='chart'" x-cloak>
-        <div class="chart-rotate"><svg class="ic" aria-hidden="true"><use href="#i-rotate"/></svg><b>Telefonu yan çevirin</b><p>Herkesin aylık mesai tablosu yatay ekranda görünür.</p></div>
+        <div class="chart-rotate" role="status"><svg class="rot-anim" viewBox="0 0 120 120" aria-hidden="true">
+            <circle class="rot-track" cx="60" cy="60" r="50"/>
+            <path class="rot-arc" d="M60 10a50 50 0 0 1 50 50"/>
+            <path class="rot-arrow" d="m104 52 6 8 7-7"/>
+            <g class="rot-phone">
+              <rect x="40" y="24" width="40" height="72" rx="7"/>
+              <rect class="rot-screen" x="44" y="31" width="32" height="58" rx="2"/>
+              <g class="rot-grid"><rect x="47" y="36" width="7" height="7"/><rect x="56.5" y="36" width="7" height="7"/><rect x="66" y="36" width="7" height="7"/><rect x="47" y="45.5" width="7" height="7"/><rect class="on" x="56.5" y="45.5" width="7" height="7"/><rect x="66" y="45.5" width="7" height="7"/><rect class="on b" x="47" y="55" width="7" height="7"/><rect x="56.5" y="55" width="7" height="7"/><rect class="on c" x="66" y="55" width="7" height="7"/><rect x="47" y="64.5" width="7" height="7"/><rect class="on" x="56.5" y="64.5" width="7" height="7"/><rect x="66" y="64.5" width="7" height="7"/></g>
+              <rect class="rot-notch" x="54" y="27" width="12" height="2" rx="1"/>
+            </g>
+          </svg><b>Telefonu yan çevirin</b><p>Herkesin aylık mesai tablosu yatay ekranda görünür.</p></div>
     <div class="chart-wrap">
       <div class="page-heading"><div><div class="heading-row"><h1><span x-text="monthName"></span><span class="year" x-text="year"></span></h1></div></div><div class="month-controls"><button class="icon-button" @click="changeMonth(-1)" aria-label="Önceki ay"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button><button class="icon-button" @click="changeMonth(1)" aria-label="Sonraki ay"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button></div></div>
       <div class="chart-grid" :style="'--days:'+monthDays+';--rows:'+(people.length+1)">
