@@ -775,3 +775,6 @@ html[data-theme="dark"] .theme-btn .moon{opacity:0;transform:rotate(-70deg) scal
 /* Döndür ipucu: kâğıt üstünde */
 .rot-phone>rect:first-child{fill:var(--surface-raised);stroke:var(--muted)}
 html[data-theme="dark"] .rot-phone>rect:first-child{stroke:var(--soft)}
+
+/* Hafta tatili: toplam saat bilgisi */
+.rest-total{margin:10px 0 0;font:500 12px var(--mono);color:var(--rest-ink);letter-spacing:.02em}

@@ -1,54 +1,70 @@
-// Net mesai hesabı. Tutarlar kuruş cinsinden, her kesinti en yakın kuruşa yuvarlanır.
+// Net fazla mesai hesabı.
+//
+// Saatlik net ücret = net maaş / aylık çalışma saati (30 gün × günlük 7,5 saat = 225 saat)
+//
+// Kurallar (günlük saat = 7,5):
+//   Hafta içi        girilen saatin tamamı fazla mesai ................ ×1,5
+//   Hafta tatili     çalışılan gün en az 7,5 saat sayılır, üstü de ..... ×1,5
+//   Resmî tatil      ilk 7,5 saat ×1, aşan saatler ................... ×1,5
+//   Bayram           ilk 7,5 saat ×2, aşan saatler ................... ×1,5
+//   Çakışma          hafta tatili resmî tatil/bayrama denk gelirse tatil/bayram kuralı geçerlidir
+//   Eksik mesai      önceki aydan aktarılan saatler, türünün katsayısıyla, bölünmeden
+//
+// Tutarlar kuruşta hesaplanır; satırların toplamı her zaman net toplamı verir.
 const hesapla = (() => {
-  const TAX_YEAR = 2026, SGK = 0.15, STAMP = 0.00759;
-  const BRACKETS = [[19_000_000, 0.15], [40_000_000, 0.20], [150_000_000, 0.27], [530_000_000, 0.35], [Infinity, 0.40]];
-  const MULT = { normal: 1.5, holiday: 1.0, bayram: 2.0 };
-  const round = x => Math.round(+x.toPrecision(15)); // PHP round() ile aynı ön-yuvarlama
-  const rate = (c, r) => round(c * r);
-  const kurus = v => round(Number(v) * 100);
-  const tl = c => Math.round(c) / 100;
+  const KATSAYI = { normal: 1.5, holiday: 1, bayram: 2 };
+  const ASIM = 1.5;
+  const SATIRLAR = [
+    ['hafta-ici', 'Hafta içi'],
+    ['hafta-tatili', 'Hafta tatili'],
+    ['resmi-tatil', 'Resmî tatil'],
+    ['bayram', 'Bayram'],
+    ['tatil-asim', 'Tatilde 7,5 saat üstü'],
+    ['eksik', 'Eksik mesai'],
+  ];
+  const yuvarla = x => Math.round(x * 100) / 100;
+  const haftaGunu = tarih => { const [y, a, g] = String(tarih).split('-').map(Number); return new Date(y, a - 1, g).getDay(); };
 
-  const progressiveTax = base => {
-    let tax = 0, prev = 0;
-    for (const [limit, r] of BRACKETS) {
-      const part = Math.min(base, limit) - prev;
-      if (part > 0) tax += rate(part, r);
-      if (base <= limit) break;
-      prev = limit;
+  // Bir kaydı ödeme parçalarına ayırır: [{ satir, saat, katsayi }]
+  const parcala = (kayit, { gunluk = 7.5, haftaTatili = 0 } = {}) => {
+    const saat = Number(kayit.hours) || 0;
+    if (saat <= 0) return [];
+    if (kayit.paidMonth) return [{ satir: 'eksik', saat, katsayi: KATSAYI[kayit.type] ?? KATSAYI.normal }];
+    if (kayit.type === 'holiday' || kayit.type === 'bayram') {
+      const satir = kayit.type === 'bayram' ? 'bayram' : 'resmi-tatil';
+      const parca = [{ satir, saat: Math.min(saat, gunluk), katsayi: KATSAYI[kayit.type] }];
+      if (saat > gunluk) parca.push({ satir: 'tatil-asim', saat: yuvarla(saat - gunluk), katsayi: ASIM });
+      return parca;
     }
-    return tax;
-  };
-  const taxOnAdditional = (cum, add) => add <= 0 ? 0 : Math.max(0, progressiveTax(cum + add) - progressiveTax(cum));
-  const netFromGross = (g, cum) => g - rate(g, SGK) - taxOnAdditional(cum, g - rate(g, SGK)) - rate(g, STAMP);
-
-  const grossForNet = (net, cum) => {
-    let lo = 0, hi = Math.max(net * 2, 1_000_000);
-    while (netFromGross(hi, cum) < net) hi *= 2;
-    while (lo < hi) { const mid = Math.floor((lo + hi) / 2); netFromGross(mid, cum) < net ? lo = mid + 1 : hi = mid; }
-    const d = g => Math.abs(netFromGross(g, cum) - net);
-    return [lo, Math.max(0, lo - 1)].sort((a, b) => d(a) - d(b) || a - b)[0];
+    if (haftaGunu(kayit.date) === haftaTatili) return [{ satir: 'hafta-tatili', saat: Math.max(saat, gunluk), katsayi: KATSAYI.normal }];
+    return [{ satir: 'hafta-ici', saat, katsayi: KATSAYI.normal }];
   };
 
-  // Bordro yöntemi (KSE bordrolarıyla doğrulandı): net saatlik = net maaş / (30 gün × günlük saat);
-  // net mesai = net saatlik × saat × katsayı. Brüt, o ayın gelir vergisi dilimine göre net'ten brütleştirilir.
-  const marginalRate = base => BRACKETS.find(([limit]) => base <= limit)[1];
-  return ({ netSalary = 65000, dailyHours = 7.5, cumulativeTaxBase = 0, entries = [] }) => {
-    const cum = kurus(cumulativeTaxBase);
-    const monthlyGross = grossForNet(kurus(netSalary), cum);
-    const monthlyTaxable = monthlyGross - rate(monthlyGross, SGK);
-    const r = marginalRate(cum + monthlyTaxable);
-    const netHourly = kurus(netSalary) / (30 * dailyHours);
-    const hourly = netHourly / (1 - SGK - (1 - SGK) * r - STAMP);
-    const weighted = entries.reduce((s, e) => s + MULT[e.type] * Number(e.hours), 0);
-    const totalHours = entries.reduce((s, e) => s + Number(e.hours), 0);
-    const net = round(netHourly * weighted);
-    const gross = entries.reduce((s, e) => s + round(hourly * MULT[e.type] * Number(e.hours)), 0);
-    const sgk = rate(gross, SGK), stampTax = rate(gross, STAMP), incomeTax = gross - sgk - stampTax - net;
+  const hesap = ({ netSalary = 0, dailyHours = 7.5, restDay = 0, entries = [] }) => {
+    const gunluk = Number(dailyHours) || 7.5;
+    const saatlik = (Number(netSalary) || 0) / (30 * gunluk);
+    const toplam = new Map(SATIRLAR.map(([k]) => [k, { saat: 0, birim: 0 }]));
+    for (const kayit of entries) {
+      for (const p of parcala(kayit, { gunluk, haftaTatili: restDay })) {
+        const t = toplam.get(p.satir);
+        t.saat += p.saat;
+        t.birim += p.saat * p.katsayi;
+      }
+    }
+    const lines = SATIRLAR
+      .map(([key, label]) => ({ key, label, hours: yuvarla(toplam.get(key).saat), amount: yuvarla(saatlik * toplam.get(key).birim) }))
+      .filter(l => l.hours > 0);
+    const birim = [...toplam.values()].reduce((s, t) => s + t.birim, 0);
+    const netTotal = yuvarla(saatlik * birim);
+    // Kuruş yuvarlama farkı ilk satıra yazılır, böylece satırlar toplamla birebir tutar
+    if (lines.length) lines[0].amount = yuvarla(lines[0].amount + netTotal - lines.reduce((s, l) => s + l.amount, 0));
     return {
-      monthlyGrossSalary: tl(monthlyGross), hourlyGross: round(hourly) / 100, totalHours: round(totalHours * 100) / 100,
-      grossTotal: tl(gross), sgk: tl(sgk), incomeTaxBase: tl(gross - sgk), incomeTax: tl(incomeTax), stampTax: tl(stampTax),
-      netTotal: tl(net), taxRate: r, taxYear: TAX_YEAR,
+      hourlyNet: yuvarla(saatlik),
+      totalHours: yuvarla(lines.reduce((s, l) => s + l.hours, 0)),
+      netTotal,
+      lines,
     };
   };
+  hesap.parcala = parcala;
+  return hesap;
 })();
-
