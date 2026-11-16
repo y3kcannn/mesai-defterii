@@ -1,21 +1,21 @@
 /* =====================================================================
    Mesai Defteri — tek tema: "Kâğıt"
-   Sıcak, kırık beyaz kâğıt zemin (saf beyaz yok → parlama yok), adaçayı yeşili vurgu,
+   Açık: kırık, hafif kumlu kâğıt zemin (beyaz yok → parlama yok). Koyu: yeşil-siyah gece zemini, adaçayı yeşili vurgu,
    ince sıcak gri çizgiler, yumuşak katman gölgeleri. DM Mono etiketler, Manrope metin.
    Metin kontrastı (#f8f7f2 üzerinde): ink 15.1 · text 13.2 · soft 9.4 · muted 6.7 · dim 4.8 · faint yalnız süs.
    ===================================================================== */
 :root{
   color-scheme:light;
   /* Zeminler: sayfa < kart < yükseltilmiş; alanlar karttan bir tık içeride */
-  --bg:#edebe4;--surface:#f8f7f2;--surface-2:#f2f0e9;--surface-3:#e7e4da;--surface-raised:#fbfaf7;--field:#f3f1eb;
-  --cell-bg:rgba(255,255,255,.38);
+  --bg:#e1ded5;--surface:#eae7df;--surface-2:#e4e1d8;--surface-3:#d9d5ca;--surface-raised:#eeebe4;--field:#e6e3db;
+  --cell-bg:rgba(255,255,255,.16);
   /* Çizgiler: sıcak gri, sert değil */
-  --line:#dcd7cb;--line-soft:#e7e3d9;--grid:#e3dfd4;--line-field:#d5cfc2;--line-strong:#c8c1b2;--line-hover:#8e998f;
+  --line:#cfc9bc;--line-soft:#d9d4c9;--grid:#d5d0c4;--line-field:#c9c3b5;--line-strong:#bbb4a4;--line-hover:#879287;
   /* Metin: saf siyah yok, yeşile çalan koyu grafit */
-  --ink:#1b231f;--text:#26302b;--soft:#3d4741;--muted:#555f59;--dim:#68716b;--faint:#979d95;
+  --ink:#1d2521;--text:#27312c;--soft:#3b4540;--muted:#525c56;--dim:#5f6862;--faint:#8f958d;
   /* Adaçayı = normal mesai, seçili, eşitlendi */
   --mint:#3b7856;--mint-ink:#2e6446;--mint-mute:#5b7a67;--mint-soft:#6ea384;--mint-line:#8db69b;--mint-edge:#adcbb6;--mint-deep:#8db69b;
-  --mint-wash:#e5eee5;--mint-wash-2:#d6e6d9;--on-mint:#fbfaf7;--today-bg:rgba(59,120,86,.075);--work-bg:rgba(110,163,132,.23);
+  --mint-wash:#d9e3d8;--mint-wash-2:#cadccd;--on-mint:#f1efe9;--today-bg:rgba(59,120,86,.075);--work-bg:rgba(110,163,132,.23);
   /* Hardal = resmî tatil, bekleyen eşitleme */
   --amber:#a87829;--holiday:var(--amber);--holiday-ink:#83601d;--holiday-line:#d2b684;--holiday-bg:rgba(168,120,41,.10);--holiday-bg-half:rgba(168,120,41,.06);--work-holiday-bg:rgba(168,120,41,.19);
   /* Kiremit = bayram, tehlike, çevrimdışı/hata */
@@ -27,13 +27,33 @@
   /* Avatar tonları */
   --av-1:#4e8e68;--av-2:#7a6cbf;--av-3:#b38737;--av-4:#bd6555;--av-5:#4f83aa;--av-6:#3e8d87;
   /* Katmanlar ve derinlik (sıcak gölge, siyah değil) */
-  --backdrop:rgba(42,38,30,.30);--shadow:rgba(60,48,28,.16);--rail-bg:rgba(250,249,245,.9);--fade-0:rgba(237,235,228,0);--outside-bg:rgba(70,60,40,.035);
+  --backdrop:rgba(42,38,30,.32);--shadow:rgba(60,48,28,.16);--rail-bg:rgba(234,231,223,.92);--fade-0:rgba(225,222,213,0);--outside-bg:rgba(70,60,40,.045);
   --amber-ring:rgba(168,120,41,.18);--red-ring:rgba(176,85,68,.18);
-  --elev-1:0 1px 0 rgba(255,255,255,.75) inset,0 1px 2px rgba(60,48,28,.05),0 8px 22px -14px rgba(60,48,28,.22);
-  --elev-2:0 1px 0 rgba(255,255,255,.8) inset,0 2px 6px rgba(60,48,28,.06),0 24px 60px -24px rgba(60,48,28,.35);
+  --elev-1:0 1px 0 rgba(255,255,255,.4) inset,0 1px 2px rgba(60,48,28,.05),0 8px 22px -14px rgba(60,48,28,.24);
+  --elev-2:0 1px 0 rgba(255,255,255,.45) inset,0 2px 6px rgba(60,48,28,.06),0 24px 60px -24px rgba(60,48,28,.38);
+  --btn-elev:0 1px 0 rgba(255,255,255,.45) inset,0 1px 1.5px rgba(60,48,28,.07);--primary-elev:0 1px 0 rgba(255,255,255,.16) inset,0 2px 6px -2px rgba(46,100,70,.45);--field-inset:inset 0 1px 2px rgba(60,48,28,.07);
   --mono:'DM Mono',ui-monospace,monospace;--sans:'Manrope',system-ui,sans-serif;
   /* --ctl: tüm düğmelerin ortak yüksekliği (dokunmatik ekranda 36px) */
   --pad:18px;--shell-x:30px;--nav-h:0px;--ctl:33px
+}
+/* ===== Koyu tema: yeşil-siyah gece ===== */
+html[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#101718;--surface:#151e1f;--surface-2:#192425;--surface-3:#202d2d;--surface-raised:#182221;--field:#121a1a;--cell-bg:rgba(25,36,36,.3);
+  --line:#2b3938;--line-soft:#22302f;--grid:#263331;--line-field:#333f3c;--line-strong:#3b4944;--line-hover:#6a7b6f;
+  --ink:#e6ece6;--text:#dbe3dc;--soft:#bcc6bf;--muted:#a6b3ac;--dim:#8b9991;--faint:#6f8178;
+  --mint:#a5d8b6;--mint-ink:#c3e3ca;--mint-mute:#afc6b6;--mint-soft:#78ad86;--mint-line:#759479;--mint-edge:#52705c;--mint-deep:#355a49;
+  --mint-wash:#1e2a25;--mint-wash-2:#293b31;--on-mint:#15211a;--today-bg:rgba(120,173,134,.07);--work-bg:rgba(120,173,134,.17);
+  --amber:#d7b67b;--holiday-ink:#e2c48d;--holiday-line:#8f7a52;--holiday-bg:rgba(215,182,123,.10);--holiday-bg-half:rgba(215,182,123,.06);--work-holiday-bg:rgba(215,182,123,.17);
+  --red:#d1847a;--red-ink:#eba896;--red-line:#9a665d;--bayram-bg:rgba(209,132,122,.09);--work-bayram-bg:rgba(209,132,122,.18);
+  --rest:#a99be0;--rest-ink:#d3cbf5;--rest-bg:rgba(160,145,220,.12);--rest-bg-dim:rgba(160,145,220,.04);
+  --leave-bg:rgba(166,179,172,.10);--leave-ink:#bcc6bf;
+  --av-1:#8fcaa2;--av-2:#b3a7e8;--av-3:#dcbd84;--av-4:#dc958b;--av-5:#8fb9d9;--av-6:#8ccbc6;
+  --backdrop:rgba(5,10,10,.76);--shadow:rgba(0,0,0,.4);--rail-bg:rgba(19,28,28,.96);--fade-0:rgba(16,23,24,0);--outside-bg:rgba(15,22,23,.24);
+  --amber-ring:rgba(215,182,123,.18);--red-ring:rgba(209,132,122,.18);
+  --elev-1:0 1px 0 rgba(255,255,255,.025) inset,0 1px 2px rgba(0,0,0,.25),0 10px 26px -16px rgba(0,0,0,.6);
+  --elev-2:0 1px 0 rgba(255,255,255,.03) inset,0 24px 70px -20px rgba(0,0,0,.7);
+  --btn-elev:0 1px 0 rgba(255,255,255,.025) inset;--primary-elev:0 2px 8px -3px rgba(120,173,134,.35);--field-inset:inset 0 1px 2px rgba(0,0,0,.2)
 }
 @media (pointer:coarse){:root{--ctl:36px}}
 *{box-sizing:border-box}
@@ -167,6 +187,7 @@ h1{display:flex;align-items:baseline;gap:8px;font-size:29px;line-height:1.1;font
 .day-cell.has-work.has-holiday.weekend:not(.outside){background:linear-gradient(var(--work-holiday-bg),var(--work-holiday-bg)) var(--rest-bg-dim)}
 .day-cell.has-work.has-bayram.weekend:not(.outside){background:linear-gradient(var(--work-bayram-bg),var(--work-bayram-bg)) var(--rest-bg-dim)}
 .day-cell.has-work:hover:not(:disabled){filter:brightness(.97)}
+html[data-theme="dark"] .day-cell.has-work:hover:not(:disabled){filter:brightness(1.12)}
 .special-label,.leave-label{position:absolute;left:10px;right:6px;bottom:9px;font:9px var(--mono);letter-spacing:0.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .special-label{text-transform:uppercase;opacity:.85}
 .leave-label{color:var(--leave-ink)}
@@ -471,6 +492,7 @@ select.form-input{padding-right:32px;background-image:linear-gradient(45deg,tran
 .btn,.icon-button,.button-primary,.chart-toggle,.multi-person,.mode-switch button{transition:transform .14s var(--ease),background .2s,border-color .2s,color .2s}
 .btn:active,.icon-button:active,.button-primary:active,.chart-toggle:active,.multi-person:active,.mode-switch button:active{transform:scale(.97)}
 .day-cell:active:not(.outside){filter:brightness(.96)}
+html[data-theme="dark"] .day-cell:active:not(.outside){filter:brightness(1.15)}
 .rail-button{position:relative}
 .rail-button .rail-icon{transition:transform .3s var(--ease)}
 .rail-button.active .rail-icon{transform:scale(1.06)}
@@ -485,7 +507,29 @@ select.form-input{padding-right:32px;background-image:linear-gradient(45deg,tran
 .cg-name:active .avatar,.multi-person:active .avatar{transform:scale(.92)}
 .chart-toggle i{transition:background .2s,border-color .2s,transform .25s var(--ease)}
 .chart-toggle.on i{transform:scale(1.08)}
-::view-transition-old(root),::view-transition-new(root){animation-duration:.35s;animation-timing-function:ease}
+/* Tema geçişi: düğmeden yayılan dairesel perde */
+::view-transition-old(root){animation:none;mix-blend-mode:normal}
+::view-transition-new(root){animation:theme-reveal .7s cubic-bezier(.65,0,.35,1);mix-blend-mode:normal}
+@keyframes theme-reveal{from{clip-path:circle(0 at var(--vx,50%) var(--vy,0))}to{clip-path:circle(var(--vr,150vmax) at var(--vx,50%) var(--vy,0))}}
+/* Tema düğmesi: güneş ↔ ay dönüşümü */
+.theme-btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;overflow:visible}
+.theme-btn .sun,.theme-btn .moon{transform-box:view-box;transform-origin:12px 12px;transition:transform .55s var(--ease),opacity .35s ease}
+.theme-btn .sun .rays{transform-box:view-box;transform-origin:12px 12px;transition:transform .55s var(--ease)}
+.theme-btn .moon{opacity:0;transform:rotate(-70deg) scale(.4)}
+html[data-theme="dark"] .theme-btn .sun{opacity:0;transform:rotate(90deg) scale(.4)}
+html[data-theme="dark"] .theme-btn .moon{opacity:1;transform:none;color:var(--mint)}
+.theme-btn:hover .sun .rays{transform:rotate(45deg)}
+.theme-btn .sun{color:var(--amber)}
+/* Ay geçişinde takvim ve tablo yönlü kayar */
+.slide-next{animation:slide-next .42s var(--ease) both}.slide-prev{animation:slide-prev .42s var(--ease) both}
+@keyframes slide-next{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}
+@keyframes slide-prev{from{opacity:0;transform:translateX(-18px)}to{opacity:1;transform:none}}
+/* Net tutar güncellenince hafif nabız */
+.net-value.bump{animation:net-bump .5s var(--ease)}
+@keyframes net-bump{30%{transform:translateY(-2px);color:var(--mint)}}
+/* Hücreye yazılan saat belirirken */
+.day-total{animation:pop-in .35s var(--ease) both}
+@keyframes pop-in{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:none}}
 
 /* Telefon (dikey): menü alta sabitlenir */
 @media (max-width:760px){
@@ -620,19 +664,20 @@ select.form-input{padding-right:32px;background-image:linear-gradient(45deg,tran
 .dialog{box-shadow:var(--elev-2)!important}
 .toast{box-shadow:var(--elev-1)}
 /* Düğmeler: kâğıt üstünde hafif kabarık */
-.btn,.icon-button,.month-current,.chart-toggle,.pin-key,.multi-person,.mode-switch button{background:var(--surface-raised);box-shadow:0 1px 0 rgba(255,255,255,.8) inset,0 1px 1.5px rgba(60,48,28,.06)}
+.btn,.icon-button,.month-current,.chart-toggle,.pin-key,.multi-person,.mode-switch button{background:var(--surface-raised);box-shadow:var(--btn-elev)}
 .btn:hover,.icon-button:hover,.chart-toggle:hover{border-color:var(--line-hover)}
-.button-primary{box-shadow:0 1px 0 rgba(255,255,255,.18) inset,0 2px 6px -2px rgba(46,100,70,.45)}
+.button-primary{box-shadow:var(--primary-elev)}
 /* Giriş alanları içe gömük */
-.form-input,.date-field{box-shadow:inset 0 1px 2px rgba(60,48,28,.06)}
+.form-input,.date-field{box-shadow:var(--field-inset)}
 /* Takvim: bugün halkası, dolu günler biraz daha belirgin yazı */
 .day-cell.today:not(.outside){box-shadow:inset 0 0 0 1.5px var(--mint-line)}
 .day-cell .day-total{font-weight:500}
 /* Menü: buzlu kâğıt */
-.rail-button.active{box-shadow:0 1px 0 rgba(255,255,255,.7) inset,0 1px 2px rgba(60,48,28,.06)}
+.rail-button.active{box-shadow:var(--btn-elev)}
 /* Tablo başlık ve sabit sütunlar */
 .cg-head>:not(template){background:var(--surface-2)}
 .cg-row>.cg-name,.cg-row>.cg-total{box-shadow:1px 0 0 var(--line-strong)}
 .cg-row>.cg-total{box-shadow:-1px 0 0 var(--line-strong)}
 /* Döndür ipucu: kâğıt üstünde */
 .rot-phone>rect:first-child{fill:var(--surface-raised);stroke:var(--muted)}
+html[data-theme="dark"] .rot-phone>rect:first-child{stroke:var(--soft)}

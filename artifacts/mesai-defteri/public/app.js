@@ -27,7 +27,7 @@ function mesaiDefteri() {
   const save = (key, value) => { try { localStorage.setItem(key, JSON.stringify(value)); } catch (error) { console.error('Yerel kayıt yazılamadı:', error); } };
   const read = (key, fallback) => { try { const value=localStorage.getItem(key); return value ? JSON.parse(value) : fallback; } catch { return fallback; } };
   return {
-     today:new Date(), online:navigator.onLine, syncPending:0, syncError:null, monthNames, view:'ledger', people:[], entries:[], selectedId:null, chartPrev:null,  year:new Date().getFullYear(), month:new Date().getMonth(),
+     today:new Date(), online:navigator.onLine, syncPending:0, syncError:null, monthNames, view:'ledger', people:[], entries:[], selectedId:null, chartPrev:null, theme:document.documentElement.dataset.theme||'light', netShown:0,  year:new Date().getFullYear(), month:new Date().getMonth(),
      result:null, calcError:false, calcErrorMessage:'', calcRequest:0, modal:'', editingEntry:null, editingPerson:null,
      entryForm:{day:1,ym:'',carry:false,mode:'work',type:'normal',hours:2,hoursText:'2'}, hourPresets:[0.5,1,1.5,2,3,4], personForm:{name:'',role:'',netSalary:65000,dailyHours:7.5,restDay:0,cumulativeTaxBase:0,startDate:'',leaveCarry:0}, toast:'', toastTimer:null, chartShow:{weekday:true,weekend:true,holiday:true,bayram:true,leave:true}, unlockedIds:[], pinInput:'', pinError:false, newPin:'', removePin:false,
      weekdays:['PZT','SAL','ÇAR','PER','CUM','CMT','PAZ'], dayNames:['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'], restDayOptions:[1,2,3,4,5,6,0], leaveTypes:[{value:'izin-yillik',label:'Yıllık izin',short:'YILLIK'},{value:'izin-ucretsiz',label:'Ücretsiz izin',short:'ÜCRETSİZ'},{value:'izin-rapor',label:'Raporlu',short:'RAPOR'},{value:'izin-mazeret',label:'Mazeret izni',short:'MAZERET'}], entryTypes:[{value:'normal',label:'Normal'},{value:'holiday',label:'Resmî tatil'},{value:'bayram',label:'Bayram'}],
@@ -46,7 +46,7 @@ function mesaiDefteri() {
       // Alpine: modal kapanırken yeniden açılınca iptal edilen x-show geçişi yakalanmamış hata olarak düşüyor; zararsız
       const cancelled=e=>{if((e.reason||e.error)?.isFromCancelledTransition)e.preventDefault();};window.addEventListener('unhandledrejection',cancelled);window.addEventListener('error',cancelled);
       window.addEventListener('focus',resume); window.addEventListener('pageshow',resume);
-      this.$watch('selectedId',id=>{try{if(id&&this.chartPrev===null)localStorage.setItem('mesai-defteri-secili',id);}catch{}this.calculate();}); this.$watch('month',()=>{this.calculate();if(this.view==='chart')this.chartScroll();});this.$watch('view',v=>{if(v==='chart')this.chartScroll();});addEventListener('resize',()=>{if(this.view==='chart')this.chartScroll();}); this.$watch('year',()=>this.calculate());
+      this.$watch('selectedId',id=>{try{if(id&&this.chartPrev===null)localStorage.setItem('mesai-defteri-secili',id);}catch{}this.calculate();}); this.$watch('month',()=>{this.calculate();if(this.view==='chart')this.chartScroll();});this.$watch('view',v=>{if(v==='chart')this.chartScroll();});this.netShown=this.netSlip?.net||0;this.$watch('netSlip',s=>this.tweenNet(s?.net||0));addEventListener('resize',()=>{if(this.view==='chart')this.chartScroll();}); this.$watch('year',()=>this.calculate());
        window.addEventListener('online',()=>{this.online=true;bulut.flush().catch(()=>{});this.sync();this.calculate();});
        window.addEventListener('offline',()=>{this.online=false;});
       this.calculate();
@@ -158,6 +158,16 @@ function mesaiDefteri() {
       const back=prop===3?props:'',front=prop===3?'':props;
       return `<span class="avatar c${tone} ${size}" aria-hidden="true"><svg viewBox="0 0 32 32">${back}<path class="av-body" d="M4.5 32c0-6 4.6-9.4 11.5-9.4s11.5 3.4 11.5 9.4z"/>${vestP}<path fill="${sk[1]}" d="M13.7 18.8h4.6v4.4L16 25.4l-2.3-2.2z"/><circle fill="${sk[1]}" cx="10.3" cy="15.2" r="1.35"/><circle fill="${sk[1]}" cx="21.7" cy="15.2" r="1.35"/><ellipse fill="${sk[0]}" cx="16" cy="14.6" rx="5.8" ry="6.5"/>${beardP}${eyes}<path fill="none" stroke="${sk[1]}" stroke-width=".8" stroke-linecap="round" d="M16 15.6v1.5"/>${must}<path fill="none" stroke="${beard?'#e9c6ad':'#9a5a48'}" stroke-width=".85" stroke-linecap="round" d="M14.6 18.5q1.4 1 2.8 0"/>${hair[style]}${front}</svg></span>`;},
     firstName(name){return (name||'').trim().split(/\s+/)[0]||'';},
+    // Tema: düğmeden yayılan dairesel geçiş
+    toggleTheme(ev){const t=this.theme==='dark'?'light':'dark',r=document.documentElement,b=ev?.currentTarget?.getBoundingClientRect();
+      if(b){const x=b.left+b.width/2,y=b.top+b.height/2;r.style.setProperty('--vx',x+'px');r.style.setProperty('--vy',y+'px');r.style.setProperty('--vr',Math.hypot(Math.max(x,innerWidth-x),Math.max(y,innerHeight-y))+'px');}
+      const apply=()=>{this.theme=t;r.dataset.theme=t;try{localStorage.setItem('mesai-tema',t);}catch{}document.querySelector('meta[name=theme-color]')?.setAttribute('content',t==='dark'?'#101718':'#e1ded5');document.querySelector('meta[name=apple-mobile-web-app-status-bar-style]')?.setAttribute('content',t==='dark'?'black-translucent':'default');};
+      if(document.startViewTransition&&!matchMedia('(prefers-reduced-motion: reduce)').matches)document.startViewTransition(apply);else apply();},
+    // Ay değişince takvim/tablo kayma yönü
+    slideMonth(dir){this.$nextTick(()=>document.querySelectorAll('.day-grid,.cg-table').forEach(el=>{el.classList.remove('slide-next','slide-prev');void el.offsetWidth;el.classList.add(dir>0?'slide-next':'slide-prev');}));},
+    // Net tutar yumuşakça sayarak değişir
+    tweenNet(to){const from=Number(this.netShown)||0;to=Number(to)||0;if(from===to)return;cancelAnimationFrame(this._netRaf);if(matchMedia('(prefers-reduced-motion: reduce)').matches||!from){this.netShown=to;return;}
+      const t0=performance.now(),d=550,step=now=>{const k=Math.min(1,(now-t0)/d),e=1-Math.pow(1-k,3);this.netShown=Math.round((from+(to-from)*e)*100)/100;if(k<1)this._netRaf=requestAnimationFrame(step);else{this.netShown=to;const n=this.$refs.net;if(n){n.classList.remove('bump');void n.offsetWidth;n.classList.add('bump');}}};this._netRaf=requestAnimationFrame(step);},
     initials(name){return (name||'').trim().split(/\s+/).slice(0,2).map(s=>s[0]||'').join('').toLocaleUpperCase('tr-TR');},
     // Yerel kayıt yazılamasa bile (iOS gizli mod / kota) değişiklik bulut kuyruğuna mutlaka girer
     persist(){save('mesai-defteri-people',this.people);save('mesai-defteri-entries',this.entries);bulut.track(this.people,this.entries);},
@@ -188,8 +198,8 @@ function mesaiDefteri() {
     // Gün sütunları görünen alana tam sığacak genişlikte; yarım sütun kalmaz
     chartFit(){const g=document.querySelector('.chart-grid'),t=g&&g.querySelector('.cg-table');if(!g||!g.clientWidth)return;const w=g.clientWidth-64-68-2,n=Math.max(1,Math.min(this.monthDays,Math.floor((w+1)/41)));t.style.setProperty('--col',((w-(n-1))/n).toFixed(2)+'px');},
     chartScroll(){setTimeout(()=>{this.chartFit();const g=document.querySelector('.chart-grid'),c=g&&g.querySelector('.cg-day.today');if(!g||!g.clientWidth)return;g.scrollLeft=c?Math.max(0,c.offsetLeft-65-Math.floor((g.clientWidth-134)/2/c.offsetWidth)*(c.offsetWidth+1)):0;},60);},
-    changeMonth(delta){const date=new Date(this.year,this.month+delta,1);this.month=date.getMonth();this.year=date.getFullYear();},
-    goCurrentMonth(){this.month=this.today.getMonth();this.year=this.today.getFullYear();},
+    changeMonth(delta){const date=new Date(this.year,this.month+delta,1);this.month=date.getMonth();this.year=date.getFullYear();this.slideMonth(delta);},
+    goCurrentMonth(){const d=(this.today.getFullYear()-this.year)*12+this.today.getMonth()-this.month;this.month=this.today.getMonth();this.year=this.today.getFullYear();if(d)this.slideMonth(d);},
     async calculate(){
       const person=this.activePerson;if(!person){this.result=null;this.calcError=false;return;}
        const request=++this.calcRequest;this.calcError=false;this.calcErrorMessage='';
