@@ -1,59 +1,39 @@
 /* =====================================================================
-   Mesai Defteri — tek tema
-   Koyu yeşil-siyah zemin, 1px ince çizgiler, DM Mono etiketler
-   (büyük harf, geniş aralık), Manrope gövde metni, mint vurgu.
+   Mesai Defteri — tek tema: "Kâğıt"
+   Sıcak, kırık beyaz kâğıt zemin (saf beyaz yok → parlama yok), adaçayı yeşili vurgu,
+   ince sıcak gri çizgiler, yumuşak katman gölgeleri. DM Mono etiketler, Manrope metin.
+   Metin kontrastı (#f8f7f2 üzerinde): ink 15.1 · text 13.2 · soft 9.4 · muted 6.7 · dim 4.8 · faint yalnız süs.
    ===================================================================== */
 :root{
-  color-scheme:dark;
-  /* Zeminler */
-  --bg:#101718;--surface:#151e1f;--surface-2:#192425;--surface-3:#202d2d;--surface-raised:#182221;--field:#121a1a;
-  --cell-bg:rgba(25,36,36,.3);
-  /* Çizgiler */
-  --line:#2b3938;--line-soft:#22302f;--grid:#263331;--line-field:#333f3c;--line-strong:#3b4944;--line-hover:#6a7b6f;
-  /* Metin (kontrast #151e1f üzerinde): ink 14.2 · text 13.0 · soft 9.7 · muted 7.8 · dim 5.7 · faint 4.1 (yalnız süs/pasif) */
-  --ink:#e6ece6;--text:#dbe3dc;--soft:#bcc6bf;--muted:#a6b3ac;--dim:#8b9991;--faint:#6f8178;
-  /* Mint = normal mesai, seçili, başarılı/eşitlendi */
-  --mint:#a5d8b6;--mint-ink:#c3e3ca;--mint-mute:#afc6b6;--mint-soft:#78ad86;--mint-line:#759479;--mint-edge:#52705c;--mint-deep:#355a49;
-  --mint-wash:#1e2a25;--mint-wash-2:#293b31;--on-mint:#15211a;--today-bg:rgba(120,173,134,.07);--work-bg:rgba(120,173,134,.17);
-  /* Amber = resmî tatil, bekleyen eşitleme */
-  --amber:#d7b67b;--holiday:var(--amber);--holiday-ink:#e2c48d;--holiday-line:#8f7a52;--holiday-bg:rgba(215,182,123,.10);--holiday-bg-half:rgba(215,182,123,.06);--work-holiday-bg:rgba(215,182,123,.17);
-  /* Kırmızı = bayram, tehlike, çevrimdışı/hata */
-  --red:#d1847a;--bayram:var(--red);--red-ink:#eba896;--bayram-ink:var(--red-ink);--red-line:#9a665d;--bayram-bg:rgba(209,132,122,.09);--work-bayram-bg:rgba(209,132,122,.18);
-  /* Arduvaz mavisi = haftalık izin günü (hafta tatili) */
-  --rest:#a99be0;--rest-ink:#d3cbf5;--rest-bg:rgba(160,145,220,.12);--rest-bg-dim:rgba(160,145,220,.04);
+  color-scheme:light;
+  /* Zeminler: sayfa < kart < yükseltilmiş; alanlar karttan bir tık içeride */
+  --bg:#edebe4;--surface:#f8f7f2;--surface-2:#f2f0e9;--surface-3:#e7e4da;--surface-raised:#fbfaf7;--field:#f3f1eb;
+  --cell-bg:rgba(255,255,255,.38);
+  /* Çizgiler: sıcak gri, sert değil */
+  --line:#dcd7cb;--line-soft:#e7e3d9;--grid:#e3dfd4;--line-field:#d5cfc2;--line-strong:#c8c1b2;--line-hover:#8e998f;
+  /* Metin: saf siyah yok, yeşile çalan koyu grafit */
+  --ink:#1b231f;--text:#26302b;--soft:#3d4741;--muted:#555f59;--dim:#68716b;--faint:#979d95;
+  /* Adaçayı = normal mesai, seçili, eşitlendi */
+  --mint:#3b7856;--mint-ink:#2e6446;--mint-mute:#5b7a67;--mint-soft:#6ea384;--mint-line:#8db69b;--mint-edge:#adcbb6;--mint-deep:#8db69b;
+  --mint-wash:#e5eee5;--mint-wash-2:#d6e6d9;--on-mint:#fbfaf7;--today-bg:rgba(59,120,86,.075);--work-bg:rgba(110,163,132,.23);
+  /* Hardal = resmî tatil, bekleyen eşitleme */
+  --amber:#a87829;--holiday:var(--amber);--holiday-ink:#83601d;--holiday-line:#d2b684;--holiday-bg:rgba(168,120,41,.10);--holiday-bg-half:rgba(168,120,41,.06);--work-holiday-bg:rgba(168,120,41,.19);
+  /* Kiremit = bayram, tehlike, çevrimdışı/hata */
+  --red:#b05544;--bayram:var(--red);--red-ink:#924232;--bayram-ink:var(--red-ink);--red-line:#d8a095;--bayram-bg:rgba(176,85,68,.09);--work-bayram-bg:rgba(176,85,68,.17);
+  /* Lavanta = haftalık izin günü */
+  --rest:#6c5fb3;--rest-ink:#544999;--rest-bg:rgba(108,95,179,.10);--rest-bg-dim:rgba(108,95,179,.045);
   /* Gri = izin günleri */
-  --leave-bg:rgba(166,179,172,.10);--leave-ink:#bcc6bf;
+  --leave-bg:rgba(85,95,89,.09);--leave-ink:#3d4741;
   /* Avatar tonları */
-  --av-1:#8fcaa2;--av-2:#b3a7e8;--av-3:#dcbd84;--av-4:#dc958b;--av-5:#8fb9d9;--av-6:#8ccbc6;
-  /* Katmanlar */
-  --backdrop:rgba(5,10,10,.76);--shadow:rgba(0,0,0,.4);--rail-bg:rgba(19,28,28,.96);--fade-0:rgba(16,23,24,0);--outside-bg:rgba(15,22,23,.24);--amber-ring:rgba(215,182,123,.18);--red-ring:rgba(209,132,122,.18);
+  --av-1:#4e8e68;--av-2:#7a6cbf;--av-3:#b38737;--av-4:#bd6555;--av-5:#4f83aa;--av-6:#3e8d87;
+  /* Katmanlar ve derinlik (sıcak gölge, siyah değil) */
+  --backdrop:rgba(42,38,30,.30);--shadow:rgba(60,48,28,.16);--rail-bg:rgba(250,249,245,.9);--fade-0:rgba(237,235,228,0);--outside-bg:rgba(70,60,40,.035);
+  --amber-ring:rgba(168,120,41,.18);--red-ring:rgba(176,85,68,.18);
+  --elev-1:0 1px 0 rgba(255,255,255,.75) inset,0 1px 2px rgba(60,48,28,.05),0 8px 22px -14px rgba(60,48,28,.22);
+  --elev-2:0 1px 0 rgba(255,255,255,.8) inset,0 2px 6px rgba(60,48,28,.06),0 24px 60px -24px rgba(60,48,28,.35);
   --mono:'DM Mono',ui-monospace,monospace;--sans:'Manrope',system-ui,sans-serif;
   /* --ctl: tüm düğmelerin ortak yüksekliği (dokunmatik ekranda 36px) */
   --pad:18px;--shell-x:30px;--nav-h:0px;--ctl:33px
-}
-/* ===== Özel renkler: kullanıcı 5 ana rengi seçer, gerisi bunlardan türetilir =====
-   JS html'e --bg, --ink, --mint, --rest, --amber, --red, --on-mint yazar ve .custom ekler. */
-html.custom{
-  --surface:color-mix(in srgb,var(--bg),var(--ink) 4%);--surface-2:color-mix(in srgb,var(--bg),var(--ink) 6.5%);--surface-3:color-mix(in srgb,var(--bg),var(--ink) 10%);
-  --surface-raised:color-mix(in srgb,var(--bg),var(--ink) 5.5%);--field:color-mix(in srgb,var(--bg),var(--ink) 2%);--cell-bg:color-mix(in srgb,var(--surface),transparent 55%);
-  --line:color-mix(in srgb,var(--bg),var(--ink) 15%);--line-soft:color-mix(in srgb,var(--bg),var(--ink) 10%);--grid:color-mix(in srgb,var(--bg),var(--ink) 12%);
-  --line-field:color-mix(in srgb,var(--bg),var(--ink) 18%);--line-strong:color-mix(in srgb,var(--bg),var(--ink) 23%);--line-hover:color-mix(in srgb,var(--bg),var(--ink) 45%);
-  --text:color-mix(in srgb,var(--ink),var(--bg) 6%);--soft:color-mix(in srgb,var(--ink),var(--bg) 20%);--muted:color-mix(in srgb,var(--ink),var(--bg) 30%);
-  --dim:color-mix(in srgb,var(--ink),var(--bg) 42%);--faint:color-mix(in srgb,var(--ink),var(--bg) 55%);
-  --mint-ink:color-mix(in srgb,var(--mint),var(--ink) 35%);--mint-mute:color-mix(in srgb,var(--mint),var(--muted) 45%);--mint-soft:color-mix(in srgb,var(--mint),var(--bg) 22%);
-  --mint-line:color-mix(in srgb,var(--mint),var(--bg) 38%);--mint-edge:color-mix(in srgb,var(--mint),var(--bg) 55%);--mint-deep:color-mix(in srgb,var(--mint),var(--bg) 66%);
-  --mint-wash:color-mix(in srgb,var(--bg),var(--mint) 10%);--mint-wash-2:color-mix(in srgb,var(--bg),var(--mint) 17%);
-  --today-bg:color-mix(in srgb,var(--mint-soft),transparent 92%);--work-bg:color-mix(in srgb,var(--mint-soft),transparent 82%);
-  --holiday-ink:color-mix(in srgb,var(--amber),var(--ink) 30%);--holiday-line:color-mix(in srgb,var(--amber),var(--bg) 40%);
-  --holiday-bg:color-mix(in srgb,var(--amber),transparent 90%);--holiday-bg-half:color-mix(in srgb,var(--amber),transparent 94%);--work-holiday-bg:color-mix(in srgb,var(--amber),transparent 82%);
-  --red-ink:color-mix(in srgb,var(--red),var(--ink) 30%);--red-line:color-mix(in srgb,var(--red),var(--bg) 40%);
-  --bayram-bg:color-mix(in srgb,var(--red),transparent 91%);--work-bayram-bg:color-mix(in srgb,var(--red),transparent 82%);
-  --rest-ink:color-mix(in srgb,var(--rest),var(--ink) 40%);--rest-bg:color-mix(in srgb,var(--rest),transparent 88%);--rest-bg-dim:color-mix(in srgb,var(--rest),transparent 96%);
-  --leave-bg:color-mix(in srgb,var(--soft),transparent 90%);--leave-ink:var(--soft);
-  --av-1:var(--mint);--av-2:var(--rest);--av-3:var(--amber);--av-4:var(--red);--av-5:color-mix(in srgb,var(--mint),var(--rest));--av-6:color-mix(in srgb,var(--mint),var(--amber));
-  --backdrop:color-mix(in srgb,color-mix(in srgb,var(--bg),#000 45%),transparent 25%);--shadow:rgba(0,0,0,.3);--rail-bg:color-mix(in srgb,var(--surface),transparent 5%);
-  --fade-0:color-mix(in srgb,var(--bg),transparent 100%);--outside-bg:color-mix(in srgb,var(--bg),var(--ink) 1.5%);
-  --amber-ring:color-mix(in srgb,var(--amber),transparent 82%);--red-ring:color-mix(in srgb,var(--red),transparent 82%)
 }
 @media (pointer:coarse){:root{--ctl:36px}}
 *{box-sizing:border-box}
@@ -186,7 +166,7 @@ h1{display:flex;align-items:baseline;gap:8px;font-size:29px;line-height:1.1;font
 .day-cell.has-work.weekend:not(.outside){background:linear-gradient(var(--work-bg),var(--work-bg)) var(--rest-bg-dim)}
 .day-cell.has-work.has-holiday.weekend:not(.outside){background:linear-gradient(var(--work-holiday-bg),var(--work-holiday-bg)) var(--rest-bg-dim)}
 .day-cell.has-work.has-bayram.weekend:not(.outside){background:linear-gradient(var(--work-bayram-bg),var(--work-bayram-bg)) var(--rest-bg-dim)}
-.day-cell.has-work:hover:not(:disabled){filter:brightness(1.12)}
+.day-cell.has-work:hover:not(:disabled){filter:brightness(.97)}
 .special-label,.leave-label{position:absolute;left:10px;right:6px;bottom:9px;font:9px var(--mono);letter-spacing:0.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .special-label{text-transform:uppercase;opacity:.85}
 .leave-label{color:var(--leave-ink)}
@@ -486,32 +466,11 @@ select.form-input{padding-right:32px;background-image:linear-gradient(45deg,tran
   .form-input,.date-field select{font-size:16px}
 }
 
-/* Renk sayfası */
-.theme-row{margin-top:22px}
-.theme-row-head{display:flex;align-items:center;justify-content:space-between;margin:0 0 8px}
-.theme-row-head .field-label{margin:0}
-.color-card{padding:14px;border:1px solid var(--line);background:var(--surface)}
-.color-preview{display:flex;align-items:center;gap:8px;margin-bottom:14px}
-.color-preview .color-chip{width:40px;height:40px;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--ink),transparent 85%);transition:background .15s}
-.color-preview .color-chip.bg{display:grid;place-items:center}
-.color-preview .color-chip.bg i{width:14px;height:14px}
-.color-preview b{margin-left:auto;font:500 12px var(--mono);color:var(--muted);letter-spacing:.06em}
-.slider-label{display:block;margin:0 0 6px;font-size:11px;color:var(--dim)}
-.color-range{-webkit-appearance:none;appearance:none;display:block;width:100%;height:30px;margin:0 0 14px;border:1px solid var(--line-field);background:var(--field);cursor:pointer;touch-action:pan-y}
-.color-range:last-child{margin-bottom:0}
-.color-range.hue{background:linear-gradient(90deg,hsl(0 45% 74%),hsl(60 45% 74%),hsl(120 45% 74%),hsl(180 45% 74%),hsl(240 45% 74%),hsl(300 45% 74%),hsl(359 45% 74%))}
-.color-range.sat{background:linear-gradient(90deg,hsl(var(--h) 12% 74%),hsl(var(--h) 60% 74%))}
-.color-range::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:30px;background:transparent;border:2px solid var(--ink);box-shadow:0 0 0 1px var(--bg),inset 0 0 0 1px var(--bg)}
-.color-range::-moz-range-thumb{width:12px;height:26px;border-radius:0;background:transparent;border:2px solid var(--ink);box-shadow:0 0 0 1px var(--bg)}
-.color-range:focus-visible{outline:1px solid var(--mint);outline-offset:2px}
-.reset-colors{height:30px;padding:0 10px;font-size:10px}
-
 /* Hareket: kısa, yumuşak, tek eğri */
 :root{--ease:cubic-bezier(.22,1,.36,1)}
 .btn,.icon-button,.button-primary,.chart-toggle,.multi-person,.mode-switch button{transition:transform .14s var(--ease),background .2s,border-color .2s,color .2s}
 .btn:active,.icon-button:active,.button-primary:active,.chart-toggle:active,.multi-person:active,.mode-switch button:active{transform:scale(.97)}
-.day-cell:active:not(.outside){filter:brightness(1.15)}
-html.light-bg .day-cell:active:not(.outside){filter:brightness(.96)}
+.day-cell:active:not(.outside){filter:brightness(.96)}
 .rail-button{position:relative}
 .rail-button .rail-icon{transition:transform .3s var(--ease)}
 .rail-button.active .rail-icon{transform:scale(1.06)}
@@ -653,3 +612,27 @@ html.light-bg .day-cell:active:not(.outside){filter:brightness(.96)}
 }
 
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+/* ===== Kâğıt tema ayrıntıları ===== */
+::selection{background:var(--mint-wash-2);color:var(--ink)}
+/* Kartlar zeminden yumuşak gölgeyle ayrılır */
+.calendar-panel,.summary-card,.manage-intro,.person-list,.chart-grid{box-shadow:var(--elev-1)}
+.dialog{box-shadow:var(--elev-2)!important}
+.toast{box-shadow:var(--elev-1)}
+/* Düğmeler: kâğıt üstünde hafif kabarık */
+.btn,.icon-button,.month-current,.chart-toggle,.pin-key,.multi-person,.mode-switch button{background:var(--surface-raised);box-shadow:0 1px 0 rgba(255,255,255,.8) inset,0 1px 1.5px rgba(60,48,28,.06)}
+.btn:hover,.icon-button:hover,.chart-toggle:hover{border-color:var(--line-hover)}
+.button-primary{box-shadow:0 1px 0 rgba(255,255,255,.18) inset,0 2px 6px -2px rgba(46,100,70,.45)}
+/* Giriş alanları içe gömük */
+.form-input,.date-field{box-shadow:inset 0 1px 2px rgba(60,48,28,.06)}
+/* Takvim: bugün halkası, dolu günler biraz daha belirgin yazı */
+.day-cell.today:not(.outside){box-shadow:inset 0 0 0 1.5px var(--mint-line)}
+.day-cell .day-total{font-weight:500}
+/* Menü: buzlu kâğıt */
+.rail-button.active{box-shadow:0 1px 0 rgba(255,255,255,.7) inset,0 1px 2px rgba(60,48,28,.06)}
+/* Tablo başlık ve sabit sütunlar */
+.cg-head>:not(template){background:var(--surface-2)}
+.cg-row>.cg-name,.cg-row>.cg-total{box-shadow:1px 0 0 var(--line-strong)}
+.cg-row>.cg-total{box-shadow:-1px 0 0 var(--line-strong)}
+/* Döndür ipucu: kâğıt üstünde */
+.rot-phone>rect:first-child{fill:var(--surface-raised);stroke:var(--muted)}

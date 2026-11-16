@@ -27,7 +27,7 @@ function mesaiDefteri() {
   const save = (key, value) => { try { localStorage.setItem(key, JSON.stringify(value)); } catch (error) { console.error('Yerel kayıt yazılamadı:', error); } };
   const read = (key, fallback) => { try { const value=localStorage.getItem(key); return value ? JSON.parse(value) : fallback; } catch { return fallback; } };
   return {
-     today:new Date(), online:navigator.onLine, syncPending:0, syncError:null, monthNames, view:'ledger', people:[], entries:[], selectedId:null, chartPrev:null, renk:(()=>{try{return JSON.parse(localStorage.getItem('mesai-renk'))||{h:140,s:40}}catch{return {h:140,s:40}}})(), customColor:(()=>{try{return !!localStorage.getItem('mesai-renk')}catch{return false}})(), year:new Date().getFullYear(), month:new Date().getMonth(),
+     today:new Date(), online:navigator.onLine, syncPending:0, syncError:null, monthNames, view:'ledger', people:[], entries:[], selectedId:null, chartPrev:null,  year:new Date().getFullYear(), month:new Date().getMonth(),
      result:null, calcError:false, calcErrorMessage:'', calcRequest:0, modal:'', editingEntry:null, editingPerson:null,
      entryForm:{day:1,ym:'',carry:false,mode:'work',type:'normal',hours:2,hoursText:'2'}, hourPresets:[0.5,1,1.5,2,3,4], personForm:{name:'',role:'',netSalary:65000,dailyHours:7.5,restDay:0,cumulativeTaxBase:0,startDate:'',leaveCarry:0}, toast:'', toastTimer:null, chartShow:{weekday:true,weekend:true,holiday:true,bayram:true,leave:true}, unlockedIds:[], pinInput:'', pinError:false, newPin:'', removePin:false,
      weekdays:['PZT','SAL','ÇAR','PER','CUM','CMT','PAZ'], dayNames:['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'], restDayOptions:[1,2,3,4,5,6,0], leaveTypes:[{value:'izin-yillik',label:'Yıllık izin',short:'YILLIK'},{value:'izin-ucretsiz',label:'Ücretsiz izin',short:'ÜCRETSİZ'},{value:'izin-rapor',label:'Raporlu',short:'RAPOR'},{value:'izin-mazeret',label:'Mazeret izni',short:'MAZERET'}], entryTypes:[{value:'normal',label:'Normal'},{value:'holiday',label:'Resmî tatil'},{value:'bayram',label:'Bayram'}],
@@ -158,10 +158,6 @@ function mesaiDefteri() {
       const back=prop===3?props:'',front=prop===3?'':props;
       return `<span class="avatar c${tone} ${size}" aria-hidden="true"><svg viewBox="0 0 32 32">${back}<path class="av-body" d="M4.5 32c0-6 4.6-9.4 11.5-9.4s11.5 3.4 11.5 9.4z"/>${vestP}<path fill="${sk[1]}" d="M13.7 18.8h4.6v4.4L16 25.4l-2.3-2.2z"/><circle fill="${sk[1]}" cx="10.3" cy="15.2" r="1.35"/><circle fill="${sk[1]}" cx="21.7" cy="15.2" r="1.35"/><ellipse fill="${sk[0]}" cx="16" cy="14.6" rx="5.8" ry="6.5"/>${beardP}${eyes}<path fill="none" stroke="${sk[1]}" stroke-width=".8" stroke-linecap="round" d="M16 15.6v1.5"/>${must}<path fill="none" stroke="${beard?'#e9c6ad':'#9a5a48'}" stroke-width=".85" stroke-linecap="round" d="M14.6 18.5q1.4 1 2.8 0"/>${hair[style]}${front}</svg></span>`;},
     firstName(name){return (name||'').trim().split(/\s+/)[0]||'';},
-    get renkOnizleme(){return window.renkPalet?window.renkPalet(this.renk):{bg:'#101718',mint:'#a5d8b6'};},
-    setRenk(k,v){this.renk={...this.renk,[k]:v};this.customColor=true;window.applyColors?.(window.renkPalet(this.renk));},
-    saveRenk(){try{localStorage.setItem('mesai-renk',JSON.stringify(this.renk));}catch{}},
-    resetColor(){this.renk={h:140,s:40};this.customColor=false;try{localStorage.removeItem('mesai-renk');}catch{}const go=()=>window.applyColors?.(null);if(document.startViewTransition)document.startViewTransition(go);else go();},
     initials(name){return (name||'').trim().split(/\s+/).slice(0,2).map(s=>s[0]||'').join('').toLocaleUpperCase('tr-TR');},
     // Yerel kayıt yazılamasa bile (iOS gizli mod / kota) değişiklik bulut kuyruğuna mutlaka girer
     persist(){save('mesai-defteri-people',this.people);save('mesai-defteri-entries',this.entries);bulut.track(this.people,this.entries);},
