@@ -10,7 +10,9 @@
 //   Çakışma          hafta tatili resmî tatil/bayrama denk gelirse tatil/bayram kuralı geçerlidir
 //   Eksik mesai      önceki aydan aktarılan saatler, türünün katsayısıyla, bölünmeden
 //
-// Tutarlar kuruşta hesaplanır; satırların toplamı her zaman net toplamı verir.
+// Bordrodaki gibi her satır ayrı yuvarlanır; net toplam satırların toplamıdır.
+// Tatilde 7,5 saati aşan saatler bordroda hafta içi fazla mesaisine yazıldığı için ödeme satırında oraya eklenir.
+// KSE bordrolarıyla doğrulandı: Nisan, Mayıs, Temmuz, Ağustos 2026 (kuruşu kuruşuna).
 const hesapla = (() => {
   const KATSAYI = { normal: 1.5, holiday: 1, bayram: 2 };
   const ASIM = 1.5;
@@ -51,13 +53,12 @@ const hesapla = (() => {
         t.birim += p.saat * p.katsayi;
       }
     }
+    const asim = toplam.get('tatil-asim'), ici = toplam.get('hafta-ici');
+    ici.saat += asim.saat; ici.birim += asim.birim; asim.saat = asim.birim = 0;
     const lines = SATIRLAR
       .map(([key, label]) => ({ key, label, hours: yuvarla(toplam.get(key).saat), amount: yuvarla(saatlik * toplam.get(key).birim) }))
       .filter(l => l.hours > 0);
-    const birim = [...toplam.values()].reduce((s, t) => s + t.birim, 0);
-    const netTotal = yuvarla(saatlik * birim);
-    // Kuruş yuvarlama farkı ilk satıra yazılır, böylece satırlar toplamla birebir tutar
-    if (lines.length) lines[0].amount = yuvarla(lines[0].amount + netTotal - lines.reduce((s, l) => s + l.amount, 0));
+    const netTotal = yuvarla(lines.reduce((s, l) => s + l.amount, 0));
     return {
       hourlyNet: yuvarla(saatlik),
       totalHours: yuvarla(lines.reduce((s, l) => s + l.hours, 0)),

@@ -114,9 +114,12 @@ function mesaiDefteri() {
       const cells=Array.from({length:days},(_,i)=>{const d=i+1,e=byDate.get(keys[i]),dt=new Date(year,month,d);const cls=[dt.getDay()===rest?'rest':'',d===today?'today':'',flashOn&&this.flashKey===keys[i]?'just-saved':''];let text='';
         if(e){if(this.isLeave(e.type)){if(show.leave){cls.push('leave');text=short[e.type]||'İ';}}else{const c=cat(e);if(show[c]){cls.push(c==='weekend'?'weekend':e.type);text=this.formatHours(this.paidHours(e,p));}}}return {day:d,cls:cls.join(' '),text};});
       return {id:p.id,name:p.name,first:this.firstName(p.name),av:this.avatar(p),cells,total:total?this.formatHours(total):'—'};});},
-    get unpaidDays(){return this.leaveEntries.filter(e=>e.type==='izin-ucretsiz').length;},
+    // Maaştan düşülen günler: ücretsiz izin ve rapor (rapor ödeneği SGK'dan ayrıca ödenir)
+    get unpaidDays(){return this.leaveEntries.filter(e=>e.type==='izin-ucretsiz'||e.type==='izin-rapor').length;},
+    // Bordro 30 gün esaslı: eksik gün varsa ödenen gün = 31 çeken ayda en çok 30 olmak üzere ay günü − eksik gün, diğer aylarda 30 − eksik gün
+    get deductedDays(){const n=this.unpaidDays;if(!n)return 0;const paid=this.monthDays===31?Math.min(30,31-n):30-n;return Math.max(0,30-Math.max(0,paid));},
     // Bordrodaki gibi: ücretsiz izin günü başına net maaş / 30 kesilir
-    get unpaidDeduction(){return Math.round((Number(this.activePerson?.netSalary)||0)/30*this.unpaidDays*100)/100;},
+    get unpaidDeduction(){return Math.round((Number(this.activePerson?.netSalary)||0)/30*this.deductedDays*100)/100;},
     get monthEntries(){if(!this.activePerson)return [];const id=this.selectedId,mk=this.monthKey;return this.entries.filter(e=>e.personId===id&&(e.paidMonth||e.date.slice(0,7))===mk);},
     // Bordrodaki gibi döküm: hafta içi / hafta sonu (kişinin hafta tatili) / resmî tatil / bayram / eksik mesai
     get breakdown(){const p=this.activePerson;if(!p)return [];const daily=Number(p.dailyHours)||7.5,rest=p.restDay??0;const rows=[['weekday','Hafta içi','normal'],['weekend','Hafta tatili','rest'],['holiday','Resmî tatil','holiday'],['bayram','Bayram','bayram'],['overflow','Tatilde 7,5 saat üstü','normal']].map(([key,label,cls])=>({key,label,cls,hours:0}));const row=k=>rows.find(r=>r.key===k);
