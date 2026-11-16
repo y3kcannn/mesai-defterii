@@ -548,3 +548,36 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .leave-big span{font-size:12px;color:var(--muted)}
 .leave-note{margin:8px 0 0;font-size:11px;line-height:1.5;color:var(--dim)}
 .leave-big.over b{color:var(--holiday-ink)}
+
+/* Yıllık izin düğmesi (sayı) */
+.leave-btn span{font:500 13px var(--mono);letter-spacing:-.02em;color:var(--mint-ink)}
+.leave-btn.over span{color:var(--holiday-ink)}
+.leave-body{padding-top:6px}
+.heading-actions{display:flex;gap:6px;align-items:center}
+/* Ekip grafiği */
+.chart-overlay{position:fixed;inset:0;z-index:60;background:var(--bg);display:flex;padding:max(10px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
+.chart-rotate{display:none;margin:auto;flex-direction:column;align-items:center;gap:10px;text-align:center;color:var(--muted)}
+.chart-rotate .ic{width:44px;height:44px;color:var(--mint);animation:rot-hint 2.4s ease-in-out infinite}
+.chart-rotate b{color:var(--ink);font-size:15px;font-weight:600}.chart-rotate p{margin:0 0 6px;font-size:12px}
+@keyframes rot-hint{0%,30%{transform:rotate(0)}60%,100%{transform:rotate(-90deg)}}
+.chart-wrap{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
+.chart-top{display:flex;align-items:center;justify-content:space-between}
+.chart-top>b{font-size:18px;font-weight:500;color:var(--ink);letter-spacing:-.03em}
+.chart-grid{flex:0 1 auto;min-height:0;overflow:auto;border:1px solid var(--line);background:var(--grid)}
+.cg-row{display:grid;grid-template-columns:38px repeat(var(--days),minmax(18px,1fr)) 40px;gap:1px;background:var(--grid)}
+.cg-row>template{display:none}
+.cg-row>:not(template){background:var(--surface);height:28px;display:grid;place-items:center;font:10px var(--mono);color:var(--text);min-width:0;overflow:hidden;white-space:nowrap}
+.cg-head>:not(template){height:22px;color:var(--dim);font-size:9px;position:sticky;top:0;z-index:1}
+.cg-head .hol-resmi,.cg-head .hol-arife{color:var(--holiday-ink)}.cg-head .hol-bayram{color:var(--bayram-ink)}
+.cg-name{border:0;cursor:pointer;color:var(--mint-ink)!important;font-weight:500;position:sticky;left:0;z-index:2}
+.cg-total{color:var(--soft)!important}
+.cg-cell.rest{background:color-mix(in srgb,var(--surface),var(--rest) 12%)}
+.cg-cell.normal{background:color-mix(in srgb,var(--surface),var(--mint-soft) 26%);color:var(--mint-ink)}
+.cg-cell.holiday{background:color-mix(in srgb,var(--surface),var(--holiday) 24%);color:var(--holiday-ink)}
+.cg-cell.bayram{background:color-mix(in srgb,var(--surface),var(--bayram) 24%);color:var(--bayram-ink)}
+.cg-cell.leave{background:color-mix(in srgb,var(--surface),var(--soft) 14%);color:var(--soft)}
+.chart-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:10px;color:var(--muted)}
+.chart-legend span{display:inline-flex;align-items:center;gap:6px}
+.chart-legend i{width:9px;height:9px;display:inline-block}
+.chart-legend .normal{background:var(--mint-soft)}.chart-legend .holiday{background:var(--holiday)}.chart-legend .bayram{background:var(--bayram)}.chart-legend .leave{background:var(--soft);opacity:.5}.chart-legend .rest{background:var(--rest);opacity:.6}
+@media(orientation:portrait) and (max-width:760px){.chart-rotate{display:flex}.chart-wrap{display:none}}

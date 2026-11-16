@@ -43,6 +43,8 @@
 <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="9.5" rx="1"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></symbol>
 <symbol id="i-unlock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="9.5" rx="1"/><path d="M8 10.5V8a4 4 0 0 1 7.6-1.7"/></symbol>
 <symbol id="i-user-switch" viewBox="0 0 24 24"><circle cx="10" cy="8" r="3.5"/><path d="M3.5 20v-1a6.5 6.5 0 0 1 10.5-5.1"/><path d="M16 15h5l-2-2m2 6h-5l2 2"/></symbol>
+<symbol id="i-chart" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="1"/><path d="M3.5 9.5h17M8.5 4.5v15M12 13h1.5M15.5 13H17M12 16.5h5"/></symbol>
+<symbol id="i-rotate" viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M20.5 12a8.5 8.5 0 0 1-6 8.1M3.5 12a8.5 8.5 0 0 1 6-8.1"/><path d="m12.5 18.5 2 1.6-1.6 2"/></symbol>
 <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
 <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
 <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
@@ -60,7 +62,7 @@
       </nav>
 
       <main class="main-panel" x-show="view==='ledger'" x-cloak>
-        <div class="page-heading"><div><div class="heading-row"><h1><span x-text="monthName"></span><span class="year" x-text="year"></span></h1></div></div><div class="month-controls"><div class="control-group"><button class="icon-button person-switch" @click="modal='picker'" :aria-label="'Personel: '+(activePerson?.name||'seçilmedi')" :title="(activePerson?.name||'Personel seç')+' · '+syncLabel"><svg class="ic" aria-hidden="true"><use href="#i-user-switch"/></svg><i class="live-dot" :class="{offline:!online||syncError, pending:online&&!syncError&&syncPending}"></i></button><button class="icon-button carry-add" x-show="activePerson" @click="openCarry()" aria-label="Eksik mesai ekle" title="Eksik mesai ekle"><svg class="ic" aria-hidden="true"><use href="#i-history"/></svg></button><button class="icon-button multi-add" x-show="people.length" @click="openMulti()" aria-label="Toplu mesai" title="Birden fazla kişiye mesai yaz"><svg class="ic" aria-hidden="true"><use href="#i-users"/></svg></button></div><span class="controls-sep" aria-hidden="true"></span><div class="control-group"><button class="icon-button" @click="changeMonth(-1)" aria-label="Önceki ay"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button><button class="month-current" @click="goCurrentMonth()">BU AY</button><button class="icon-button" @click="changeMonth(1)" aria-label="Sonraki ay"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button></div></div></div>
+        <div class="page-heading"><div><div class="heading-row"><h1><span x-text="monthName"></span><span class="year" x-text="year"></span></h1></div></div><div class="month-controls"><div class="control-group"><button class="icon-button person-switch" @click="modal='picker'" :aria-label="'Personel: '+(activePerson?.name||'seçilmedi')" :title="(activePerson?.name||'Personel seç')+' · '+syncLabel"><svg class="ic" aria-hidden="true"><use href="#i-user-switch"/></svg><i class="live-dot" :class="{offline:!online||syncError, pending:online&&!syncError&&syncPending}"></i></button><button class="icon-button carry-add" x-show="activePerson" @click="openCarry()" aria-label="Eksik mesai ekle" title="Eksik mesai ekle"><svg class="ic" aria-hidden="true"><use href="#i-history"/></svg></button><button class="icon-button multi-add" x-show="people.length" @click="openMulti()" aria-label="Toplu mesai" title="Birden fazla kişiye mesai yaz"><svg class="ic" aria-hidden="true"><use href="#i-users"/></svg></button><button class="icon-button leave-btn" x-show="activePerson" :class="{over: leaveBalance && !leaveBalance.noStart && leaveBalance.left<0}" @click="modal='leave'" :aria-label="'Yıllık izin: '+(leaveBalance && !leaveBalance.noStart ? leaveBalance.left+' gün' : 'tarih girilmedi')" title="Yıllık izin"><span x-text="leaveBalance && !leaveBalance.noStart ? leaveBalance.left : '–'"></span></button></div><span class="controls-sep" aria-hidden="true"></span><div class="control-group"><button class="icon-button" @click="changeMonth(-1)" aria-label="Önceki ay"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button><button class="month-current" @click="goCurrentMonth()">BU AY</button><button class="icon-button" @click="changeMonth(1)" aria-label="Sonraki ay"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button></div></div></div>
 
         <div class="ledger-layout">
           <section class="calendar-panel">
@@ -91,22 +93,13 @@
                </div></template>
               <button class="retry-button" x-show="calcError" @click="calculate()">Yeniden hesapla</button></div>
             </section>
-            <section class="summary-card leave-card" x-show="activePerson"><div class="panel-topline"><div><svg class="ic section-ic" aria-hidden="true"><use href="#i-calendar"/></svg><span class="section-title">YILLIK İZİN</span></div></div>
-              <template x-if="leaveBalance && leaveBalance.noStart"><p class="leave-note">Bakiyeyi görmek için Ayarlar'dan işe giriş tarihini girin.</p></template>
-              <template x-if="leaveBalance && !leaveBalance.noStart"><div>
-                <div class="leave-big" :class="{over: leaveBalance.left<0}"><b x-text="Math.abs(leaveBalance.left)"></b><span x-text="leaveBalance.left<0 ? 'gün avans kullanıldı' : 'gün kaldı'"></span></div>
-                <div class="slip-row two"><span>Bu yılın hakkı</span><b x-text="leaveBalance.entitled+' gün'"></b></div>
-                <div class="slip-row two" x-show="leaveBalance.carry"><span>Devreden</span><b x-text="leaveBalance.carry+' gün'"></b></div>
-                <div class="slip-row two"><span>Kullanılan</span><b x-text="leaveBalance.used+' gün'"></b></div>
-                <p class="leave-note" x-text="leaveBalance.years<1 ? ('İlk izin hakkı '+leaveBalance.next+' tarihinde doğar.') : ('İzin yılı '+leaveBalance.from+' – '+leaveBalance.next)"></p>
-              </div></template>
-            </section>
+            
           </aside>
         </div>
       </main>
 
       <main class="main-panel management-panel" x-show="view==='people'" x-cloak>
-        <div class="page-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> PERSONEL YÖNETİMİ</div><div class="heading-row"><h1>Personel <span class="year">listesi</span></h1></div></div><button class="btn" @click="openPersonForm()"><svg class="ic" aria-hidden="true"><use href="#i-user-plus"/></svg>Personel ekle</button></div>
+        <div class="page-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> PERSONEL YÖNETİMİ</div><div class="heading-row"><h1>Personel <span class="year">listesi</span></h1></div></div><div class="heading-actions"><button class="btn btn-icon" @click="chartOpen=true" aria-label="Aylık grafik" title="Aylık grafik"><svg class="ic" aria-hidden="true"><use href="#i-chart"/></svg></button><button class="btn" @click="openPersonForm()"><svg class="ic" aria-hidden="true"><use href="#i-user-plus"/></svg>Personel ekle</button></div></div>
         <div class="manage-intro"><svg class="ic section-ic" aria-hidden="true"><use href="#i-users"/></svg><span>KAYITLI PERSONEL</span><span class="manage-count" x-text="people.length+' KİŞİ'"></span></div>
         <div class="person-list" x-show="people.length"><template x-for="person in people" :key="person.id"><article class="person-row"><div class="person-initials large" x-text="initials(person.name)"></div><div class="person-info"><b><span x-text="person.name"></span><span class="example-badge" x-show="person.example">ÖRNEK</span></b><span x-text="person.role || 'Görev belirtilmedi'"></span><small class="person-meta"><span x-text="isLocked(person) ? '•••••• net' : money(person.netSalary)+' net'"></span><i>·</i><span x-text="'Hafta tatili '+dayNames[person.restDay ?? 0]"></span><template x-if="person.pinHash"><span class="pin-tag"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg>PIN</span></template></small></div><div class="row-actions"><button class="btn btn-icon" @click="openPersonForm(person)" aria-label="Düzenle" title="Düzenle"><svg class="ic" aria-hidden="true"><use href="#i-edit"/></svg></button><button class="btn btn-icon danger" @click="removePerson(person)" aria-label="Sil" title="Sil"><svg class="ic" aria-hidden="true"><use href="#i-trash"/></svg></button></div></article></template></div>
         <div class="empty-state" x-show="!people.length"><b>Henüz personel eklenmedi</b><p>Mesai takibine başlamak için ilk personeli ekleyin.</p><button class="btn" @click="openPersonForm()"><svg class="ic" aria-hidden="true"><use href="#i-user-plus"/></svg>Personel ekle</button></div>
@@ -121,7 +114,31 @@
     
   </div>
 
-  <div class="modal-backdrop" x-show="modal==='entry' || modal==='person' || modal==='picker'" x-transition.opacity.duration.300ms @click.self="closeModal()" x-cloak>
+
+  <div class="chart-overlay" x-show="chartOpen" x-transition.opacity.duration.300ms x-cloak @keydown.escape.window="chartOpen=false">
+    <div class="chart-rotate"><svg class="ic" aria-hidden="true"><use href="#i-rotate"/></svg><b>Telefonu yan çevirin</b><p>Herkesin aylık mesaisi yatay ekranda görünür.</p><button class="btn" @click="chartOpen=false">Kapat</button></div>
+    <div class="chart-wrap">
+      <div class="chart-top"><b x-text="monthName+' '+year"></b><div class="month-controls"><button class="icon-button" @click="changeMonth(-1)" aria-label="Önceki ay"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button><button class="icon-button" @click="changeMonth(1)" aria-label="Sonraki ay"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button><button class="btn btn-icon" @click="chartOpen=false" aria-label="Kapat"><svg class="ic" aria-hidden="true"><use href="#i-close"/></svg></button></div></div>
+      <div class="chart-grid" :style="'--days:'+monthDays">
+        <div class="cg-row cg-head"><span class="cg-name"></span><template x-for="c in chartDays" :key="c.day"><span class="cg-day" :class="c.cls" x-text="c.day"></span></template><span class="cg-total">SA</span></div>
+        <template x-for="r in chartRows" :key="r.id"><div class="cg-row"><button class="cg-name" @click="selectPerson(r.id);chartOpen=false;view='ledger'" :title="r.name" x-text="r.initials"></button><template x-for="c in r.cells" :key="c.day"><span class="cg-cell" :class="c.cls" x-text="c.text"></span></template><span class="cg-total" x-text="r.total"></span></div></template>
+      </div>
+      <div class="chart-legend"><span><i class="normal"></i>Normal</span><span><i class="holiday"></i>Resmî tatil</span><span><i class="bayram"></i>Bayram</span><span><i class="leave"></i>İzin</span><span><i class="rest"></i>Hafta tatili</span></div>
+    </div>
+  </div>
+  <div class="modal-backdrop" x-show="modal==='entry' || modal==='person' || modal==='picker' || modal==='leave'" x-transition.opacity.duration.300ms @click.self="closeModal()" x-cloak>
+    <section class="dialog picker-dialog" x-show="modal==='leave'" x-transition:enter="dlg-in" x-transition:enter-start="dlg-from" x-transition:enter-end="dlg-to" x-transition:leave="dlg-out" x-transition:leave-start="dlg-to" x-transition:leave-end="dlg-from" @click.stop aria-modal="true" role="dialog" aria-labelledby="leave-title">
+      <div class="dialog-head"><div><div class="eyebrow"><span class="eyebrow-line"></span> YILLIK İZİN <span class="eyebrow-slash">/</span> <span class="eyebrow-name" x-text="activePerson?.name || ''"></span></div><h2 id="leave-title">İzin bakiyesi</h2></div><button type="button" class="btn btn-icon close-button" @click="closeModal()" aria-label="Kapat"><svg class="ic" aria-hidden="true"><use href="#i-close"/></svg></button></div>
+      <div class="leave-body"><template x-if="leaveBalance && leaveBalance.noStart"><p class="leave-note">Bakiyeyi görmek için Ayarlar'dan işe giriş tarihini girin.</p></template>
+              <template x-if="leaveBalance && !leaveBalance.noStart"><div>
+                <div class="leave-big" :class="{over: leaveBalance.left<0}"><b x-text="Math.abs(leaveBalance.left)"></b><span x-text="leaveBalance.left<0 ? 'gün avans kullanıldı' : 'gün kaldı'"></span></div>
+                <div class="slip-row two"><span>Bu yılın hakkı</span><b x-text="leaveBalance.entitled+' gün'"></b></div>
+                <div class="slip-row two" x-show="leaveBalance.carry"><span>Devreden</span><b x-text="leaveBalance.carry+' gün'"></b></div>
+                <div class="slip-row two"><span>Kullanılan</span><b x-text="leaveBalance.used+' gün'"></b></div>
+                <p class="leave-note" x-text="leaveBalance.years<1 ? ('İlk izin hakkı '+leaveBalance.next+' tarihinde doğar.') : ('İzin yılı '+leaveBalance.from+' – '+leaveBalance.next)"></p>
+              </div></template>
+            </div>
+    </section>
     <section class="dialog picker-dialog" x-show="modal==='picker'" x-transition:enter="dlg-in" x-transition:enter-start="dlg-from" x-transition:enter-end="dlg-to" x-transition:leave="dlg-out" x-transition:leave-start="dlg-to" x-transition:leave-end="dlg-from" @click.stop aria-modal="true" role="dialog" aria-labelledby="picker-title">
       <div class="dialog-head"><div><div class="eyebrow"><span class="eyebrow-line"></span> PERSONEL <span class="eyebrow-slash">/</span> <span class="eyebrow-name" x-text="people.length+' kişi'"></span></div><h2 id="picker-title">Personel seç</h2></div><button type="button" class="btn btn-icon close-button" @click="closeModal()" aria-label="Kapat"><svg class="ic" aria-hidden="true"><use href="#i-close"/></svg></button></div>
       <div class="picker-list"><template x-for="p in people" :key="p.id"><button type="button" class="multi-person" :class="{chosen: selectedId===p.id}" @click="selectPerson(p.id);closeModal()"><span class="person-initials" x-text="initials(p.name)"></span><span x-text="p.name"></span><span class="type-check">✓</span></button></template></div>
