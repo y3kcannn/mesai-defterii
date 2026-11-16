@@ -33,7 +33,7 @@
 *::-webkit-scrollbar{display:none;width:0;height:0}
 /* iOS: döndürünce yazı büyümesi olmasın */
 html{min-width:320px;background:var(--bg);-webkit-text-size-adjust:100%;text-size-adjust:100%}
-body{margin:0;min-height:100dvh;background:radial-gradient(ellipse at 42% -25%,rgba(85,126,103,.12),transparent 48%),var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;-webkit-font-smoothing:antialiased}
+body{margin:0;min-height:100dvh;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;-webkit-font-smoothing:antialiased}
 button,input,select{font:inherit}
 button{color:inherit}
 button:focus-visible,input:focus-visible,select:focus-visible{outline:1px solid var(--mint);outline-offset:3px}
@@ -107,7 +107,7 @@ h1{display:flex;align-items:baseline;gap:8px;font-size:29px;line-height:1.1;font
 .leave-btn.over span{color:var(--holiday-ink)}
 
 /* Kart zemini (takvim, özet, personel) */
-.calendar-panel,.summary-card,.manage-intro,.person-list{background:linear-gradient(145deg,rgba(24,34,34,.88),rgba(18,26,27,.95));border:1px solid var(--line)}
+.calendar-panel,.summary-card,.manage-intro,.person-list{background:var(--surface);border:1px solid var(--line)}
 .panel-topline{display:flex;justify-content:space-between;align-items:center;min-height:20px}
 .panel-topline>div:first-child{display:flex;align-items:center;gap:8px}
 .section-title{font-size:11px;color:var(--soft);letter-spacing:0.06em}
