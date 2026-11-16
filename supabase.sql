@@ -38,3 +38,4 @@ alter table people add column if not exists pin_hash text; -- maaş PIN'inin SHA
 -- İzin türleri
 alter table entries drop constraint if exists entries_type_check;
 alter table entries add constraint entries_type_check check (type in ('normal','holiday','bayram','izin-yillik','izin-ucretsiz','izin-rapor','izin-mazeret'));
+alter table people add column if not exists start_date text; -- işe giriş tarihi

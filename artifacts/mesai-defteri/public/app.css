@@ -517,3 +517,10 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 /* Kesinti detayı her zaman açık: başlık düz etiket */
 .deductions summary{pointer-events:none;cursor:default}
 .deductions summary::after{display:none}
+
+/* Bordro dökümü */
+.payroll-list .sum{border-top:1px solid var(--line);margin-top:2px;padding-top:9px}
+.payroll-list .sum span{color:var(--ink);font-weight:600}
+.payroll-list .net b{color:var(--mint)}
+.payroll-list .minor span,.payroll-list .minor b{color:var(--dim);font-size:11px}
+.payroll-list small{display:block;margin-top:2px;font-size:11px;color:var(--dim);font-weight:400}
