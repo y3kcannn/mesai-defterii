@@ -179,7 +179,7 @@ function mesaiDefteri() {
     // Tema: düğmeden yayılan dairesel geçiş
     toggleTheme(ev){const t=this.theme==='dark'?'light':'dark',r=document.documentElement,b=ev?.currentTarget?.getBoundingClientRect();
       if(b){const x=b.left+b.width/2,y=b.top+b.height/2;r.style.setProperty('--vx',x+'px');r.style.setProperty('--vy',y+'px');r.style.setProperty('--vr',Math.hypot(Math.max(x,innerWidth-x),Math.max(y,innerHeight-y))+'px');}
-      const apply=()=>{this.theme=t;r.dataset.theme=t;try{localStorage.setItem('mesai-tema',t);}catch{}document.querySelector('meta[name=theme-color]')?.setAttribute('content',t==='dark'?'#101718':'#e1ded5');document.querySelector('meta[name=apple-mobile-web-app-status-bar-style]')?.setAttribute('content',t==='dark'?'black-translucent':'default');};
+      const apply=()=>{this.theme=t;r.dataset.theme=t;try{localStorage.setItem('mesai-tema',t);}catch{}document.querySelector('meta[name=theme-color]')?.setAttribute('content',t==='dark'?'#101718':'#d7d3c8');document.querySelector('meta[name=apple-mobile-web-app-status-bar-style]')?.setAttribute('content',t==='dark'?'black-translucent':'default');};
       if(document.startViewTransition&&!matchMedia('(prefers-reduced-motion: reduce)').matches)document.startViewTransition(apply);else apply();},
     // Ay değişince takvim/tablo kayma yönü
     slideMonth(dir){this.$nextTick(()=>document.querySelectorAll('.day-grid,.cg-table').forEach(el=>{el.classList.remove('slide-next','slide-prev');void el.offsetWidth;el.classList.add(dir>0?'slide-next':'slide-prev');}));},
