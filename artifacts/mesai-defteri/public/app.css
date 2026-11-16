@@ -128,8 +128,8 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:1px solid 
 
 /* İkonlar */
 /* Tek aile: 16px, 1px çizgi (1.5 birim), kare uç, sivri köşe. Küçük (12px) kullanımda çizgi 2 birim = yine 1px. */
-.ic{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;flex-shrink:0;display:inline-block;vertical-align:-3px;transition:transform var(--dur-2) var(--ease-out)}
-.ic-sm,.pin-tag .ic,.row-edit-ic{width:12px;height:12px;stroke-width:2}
+.ic{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;display:inline-block;vertical-align:-3px;transition:transform var(--dur-2) var(--ease-out)}
+.ic-sm,.pin-tag .ic,.row-edit-ic{width:12px;height:12px;stroke-width:2.25}
 .section-ic{color:var(--mint-mute)}
 
 /* ---------- Düğmeler: tek dil, tek yükseklik (--ctl) ---------- */
@@ -162,7 +162,8 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:1px solid 
 .rail-button{display:flex;align-items:center;gap:10px;white-space:nowrap;text-align:left;width:100%;padding:10px 9px;border:1px solid transparent;background:transparent;color:var(--muted);font-size:12px;cursor:pointer;transition:color var(--dur-2),background-color var(--dur-2),border-color var(--dur-2)}
 .rail-button:hover{color:var(--text);background:var(--surface-2)}
 .rail-button.active{color:var(--mint);background:var(--mint-wash);border-color:var(--line-strong)}
-.rail-icon{width:16px;height:16px;display:inline-grid;place-items:center;flex-shrink:0}
+.rail-icon,.rail-icon .ic{width:18px;height:18px}
+.rail-icon{display:inline-grid;place-items:center;flex-shrink:0}
 .main-panel{min-width:0}
 @keyframes fade-up{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
@@ -609,7 +610,7 @@ select.form-input{padding-right:32px;background-image:linear-gradient(45deg,tran
 ::view-transition-new(root){animation:theme-reveal var(--dur-4) var(--ease-io);mix-blend-mode:normal}
 @keyframes theme-reveal{from{clip-path:circle(0 at var(--vx,50%) var(--vy,0))}to{clip-path:circle(var(--vr,150vmax) at var(--vx,50%) var(--vy,0))}}
 /* Tema düğmesi: güneş ↔ ay dönüşümü (ikon ailesiyle aynı çizgi: kare uç, sivri köşe) */
-.theme-btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:square;stroke-linejoin:miter;overflow:visible}
+.theme-btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;overflow:visible}
 .theme-btn .sun,.theme-btn .moon{transform-box:view-box;transform-origin:12px 12px;transition:transform var(--dur-4) var(--ease-out),opacity var(--dur-3) var(--ease-out)}
 .theme-btn .sun .rays{transform-box:view-box;transform-origin:12px 12px;transition:transform var(--dur-4) var(--ease-out)}
 .theme-btn .moon{opacity:0;transform:rotate(-70deg) scale(.4)}
