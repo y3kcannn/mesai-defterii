@@ -382,7 +382,7 @@ h1{display:flex;align-items:baseline;gap:8px;font-size:29px;line-height:1.1;font
 .chart-wrap{min-width:0;display:flex;flex-direction:column}
 .chart-grid{flex:0 1 auto;min-height:0;overflow:auto;overscroll-behavior:none;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;scroll-padding-left:65px;border:1px solid var(--line);background:var(--surface)}
 /* Tek ızgara: satırlar display:contents, tüm çizgiler aynı 1px boşluktan gelir */
-.cg-table{display:grid;grid-template-columns:64px repeat(var(--days),var(--col,40px)) 68px;grid-template-rows:34px;grid-auto-rows:44px;gap:1px;min-width:100%;width:max-content;min-height:100%;background:var(--grid)}
+.cg-table{display:grid;grid-template-columns:64px repeat(var(--days),var(--col,40px)) 76px 68px;grid-template-rows:34px;grid-auto-rows:44px;gap:1px;min-width:100%;width:max-content;min-height:100%;background:var(--grid)}
 .cg-row{display:contents}
 .cg-row>template{display:none}
 .cg-row>:not(template){margin:0;padding:0;border:0;border-radius:0;background:var(--surface);display:grid;place-items:center;font:13px var(--mono);color:var(--text);min-width:0;overflow:hidden;white-space:nowrap;-webkit-tap-highlight-color:transparent}
@@ -868,4 +868,6 @@ html,body{overscroll-behavior-x:none}
 @keyframes chase-hop{50%{transform:translateY(-1px)}}
 .chase.rtl{transform:scaleX(-1)}
 @media (min-width:761px){.chase{bottom:10px}}
-.cg-cell.moved{position:relative}.cg-cell.moved::before{content:"→";position:absolute;top:3px;left:4px;font-size:10px;line-height:1;opacity:.75}
+.cg-row>.cg-carry{background:var(--surface);color:var(--dim);font-variant-numeric:tabular-nums;position:sticky;right:68px;z-index:1;box-shadow:-1px 0 0 var(--line-strong)}
+.cg-row>.cg-carry.on{color:var(--ink);font-weight:500}
+.cg-head>.cg-carry{z-index:3;background:var(--surface-2);font-size:10px;letter-spacing:.08em;color:var(--soft)}
