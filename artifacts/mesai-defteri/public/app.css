@@ -37,56 +37,57 @@ button{appearance:button}
 :root{
   color-scheme:light;
   /* Zeminler: sayfa < kart < yükseltilmiş; alanlar karttan bir tık içeride */
-  --bg:#d7d3c8;--surface:#e9e6de;--surface-2:#e1ddd3;--surface-3:#d3cec2;--surface-raised:#eeebe4;--field:#e4e0d7;
-  --cell-bg:rgba(255,255,255,.16);
+  --bg:#f9f9f7;--surface:#ffffff;--surface-2:#f3f3f0;--surface-3:#ecece8;--surface-raised:#ffffff;--field:#f6f6f3;
+  --cell-bg:rgba(255,255,255,0);
   /* Dolgu oranları: zayıf = gün işareti (tatil, hafta tatili, izin), yarım = arife/ay dışı tatil, güçlü = mesai girilmiş gün, tablo = kişi×gün tablosu */
   --t-half:11%;--t-weak:21%;--t-strong:36%;--t-fill:40%;
   /* Çizgiler: sıcak gri, sert değil */
-  --line:#c4bdae;--line-soft:#d2ccbf;--grid:#cbc5b7;--line-field:#bfb8a8;--line-strong:#aaa291;--line-hover:#77827a;
-  /* Metin: saf siyah yok, yeşile çalan koyu grafit */
-  --ink:#141b17;--text:#1c2420;--soft:#2c3530;--muted:#3e4843;--dim:#4a534e;--faint:#737a73;
-  /* Adaçayı = normal mesai, seçili, eşitlendi */
-  --mint:#33704f;--mint-ink:#2a5c40;--mint-mute:#5b7a67;--mint-soft:#6ea384;--mint-line:#8db69b;--mint-edge:#adcbb6;--mint-deep:#8db69b;
-  --mint-wash:#d3dfd2;--mint-wash-2:#c1d6c5;--on-mint:#f1efe9;
+  --line:#e6e6e6;--line-soft:#eeeeeb;--grid:#e6e6e6;--line-field:#dcdcd7;--line-strong:#cfcec8;--line-hover:#a3a29c;
+  /* Metin: saf siyah yok, sıcak grafit */
+  --ink:#131313;--text:#1c1c1b;--soft:#2e2e2c;--muted:#55544f;--dim:#7a7974;--faint:#a3a29c;
+  /* Vurgu mavisi = seçili, normal mesai, eşitlendi */
+  --mint:#3968b9;--mint-ink:#2d5496;--mint-mute:#6a88be;--mint-soft:#7f9fd3;--mint-line:#a9bee3;--mint-edge:#c8d6ee;--mint-deep:#a9bee3;
+  --mint-wash:#eaf0f9;--mint-wash-2:#dce6f5;--on-mint:#ffffff;
   /* Hardal = resmî tatil, bekleyen eşitleme */
-  --amber:#b07a1c;--holiday:var(--amber);--holiday-ink:#6a4b12;--holiday-line:#d2b684;
+  --amber:#b0801f;--holiday:var(--amber);--holiday-ink:#6e5214;--holiday-line:#dcc593;
   /* Kiremit = bayram, tehlike, çevrimdışı/hata */
-  --red:#b8503d;--bayram:var(--red);--red-ink:#83392b;--bayram-ink:var(--red-ink);--red-line:#d8a095;
-  /* Lavanta = haftalık izin günü */
-  --rest:#6a5bc0;--rest-ink:#463b8c;
+  --red:#b8503d;--bayram:var(--red);--red-ink:#822e2a;--bayram-ink:var(--red-ink);--red-line:#e2b0a8;
+  /* Mor = hafta tatili */
+  --rest:#8a5cb8;--rest-ink:#5a3c85;
   /* Gri = izin günleri */
-  --leave-ink:#3d4741;
+  --leave-ink:#55544f;
   /* Avatar tonları */
   --av-1:#4e8e68;--av-2:#7a6cbf;--av-3:#b38737;--av-4:#bd6555;--av-5:#4f83aa;--av-6:#3e8d87;
   /* Katmanlar ve derinlik (sıcak gölge, siyah değil) */
-  --backdrop:rgba(42,38,30,.32);--shadow:rgba(60,48,28,.16);--rail-bg:rgba(233,230,222,.94);--fade-0:rgba(215,211,200,0);--outside-bg:rgba(70,60,40,.07);
+  --backdrop:rgba(19,19,19,.28);--shadow:rgba(0,0,0,.08);--rail-bg:rgba(243,243,240,.96);--fade-0:rgba(249,249,247,0);--outside-bg:rgba(0,0,0,.025);
   /* Derinlik: parlak iç kenar yok; kartlar yumuşak, sıcak bir gölgeyle, düğmeler yalnız 1px taban çizgisiyle ayrılır */
-  --elev-1:0 1px 0 rgba(60,48,28,.05),0 8px 22px -14px rgba(60,48,28,.26);
-  --elev-2:0 2px 6px rgba(60,48,28,.06),0 24px 60px -24px rgba(60,48,28,.38);
-  --btn-elev:0 1px 0 rgba(60,48,28,.07);--primary-elev:0 1px 0 rgba(30,62,44,.35);--field-inset:inset 0 1px 0 rgba(60,48,28,.05);
+  --elev-1:0 1px 2px rgba(0,0,0,.03);
+  --elev-2:0 18px 48px -22px rgba(0,0,0,.22);
+  --btn-elev:none;--primary-elev:none;--field-inset:none;
   --mono:'DM Mono',ui-monospace,monospace;--sans:'Manrope',system-ui,sans-serif;
   /* --ctl: tüm düğmelerin ortak yüksekliği (dokunmatik ekranda 36px) */
+  --brand:#c6613f;--primary-bg:#131313;--on-primary:#f9f9f7;
   --pad:18px;--shell-x:30px;--nav-h:0px;--ctl:33px
 }
 /* ===== Koyu tema: yeşil-siyah gece ===== */
 html[data-theme="dark"]{
   color-scheme:dark;
-  --bg:#101718;--surface:#151e1f;--surface-2:#192425;--surface-3:#202d2d;--surface-raised:#182221;--field:#121a1a;--cell-bg:rgba(25,36,36,.3);
+  --bg:#151515;--surface:#20201f;--surface-2:#262625;--surface-3:#2c2c2b;--surface-raised:#262625;--field:#1a1a19;--cell-bg:rgba(255,255,255,.012);
   --t-half:6%;--t-weak:11%;--t-strong:18%;--t-fill:24%;
-  --line:#2b3938;--line-soft:#22302f;--grid:#263331;--line-field:#333f3c;--line-strong:#3b4944;--line-hover:#6a7b6f;
-  --ink:#e6ece6;--text:#dbe3dc;--soft:#bcc6bf;--muted:#a6b3ac;--dim:#8b9991;--faint:#6f8178;
-  --mint:#a5d8b6;--mint-ink:#c3e3ca;--mint-mute:#afc6b6;--mint-soft:#78ad86;--mint-line:#759479;--mint-edge:#52705c;--mint-deep:#355a49;
-  --mint-wash:#1e2a25;--mint-wash-2:#293b31;--on-mint:#15211a;
-  --amber:#d7b67b;--holiday-ink:#e2c48d;--holiday-line:#8f7a52;
-  --red:#d1847a;--red-ink:#eba896;--red-line:#9a665d;
-  --rest:#a99be0;--rest-ink:#d3cbf5;
-  --leave-ink:#bcc6bf;
+  --line:#363635;--line-soft:#2c2c2b;--grid:#313130;--line-field:#3d3d3b;--line-strong:#4a4a48;--line-hover:#7a7974;
+  --ink:#f9f9f7;--text:#ecebe6;--soft:#d6d5ce;--muted:#c3c2b7;--dim:#97958d;--faint:#6e6d67;
+  --mint:#5598e7;--mint-ink:#8dbbf0;--mint-mute:#9db8da;--mint-soft:#6fa6e6;--mint-line:#4d79ae;--mint-edge:#3a5a80;--mint-deep:#2f4a6b;
+  --mint-wash:#1d2633;--mint-wash-2:#233247;--on-mint:#0f1a28;
+  --amber:#d9b56e;--holiday-ink:#e8cb91;--holiday-line:#8a7445;
+  --red:#e0877c;--red-ink:#f4abab;--red-line:#9e625c;
+  --rest:#b59ae6;--rest-ink:#d9cbf5;
+  --leave-ink:#c3c2b7;
   --av-1:#8fcaa2;--av-2:#b3a7e8;--av-3:#dcbd84;--av-4:#dc958b;--av-5:#8fb9d9;--av-6:#8ccbc6;
-  --backdrop:rgba(5,10,10,.76);--shadow:rgba(0,0,0,.4);--rail-bg:rgba(19,28,28,.96);--fade-0:rgba(16,23,24,0);--outside-bg:rgba(6,10,11,.32);
-  --elev-1:0 1px 2px rgba(0,0,0,.25),0 10px 26px -16px rgba(0,0,0,.6);
+  --backdrop:rgba(0,0,0,.62);--shadow:rgba(0,0,0,.4);--rail-bg:rgba(26,26,25,.96);--fade-0:rgba(21,21,21,0);--outside-bg:rgba(0,0,0,.22);
+  --elev-1:none;
   --elev-2:0 24px 70px -20px rgba(0,0,0,.7);
-  --btn-elev:none;--primary-elev:none;--field-inset:inset 0 1px 0 rgba(0,0,0,.18)
-}
+  --btn-elev:none;--primary-elev:none;--field-inset:none
+;--primary-bg:#f9f9f7;--on-primary:#151515}
 /* Türetilmiş dolgular: iki temada da aynı formül (ana renk × --t-* oranı) */
 :root{
   --today-bg:color-mix(in srgb,var(--mint) var(--t-half),transparent);
@@ -144,8 +145,8 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:1px solid 
 .btn-icon,.icon-button{width:var(--ctl);padding:0}
 .btn.danger{color:var(--muted);border-color:var(--red-line);background:transparent}
 .btn.danger:hover:not(:disabled){border-color:var(--red);color:var(--red-ink)}
-.button-primary{line-height:1;display:inline-flex;align-items:center;justify-content:center;gap:8px;height:var(--ctl);padding:0 16px;border:1px solid var(--mint);border-radius:0;background:var(--mint);box-shadow:var(--primary-elev);color:var(--on-mint);font-size:12px;font-weight:500;cursor:pointer}
-.button-primary:hover:not(:disabled){background:var(--mint-ink);border-color:var(--mint-ink)}
+.button-primary{line-height:1;display:inline-flex;align-items:center;justify-content:center;gap:8px;height:var(--ctl);padding:0 16px;border:1px solid var(--primary-bg);border-radius:0;background:var(--primary-bg);box-shadow:var(--primary-elev);color:var(--on-primary);font-size:12px;font-weight:500;cursor:pointer}
+.button-primary:hover:not(:disabled){background:color-mix(in srgb,var(--primary-bg) 86%,var(--bg));border-color:color-mix(in srgb,var(--primary-bg) 86%,var(--bg))}
 
 /* ---------- Kabuk ---------- */
 .app-shell{max-width:1680px;min-height:100dvh;margin:0 auto;padding:env(safe-area-inset-top) max(var(--shell-x),env(safe-area-inset-right)) 0 max(var(--shell-x),env(safe-area-inset-left));display:flex;flex-direction:column}
@@ -175,7 +176,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:1px solid 
 .page-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 22px}
 .page-heading>div:first-child{min-width:0}
 .eyebrow{display:flex;align-items:center;gap:9px;font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.eyebrow-line{width:19px;height:1px;background:var(--mint-deep);display:inline-block;flex-shrink:0}
+.eyebrow-line{width:19px;height:1px;background:var(--brand);display:inline-block;flex-shrink:0}
 .eyebrow-slash{color:var(--faint)}
 .eyebrow .eyebrow-name{overflow:hidden;text-overflow:ellipsis;text-transform:none;letter-spacing:var(--track-sm)}
 .heading-row{display:flex;align-items:baseline;gap:15px;margin-top:9px}

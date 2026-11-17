@@ -848,7 +848,7 @@ function mesaiDefteri() {
         const t = this.theme === 'dark' ? 'light' : 'dark';
         this.theme = t; r.dataset.theme = t;
         try { localStorage.setItem('mesai-tema', t); } catch {}
-        document.querySelector('meta[name=theme-color]')?.setAttribute('content', t === 'dark' ? '#101718' : '#d7d3c8');
+        document.querySelector('meta[name=theme-color]')?.setAttribute('content', t === 'dark' ? '#151515' : '#f9f9f7');
         document.querySelector('meta[name=apple-mobile-web-app-status-bar-style]')?.setAttribute('content', t === 'dark' ? 'black-translucent' : 'default');
       };
       if (document.startViewTransition && !reduceMotion()) document.startViewTransition(apply).ready.catch(() => {}); // yarıda kesilen geçiş hata sayılmasın
