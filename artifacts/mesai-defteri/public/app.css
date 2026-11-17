@@ -40,24 +40,24 @@ button{appearance:button}
   --bg:#e8e7e1;--surface:#f2f1ec;--surface-2:#ebeae4;--surface-3:#e2e1da;--surface-raised:#f4f3ee;--field:#eceae4;
   --cell-bg:rgba(255,255,255,0);
   /* Dolgu oranları: zayıf = gün işareti (tatil, hafta tatili, izin), yarım = arife/ay dışı tatil, güçlü = mesai girilmiş gün, tablo = kişi×gün tablosu */
-  --t-half:11%;--t-weak:21%;--t-strong:36%;--t-fill:40%;
+  --t-half:8%;--t-weak:15%;--t-strong:24%;--t-fill:28%;
   /* Çizgiler: sıcak gri, sert değil */
   --line:#d8d6ce;--line-soft:#e1dfd8;--grid:#d8d6ce;--line-field:#cfcdc5;--line-strong:#bfbdb4;--line-hover:#a3a29c;
   /* Metin: saf siyah yok, sıcak grafit */
   --ink:#131313;--text:#1c1c1b;--soft:#2e2e2c;--muted:#55544f;--dim:#7a7974;--faint:#a3a29c;
   /* Vurgu mavisi = seçili, normal mesai, eşitlendi */
-  --mint:#3968b9;--mint-ink:#2d5496;--mint-mute:#6a88be;--mint-soft:#7f9fd3;--mint-line:#a9bee3;--mint-edge:#c8d6ee;--mint-deep:#a9bee3;
+  --mint:#3968b9;--mint-ink:#264a8e;--mint-mute:#6680b0;--mint-soft:#7a98d0;--mint-line:#a9bfe5;--mint-edge:#c3d2ec;--mint-deep:#a9bfe5;
   --mint-wash:#dfe5ee;--mint-wash-2:#d2dcea;--on-mint:#ffffff;
   /* Hardal = resmî tatil, bekleyen eşitleme */
-  --amber:#b0801f;--holiday:var(--amber);--holiday-ink:#6e5214;--holiday-line:#dcc593;
+  --amber:#ba882e;--holiday:var(--amber);--holiday-ink:#784900;--holiday-line:#ddbf91;
   /* Kiremit = bayram, tehlike, çevrimdışı/hata */
-  --red:#b8503d;--bayram:var(--red);--red-ink:#822e2a;--bayram-ink:var(--red-ink);--red-line:#e2b0a8;
+  --red:#b54c3d;--bayram:var(--red);--red-ink:#822e2a;--bayram-ink:var(--red-ink);--red-line:#e7ada3;
   /* Mor = hafta tatili */
-  --rest:#8a5cb8;--rest-ink:#5a3c85;
+  --rest:#7e55a7;--rest-ink:#5d3881;
   /* Gri = izin günleri */
   --leave-ink:#55544f;
   /* Avatar tonları */
-  --av-1:#4e8e68;--av-2:#7a6cbf;--av-3:#b38737;--av-4:#bd6555;--av-5:#4f83aa;--av-6:#3e8d87;
+  --av-1:#5d9669;--av-2:#8e70b0;--av-3:#ba904c;--av-4:#b96558;--av-5:#4f84ba;--av-6:#429595;
   /* Katmanlar ve derinlik (sıcak gölge, siyah değil) */
   --backdrop:rgba(19,19,19,.28);--shadow:rgba(0,0,0,.08);--rail-bg:rgba(226,225,218,.96);--fade-0:rgba(232,231,225,0);--outside-bg:rgba(60,55,40,.035);
   /* Derinlik: parlak iç kenar yok; kartlar yumuşak, sıcak bir gölgeyle, düğmeler yalnız 1px taban çizgisiyle ayrılır */
@@ -73,16 +73,16 @@ button{appearance:button}
 html[data-theme="dark"]{
   color-scheme:dark;
   --bg:#151515;--surface:#20201f;--surface-2:#262625;--surface-3:#2c2c2b;--surface-raised:#262625;--field:#1a1a19;--cell-bg:rgba(255,255,255,.012);
-  --t-half:6%;--t-weak:11%;--t-strong:18%;--t-fill:24%;
+  --t-half:6%;--t-weak:11%;--t-strong:19%;--t-fill:23%;
   --line:#363635;--line-soft:#2c2c2b;--grid:#313130;--line-field:#3d3d3b;--line-strong:#4a4a48;--line-hover:#7a7974;
   --ink:#f9f9f7;--text:#ecebe6;--soft:#d6d5ce;--muted:#c3c2b7;--dim:#97958d;--faint:#6e6d67;
-  --mint:#5598e7;--mint-ink:#8dbbf0;--mint-mute:#9db8da;--mint-soft:#6fa6e6;--mint-line:#4d79ae;--mint-edge:#3a5a80;--mint-deep:#2f4a6b;
+  --mint:#5598e7;--mint-ink:#aacdff;--mint-mute:#9ab3d8;--mint-soft:#77a0dc;--mint-line:#476a9c;--mint-edge:#344e73;--mint-deep:#2e4362;
   --mint-wash:#1d2633;--mint-wash-2:#233247;--on-mint:#0f1a28;
-  --amber:#d9b56e;--holiday-ink:#e8cb91;--holiday-line:#8a7445;
-  --red:#e0877c;--red-ink:#f4abab;--red-line:#9e625c;
-  --rest:#b59ae6;--rest-ink:#d9cbf5;
+  --amber:#e1b671;--holiday-ink:#eecb95;--holiday-line:#886d41;
+  --red:#e18881;--red-ink:#f4abab;--red-line:#925651;
+  --rest:#b99bde;--rest-ink:#dbc6f7;
   --leave-ink:#c3c2b7;
-  --av-1:#8fcaa2;--av-2:#b3a7e8;--av-3:#dcbd84;--av-4:#dc958b;--av-5:#8fb9d9;--av-6:#8ccbc6;
+  --av-1:#8dc096;--av-2:#b89dd9;--av-3:#deb77a;--av-4:#de9589;--av-5:#7fafe2;--av-6:#7abfbf;
   --backdrop:rgba(0,0,0,.62);--shadow:rgba(0,0,0,.4);--rail-bg:rgba(26,26,25,.96);--fade-0:rgba(21,21,21,0);--outside-bg:rgba(0,0,0,.22);
   --elev-1:none;
   --elev-2:0 24px 70px -20px rgba(0,0,0,.7);
@@ -270,6 +270,8 @@ h1{display:flex;align-items:baseline;gap:8px;font-size:29px;line-height:1.1;font
 .day-cell.has-work.has-bayram:not(.outside){background:var(--work-bayram-bg)}
 .day-cell.has-work.weekend:not(.outside){background:linear-gradient(var(--work-bg),var(--work-bg)) var(--rest-bg-dim)}
 .day-cell.has-work.has-holiday.weekend:not(.outside){background:linear-gradient(var(--work-holiday-bg),var(--work-holiday-bg)) var(--rest-bg-dim)}
+.day-cell.has-work.rest-worked:not(.outside){background:color-mix(in srgb,var(--rest) var(--t-strong),var(--surface))}
+.day-cell.rest-worked:not(.outside) .day-total{color:var(--rest-ink)}
 .day-cell.has-work.has-bayram.weekend:not(.outside){background:linear-gradient(var(--work-bayram-bg),var(--work-bayram-bg)) var(--rest-bg-dim)}
 .special-label,.leave-label{position:absolute;left:10px;right:6px;bottom:9px;font:9px var(--mono);letter-spacing:var(--track-sm);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .special-label{text-transform:uppercase;opacity:.85}
