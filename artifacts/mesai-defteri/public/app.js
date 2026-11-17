@@ -62,18 +62,7 @@ function mesaiDefteri() {
           q.style.transition='none';q.style.transform=`translateX(${dx<0?48:-48}px)`;q.style.opacity='0';void q.offsetWidth;q.style.transition=ease;q.style.transform='';q.style.opacity='';
           setTimeout(()=>{q.style.transition='';lock=false;},360);});},210);},{passive:true});},
     // Piksel kedi ile fare: sekme değişince ve arada bir ekranın altından koşarak geçer
-    chaseInit(){if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-      const C={g:'#9aa1a3',p:'#e7a3ab',k:'#1d2521',t:'#c7b7ae',l:'#6c7275',o:'#e0913a',d:'#b2682b',w:'#f4e6d4'};
-      const sprite=(rows,frames)=>{const w=Math.max(...rows.map(r=>r.length),...frames.flat().map(r=>r.length));const h=rows.length+frames[0].length;
-        const cells=(rs,y0)=>rs.map((r,y)=>[...r].map((c,x)=>C[c]?`<rect x="${x}" y="${y+y0}" width="1" height="1" fill="${C[c]}"/>`:'').join('')).join('');
-        return `<svg viewBox="0 0 ${w} ${h}" width="${w*2}" height="${h*2}" shape-rendering="crispEdges">${cells(rows,0)}<g class="f1">${cells(frames[0],rows.length)}</g><g class="f2">${cells(frames[1],rows.length)}</g></svg>`;};
-      const mouse=sprite(['......p...','..ggggggg.','t.gggggkgg','tgggggggggp','.t.ggggg..'],[['..l...l...'],['...l...l..']]);
-      const cat=sprite(['...........o..o','...........oooo','t..........okok','t.........ooooo','.t.ododoooooopo','..ooooooooooww.','..odoooodoooo..'],[['..d.d.....d.d..'],['...d.d...d.d...']]);
-      const el=document.createElement('div');el.className='chase';el.setAttribute('aria-hidden','true');el.innerHTML=`<span class="chase-mouse">${mouse}</span><span class="chase-cat">${cat}</span>`;document.body.appendChild(el);
-      let busy=false;const run=dir=>{if(busy||document.hidden)return;busy=true;el.classList.toggle('rtl',dir<0);el.classList.remove('go');void el.offsetWidth;el.classList.add('go');setTimeout(()=>{el.classList.remove('go');busy=false;},4600);};
-      this.$watch('view',(v,o)=>{const order=['ledger','people','chart'];run(order.indexOf(v)>=order.indexOf(o)?1:-1);});
-      const idle=()=>setTimeout(()=>{run(Math.random()<.5?1:-1);idle();},45000+Math.random()*45000);idle();},
-    init(){this.swipeInit();this.chaseInit();
+    init(){this.swipeInit();
       const savedPeople=read('mesai-defteri-people',null), savedEntries=read('mesai-defteri-entries',null);
       if(savedPeople===null){this.people=demoPeople;this.entries=demoEntries;this.persist();}
       else {this.people=validPeople(savedPeople);this.entries=validEntries(savedEntries);}
