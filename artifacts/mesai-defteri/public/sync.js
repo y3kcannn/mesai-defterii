@@ -14,11 +14,19 @@ const bulut = (() => {
   const db = on ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { accessToken: async () => null, global: { fetch: timedFetch } }) : null;
   const num = (v, d = 0) => Number.isFinite(Number(v)) ? Number(v) : d;
   const toRow = {
-    people: p => ({ id: p.id, name: p.name || '', role: p.role || '', net_salary: num(p.netSalary), daily_hours: num(p.dailyHours, 7.5), rest_day: num(p.restDay), cumulative_tax_base: num(p.cumulativeTaxBase), start_date: p.startDate || null, leave_carry: num(p.leaveCarry), example: !!p.example, pin_hash: p.pinHash || null, ...(p.photo !== undefined && { photo: p.photo || null }) }),
+    people: p => ({
+      id: p.id, name: p.name || '', role: p.role || '', net_salary: num(p.netSalary), daily_hours: num(p.dailyHours, 7.5), rest_day: num(p.restDay),
+      cumulative_tax_base: num(p.cumulativeTaxBase), start_date: p.startDate || null, leave_carry: num(p.leaveCarry), example: !!p.example, pin_hash: p.pinHash || null,
+      ...(p.photo !== undefined && { photo: p.photo || null }), // fotoğrafı hiç yüklenmemiş kayıt sunucudakini silmesin
+    }),
     entries: e => ({ id: e.id, person_id: e.personId, date: e.date, type: e.type, hours: num(e.hours), paid_month: e.paidMonth || null }),
   };
   const fromRow = {
-    people: r => ({ id: r.id, name: r.name, role: r.role || '', netSalary: +r.net_salary, dailyHours: +r.daily_hours, restDay: +(r.rest_day ?? 0), cumulativeTaxBase: +r.cumulative_tax_base, startDate: r.start_date || '', leaveCarry: +(r.leave_carry ?? 0), example: !!r.example, ...(r.pin_hash && { pinHash: r.pin_hash }), ...(r.photo && { photo: r.photo }) }),
+    people: r => ({
+      id: r.id, name: r.name, role: r.role || '', netSalary: +r.net_salary, dailyHours: +r.daily_hours, restDay: +(r.rest_day ?? 0),
+      cumulativeTaxBase: +r.cumulative_tax_base, startDate: r.start_date || '', leaveCarry: +(r.leave_carry ?? 0), example: !!r.example,
+      ...(r.pin_hash && { pinHash: r.pin_hash }), ...(r.photo && { photo: r.photo }),
+    }),
     entries: r => ({ id: r.id, personId: r.person_id, date: r.date, type: r.type, hours: +r.hours, ...(r.paid_month && { paidMonth: r.paid_month }) }),
   };
   const QKEY = 'mesai-defteri-kuyruk', FKEY = 'mesai-defteri-gonderilemeyen';
@@ -32,7 +40,12 @@ const bulut = (() => {
     people: new Map(people.map(p => [p.id, JSON.stringify(toRow.people(p))])),
     entries: new Map(entries.map(e => [e.id, JSON.stringify(toRow.entries(e))])),
   });
-  const withTimeout = p => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error('Zaman aşımı')), TIMEOUT + 2000))]);
+  // İstek yanıtlanınca zamanlayıcı temizlenir (her istek için 17 sn bekleyen zamanlayıcı kalmasın)
+  const withTimeout = p => {
+    let timer;
+    const limit = new Promise((_, rej) => { timer = setTimeout(() => rej(new Error('Zaman aşımı')), TIMEOUT + 2000); });
+    return Promise.race([p, limit]).finally(() => clearTimeout(timer));
+  };
   // Tekrar denemekle düzelmeyecek hatalar: geçersiz veri (22xxx), bütünlük (23xxx), bozuk istek gövdesi
   const permanent = err => /^2[23]\d{3}$/.test(err?.code || '') || err?.code === '21000' || err?.code === 'PGRST102';
   const scheduleRetry = () => { clearTimeout(retry); retry = setTimeout(() => api.flush().catch(() => {}), RETRY); };
@@ -43,6 +56,7 @@ const bulut = (() => {
     reachable: null, // son istek sunucuya ulaştı mı (navigator.onLine iOS'ta güvenilir değil)
     onChange: () => {},
     onDrained: () => {},
+    onRejected: () => {}, // sunucu bir kaydı kalıcı olarak reddetti (ör. CHECK kısıtı); arayüz uyarı gösterir
     get pending() { return queue.length; },
     get version() { return version; },
     get failed() { return failed; },
@@ -82,9 +96,13 @@ const bulut = (() => {
             if (!permanent(error)) throw error;
             if (n > 1) { single = true; continue; } // hatalı kaydı bulmak için tek tek dene
             // Hiçbir zaman gönderilemeyecek kayıt kuyruğu kilitlemesin; ama silinmez, ayrı saklanır (yedekte de çıkar)
-            if (error.code !== '23503') console.error('Gönderilemeyen kayıt ayrıldı:', batch[0], error);
             failed.push({ ...batch[0], error: { code: error.code, message: error.message }, at: new Date().toISOString() });
             store(FKEY, failed);
+            // 23503: kişi başka cihazda silinmiş; kaydın kaybolması beklenen sonuç, uyarı gerekmez
+            if (error.code !== '23503') {
+              console.error('Gönderilemeyen kayıt ayrıldı:', batch[0], error);
+              try { this.onRejected(batch[0], error); } catch {}
+            }
           }
           queue.splice(0, n); saveQueue(); single = false; this.reachable = true; this.onChange();
         }
@@ -116,7 +134,9 @@ const bulut = (() => {
       const later = () => { clearTimeout(timer); timer = setTimeout(cb, 300); };
       // Bağlantı koptuğunda kaçırılan değişiklikler tekrar gönderilmez: yeniden bağlanınca bir kez çek
       let joined = false;
-      db.channel('mesai').on('postgres_changes', { event: '*', schema: 'public' }, later).subscribe(status => { if (status !== 'SUBSCRIBED') return; if (joined) later(); joined = true; });
+      db.channel('mesai')
+        .on('postgres_changes', { event: '*', schema: 'public' }, later)
+        .subscribe(status => { if (status !== 'SUBSCRIBED') return; if (joined) later(); joined = true; });
     },
   };
   // Kuyruk boşalana kadar düzenli dene (zamanlayıcı iOS'ta dondurulsa bile sayfa geri gelince çalışır)

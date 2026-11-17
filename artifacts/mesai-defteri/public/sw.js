@@ -11,9 +11,11 @@ const SLOW_MS = 5000;
 
 self.addEventListener('install', event => {
   // cache: 'reload' bypasses the HTTP cache so the new shell is really new.
+  // Dosyalar tek tek önbelleğe alınır: biri inemezse (zayıf ağ) diğerleri yine çevrimdışı kabukta kalır
+  // (addAll ya hep ya hiç: tek hata tüm kabuğu boş bırakıyordu; eksikler ilk kullanımda ağdan önbelleğe girer).
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(SHELL.map(u => new Request(u, { cache: 'reload' }))))
+      .then(cache => Promise.allSettled(SHELL.map(u => cache.add(new Request(u, { cache: 'reload' })))))
       .catch(() => {})
       .then(() => self.skipWaiting())
   );

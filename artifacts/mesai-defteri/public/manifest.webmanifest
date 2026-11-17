@@ -1,8 +1,10 @@
 {
+  "id": "./",
   "name": "Mesai Defteri — Fazla mesai takibi",
   "short_name": "Mesai Defteri",
-  "description": "Personel bazında fazla mesai ve net ödeme takibi.",
+  "description": "Personel bazında fazla mesai, tatil çalışması ve net ödeme takibi.",
   "lang": "tr",
+  "dir": "ltr",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
