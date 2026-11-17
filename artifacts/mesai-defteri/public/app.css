@@ -865,5 +865,3 @@ html,body{overscroll-behavior-x:none}
 .day-cell.outside.carried-in .day-total{color:var(--soft)}
 .leave-options>button:last-of-type:nth-of-type(odd){grid-column:1/-1}
 
-.stick-fight{position:fixed;left:0;bottom:calc(var(--nav-h) + max(8px,env(safe-area-inset-bottom)) + 2px);height:72px;pointer-events:none;z-index:5;opacity:0;transition:opacity .35s}
-@media (min-width:761px){.stick-fight{bottom:4px}}

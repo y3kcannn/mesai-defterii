@@ -4,7 +4,7 @@ const APP_VERSION = '__APP_VERSION__';
 const CACHE_NAME = 'mesai-defteri-shell-' + APP_VERSION;
 // Yollar sw.js'in bulunduğu klasöre göre (Netlify kökü veya GitHub Pages alt klasörü)
 const BASE = new URL('./', self.location).pathname;
-const SHELL = ['', 'app.css', 'supabase.min.js', 'supabase-config.js', 'hesaplama.js', 'sync.js', 'fight.js', 'app.js', 'alpine.min.js', 'manifest.webmanifest', 'icon.svg', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png', 'icon-maskable-512.png', 'favicon-32.png'].map(f => BASE + f);
+const SHELL = ['', 'app.css', 'supabase.min.js', 'supabase-config.js', 'hesaplama.js', 'sync.js', 'app.js', 'alpine.min.js', 'manifest.webmanifest', 'icon.svg', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png', 'icon-maskable-512.png', 'favicon-32.png'].map(f => BASE + f);
 // Ağ bu kadar sürede yanıt vermezse ve önbellekte tam eşleşen kopya varsa o sunulur
 // (iOS'ta zayıf/kesik bağlantıda beyaz ekranda takılmasın). Ağ yanıtı arka planda önbelleği yine günceller.
 const SLOW_MS = 5000;

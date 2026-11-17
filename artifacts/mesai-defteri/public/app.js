@@ -62,9 +62,7 @@ function mesaiDefteri() {
           q.style.transition='none';q.style.transform=`translateX(${dx<0?48:-48}px)`;q.style.opacity='0';void q.offsetWidth;q.style.transition=ease;q.style.transform='';q.style.opacity='';
           setTimeout(()=>{q.style.transition='';lock=false;},360);});},210);},{passive:true});},
     // Piksel kedi ile fare: sekme değişince ve arada bir ekranın altından koşarak geçer
-    // Ekranın altında iki çöp adam dövüşü (fight.js): sekme değişince ve arada bir
-    fightInit(){if(typeof stickFight==='undefined')return;stickFight.init();this.$watch('view',()=>stickFight.start());const idle=()=>setTimeout(()=>{stickFight.start();idle();},45000+Math.random()*45000);idle();},
-    init(){this.swipeInit();this.fightInit();
+    init(){this.swipeInit();
       const savedPeople=read('mesai-defteri-people',null), savedEntries=read('mesai-defteri-entries',null);
       if(savedPeople===null){this.people=demoPeople;this.entries=demoEntries;this.persist();}
       else {this.people=validPeople(savedPeople);this.entries=validEntries(savedEntries);}
