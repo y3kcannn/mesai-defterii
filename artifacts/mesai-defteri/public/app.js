@@ -271,7 +271,6 @@ function mesaiDefteri() {
     // Fotoğraf önizleme: avatara dokununca büyük görünür, buradan değiştirilir ya da kaldırılır
     get photoPerson(){return this.people.find(p=>p.id===this.photoId)||null;},
     openPhoto(id){this.photoId=id;this.modal='photo';},
-    openPhotoCalendar(){const id=this.photoId;this.closeModal();this.selectPerson(id);},
     setPersonPhoto(id,photo){this.people=this.people.map(p=>p.id===id?{...p,photo}:p);this.persist();this.notify(photo?'Fotoğraf güncellendi':'Fotoğraf kaldırıldı');},
     pickPhoto(ev){const f=ev.target.files?.[0];ev.target.value='';if(!f)return;const url=URL.createObjectURL(f),img=new Image();
       img.onload=()=>{const s=Math.min(img.width,img.height),x=(img.width-s)/2,y=img.height>img.width?(img.height-s)*.3:0,c=document.createElement('canvas');c.width=c.height=480;const g=c.getContext('2d');g.imageSmoothingQuality='high';g.drawImage(img,x,y,s,s,0,0,480,480);URL.revokeObjectURL(url);let q=.85,d=c.toDataURL('image/jpeg',q);while(d.length>100000&&q>.4){q-=.1;d=c.toDataURL('image/jpeg',q);}if(this.modal==='photo'&&this.photoId)this.setPersonPhoto(this.photoId,d);else this.personForm={...this.personForm,photo:d};};
