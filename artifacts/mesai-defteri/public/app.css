@@ -226,6 +226,7 @@ h1{display:flex;align-items:baseline;gap:8px;font-size:29px;line-height:1.1;font
 /* Saat: sağ alt, tür renginde */
 .day-total{position:absolute;right:9px;bottom:9px;font:500 14px var(--mono);letter-spacing:-.02em;color:var(--mint)}
 .day-total::after{content:"SA";margin-left:3px;font-size:9px;letter-spacing:0.06em;color:var(--dim)}
+.day-total.no-unit::after{display:none}
 .day-total{color:var(--mint-ink)}
 .day-total.holiday{color:var(--holiday-ink)}
 .day-total.bayram{color:var(--bayram-ink)}
@@ -306,7 +307,7 @@ h1{display:flex;align-items:baseline;gap:8px;font-size:29px;line-height:1.1;font
 .slip-head.two,.slip-row.two{grid-template-columns:minmax(0,1fr) auto}
 .slip-head.three,.slip-row.three{grid-template-columns:minmax(0,1fr) 40px 92px}
 .slip-head.four,.slip-row.four{grid-template-columns:minmax(0,1fr) 38px 38px 88px}
-.slip-head{padding-bottom:6px;border-bottom:1px solid var(--line);font:9px var(--mono);letter-spacing:.06em;color:var(--dim)}
+.slip-head{white-space:nowrap;padding-bottom:6px;border-bottom:1px solid var(--line);font:9px var(--mono);letter-spacing:.06em;color:var(--dim)}
 .slip-head span:first-child,.slip-row>span{min-width:0}
 .slip-head span:not(:first-child),.slip-row b{text-align:right}
 .slip-row{padding:6px 0;font-size:12px;color:var(--muted)}

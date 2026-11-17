@@ -18,11 +18,11 @@ const hesapla = (() => {
   const ASIM = 1.5;
   const SATIRLAR = [
     ['hafta-ici', 'Hafta içi'],
-    ['hafta-tatili', 'Hafta tatili çalışma'],
+    ['hafta-tatili', 'Hafta tatili'],
     ['resmi-tatil', 'Resmî tatil'],
     ['bayram', 'Bayram'],
     ['tatil-asim', 'Tatilde 7,5 saat üstü'],
-    ['eksik', 'Eksik mesai'],
+    ['eksik', 'Devreden mesai'],
   ];
   const yuvarla = x => Math.round(x * 100) / 100;
   const haftaGunu = tarih => { const [y, a, g] = String(tarih).split('-').map(Number); return new Date(y, a - 1, g).getDay(); };
