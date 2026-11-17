@@ -96,71 +96,7 @@ function mesaiDefteri() {
     // ── Başlatma ────────────────────────────────────────────────────────────
 
     // Sekmeler arası kaydırma: panel parmağı izler; bırakınca yumuşakça kayarak çıkar, yeni sekme aynı yönden girer
-    swipeInit() {
-      const views = ['ledger', 'people', 'chart'];
-      const ease = 'transform 340ms cubic-bezier(.22,1,.36,1),opacity 340ms ease';
-      let s = null, panel = null, lock = false, raf = 0, timer = 0;
-      const skip = t => this.modal || t.closest('.chart-grid,.crop-box,.pattern-pad,input,select,textarea,.dialog,.modal-backdrop');
-      const visible = () => [...document.querySelectorAll('.main-panel')].find(el => el.offsetParent);
-      const set = (el, transition, transform = '', opacity = '') => { el.style.transition = transition; el.style.transform = transform; el.style.opacity = opacity; };
-      const done = (el, ms) => { clearTimeout(timer); timer = setTimeout(() => { el.style.transition = ''; el.style.willChange = ''; lock = false; }, ms); };
-      // Bırakılan / iptal edilen panel yerine döner
-      const back = el => { set(el, ease); done(el, 360); };
-      const stop = () => { cancelAnimationFrame(raf); const p = panel; s = null; panel = null; return p; };
-
-      addEventListener('touchstart', e => {
-        if (lock || e.touches.length !== 1 || skip(e.target)) { s = null; return; }
-        s = {x: e.touches[0].clientX, y: e.touches[0].clientY, t: Date.now(), dir: 0};
-        panel = visible();
-      }, {passive: true});
-
-      addEventListener('touchmove', e => {
-        if (!s || !panel) return;
-        const dx = e.touches[0].clientX - s.x, dy = e.touches[0].clientY - s.y;
-        if (!s.dir) {
-          if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
-          s.dir = Math.abs(dx) > Math.abs(dy) * 1.3 ? 1 : -1; // 1: yatay, -1: dikey (kaydırmaya karışma)
-          if (s.dir > 0) { clearTimeout(timer); panel.style.willChange = 'transform,opacity'; }
-        }
-        if (s.dir < 0 || reduceMotion()) return;
-        // Kenar sekmede direnç: panel daha az kayar
-        const i = views.indexOf(this.view), edge = (dx > 0 && i === 0) || (dx < 0 && i === views.length - 1), k = edge ? .18 : .5;
-        const p = panel, x = dx * k, o = String(1 - Math.min(.35, Math.abs(dx) / 900));
-        cancelAnimationFrame(raf);
-        raf = requestAnimationFrame(() => set(p, 'none', `translateX(${x}px)`, o)); // kare başına bir çizim
-      }, {passive: true});
-
-      addEventListener('touchcancel', () => { const horiz = s?.dir > 0, p = stop(); if (p && horiz) back(p); }, {passive: true});
-
-      addEventListener('touchend', e => {
-        if (!s) return;
-        const t = e.changedTouches[0], dx = t.clientX - s.x, dt = Date.now() - s.t, horiz = s.dir > 0;
-        const p = stop();
-        if (!p || !horiz) return;
-        const from = this.view, i = views.indexOf(from), n = i + (dx < 0 ? 1 : -1);
-        const go = (Math.abs(dx) > 90 || (Math.abs(dx) > 40 && dt < 300)) && n >= 0 && n < views.length;
-        if (!go || reduceMotion()) { back(p); if (go) this.view = views[n]; return; }
-        lock = true;
-        set(p, 'transform 220ms cubic-bezier(.4,0,1,1),opacity 220ms ease', `translateX(${dx < 0 ? -48 : 48}px)`, '0');
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-          set(p, ''); p.style.willChange = '';
-          if (this.view !== from) { lock = false; return; } // bu arada sekmeye dokunulduysa ona dokunma
-          this.view = views[n];
-          this.$nextTick(() => {
-            const q = visible();
-            if (!q) { lock = false; return; }
-            set(q, 'none', `translateX(${dx < 0 ? 48 : -48}px)`, '0');
-            void q.offsetWidth; // başlangıç konumu uygulansın, sonra geçiş başlasın
-            set(q, ease);
-            done(q, 360);
-          });
-        }, 210);
-      }, {passive: true});
-    },
-
     init() {
-      this.swipeInit();
       const savedPeople = read('mesai-defteri-people', null), savedEntries = read('mesai-defteri-entries', null);
       if (savedPeople === null) { this.people = demoPeople; this.entries = demoEntries; this.persist(); }
       else { this.people = validPeople(savedPeople); this.entries = validEntries(savedEntries); }
