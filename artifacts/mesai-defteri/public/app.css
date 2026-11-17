@@ -37,60 +37,71 @@ button{appearance:button}
 :root{
   color-scheme:light;
   /* Zeminler: sayfa < kart < yükseltilmiş; alanlar karttan bir tık içeride */
-  --bg:#e8e7e1;--surface:#f2f1ec;--surface-2:#ebeae4;--surface-3:#e2e1da;--surface-raised:#f4f3ee;--field:#eceae4;
-  --cell-bg:rgba(255,255,255,0);
+  --bg:#ece5d3;--surface:#f5efe1;--surface-2:#efe8d7;--surface-3:#e5dcc7;--surface-raised:#f7f2e6;--field:#f0e9d9;
+  --cell-bg:rgba(255,250,235,0);
   /* Dolgu oranları: zayıf = gün işareti (tatil, hafta tatili, izin), yarım = arife/ay dışı tatil, güçlü = mesai girilmiş gün, tablo = kişi×gün tablosu */
-  --t-half:8%;--t-weak:15%;--t-strong:24%;--t-fill:28%;
+  --t-half:8%;--t-weak:14%;--t-strong:22%;--t-fill:26%;
   /* Çizgiler: sıcak gri, sert değil */
-  --line:#d8d6ce;--line-soft:#e1dfd8;--grid:#d8d6ce;--line-field:#cfcdc5;--line-strong:#bfbdb4;--line-hover:#a3a29c;
+  --line:#d6ccb4;--line-soft:#e0d7c2;--grid:#d9cfb8;--line-field:#cdc2a8;--line-strong:#b9ad92;--line-hover:#8a8270;
   /* Metin: saf siyah yok, sıcak grafit */
-  --ink:#131313;--text:#1c1c1b;--soft:#2e2e2c;--muted:#55544f;--dim:#7a7974;--faint:#a3a29c;
+  --ink:#2a2721;--text:#322f28;--soft:#45413a;--muted:#5c574c;--dim:#766f62;--faint:#a1988a;
   /* Vurgu mavisi = seçili, normal mesai, eşitlendi */
-  --mint:#3968b9;--mint-ink:#264a8e;--mint-mute:#6680b0;--mint-soft:#7a98d0;--mint-line:#a9bfe5;--mint-edge:#c3d2ec;--mint-deep:#a9bfe5;
-  --mint-wash:#dfe5ee;--mint-wash-2:#d2dcea;--on-mint:#ffffff;
+  --mint:#335989;--mint-ink:#20436e;--mint-mute:#627c9e;--mint-soft:#7595bd;--mint-line:#a5b9d4;--mint-edge:#c1cfe2;--mint-deep:#a5b9d4;
+  --mint-wash:#dbe6f3;--mint-wash-2:#cbd9ec;--on-mint:#f7f2e6;
   /* Hardal = resmî tatil, bekleyen eşitleme */
-  --amber:#ba882e;--holiday:var(--amber);--holiday-ink:#784900;--holiday-line:#ddbf91;
+  --amber:#b58a3a;--holiday:var(--amber);--holiday-ink:#744c0e;--holiday-line:#d9c099;
   /* Kiremit = bayram, tehlike, çevrimdışı/hata */
-  --red:#b54c3d;--bayram:var(--red);--red-ink:#822e2a;--bayram-ink:var(--red-ink);--red-line:#e7ada3;
+  --red:#b35537;--bayram:var(--red);--red-ink:#853021;--bayram-ink:var(--red-ink);--red-line:#e1b1a2;
   /* Mor = hafta tatili */
-  --rest:#7e55a7;--rest-ink:#5d3881;
+  --rest:#7d5c92;--rest-ink:#5d3d70;
   /* Gri = izin günleri */
-  --leave-ink:#55544f;
+  --leave-ink:#5c574c;
   /* Avatar tonları */
-  --av-1:#5d9669;--av-2:#8e70b0;--av-3:#ba904c;--av-4:#b96558;--av-5:#4f84ba;--av-6:#429595;
+  --av-1:#739f7c;--av-2:#9b80ab;--av-3:#bf9f6a;--av-4:#bc7964;--av-5:#6b90b6;--av-6:#659e9e;
   /* Katmanlar ve derinlik (sıcak gölge, siyah değil) */
-  --backdrop:rgba(19,19,19,.28);--shadow:rgba(0,0,0,.08);--rail-bg:rgba(226,225,218,.96);--fade-0:rgba(232,231,225,0);--outside-bg:rgba(60,55,40,.035);
+  --backdrop:rgba(40,32,18,.3);--shadow:rgba(70,52,20,.14);--rail-bg:rgba(231,223,205,.96);--fade-0:rgba(236,229,211,0);--outside-bg:rgba(90,70,30,.045);
   /* Derinlik: parlak iç kenar yok; kartlar yumuşak, sıcak bir gölgeyle, düğmeler yalnız 1px taban çizgisiyle ayrılır */
-  --elev-1:0 1px 2px rgba(0,0,0,.03);
-  --elev-2:0 18px 48px -22px rgba(0,0,0,.22);
-  --btn-elev:none;--primary-elev:none;--field-inset:none;
+  --elev-1:0 1px 1px rgba(80,60,20,.05),0 8px 20px -12px rgba(80,60,20,.28);
+  --elev-2:0 2px 4px rgba(80,60,20,.06),0 28px 60px -24px rgba(80,60,20,.42);
+  --btn-elev:0 1px 0 rgba(80,60,20,.08);--primary-elev:none;--field-inset:inset 0 1px 0 rgba(80,60,20,.05);
   --mono:'DM Mono',ui-monospace,monospace;--sans:'Manrope',system-ui,sans-serif;
   /* --ctl: tüm düğmelerin ortak yüksekliği (dokunmatik ekranda 36px) */
-  --brand:#c6613f;--primary-bg:#131313;--on-primary:#f9f9f7;
+  --brand:#b35537;--primary-bg:#2a2721;--on-primary:#f5efe1;
   --pad:18px;--shell-x:30px;--nav-h:0px;--ctl:33px
 }
 /* ===== Koyu tema: yeşil-siyah gece ===== */
 html[data-theme="dark"]{
   color-scheme:dark;
-  --bg:#151515;--surface:#20201f;--surface-2:#262625;--surface-3:#2c2c2b;--surface-raised:#262625;--field:#1a1a19;--cell-bg:rgba(255,255,255,.012);
-  --t-half:6%;--t-weak:11%;--t-strong:19%;--t-fill:23%;
-  --line:#363635;--line-soft:#2c2c2b;--grid:#313130;--line-field:#3d3d3b;--line-strong:#4a4a48;--line-hover:#7a7974;
-  --ink:#f9f9f7;--text:#ecebe6;--soft:#d6d5ce;--muted:#c3c2b7;--dim:#97958d;--faint:#6e6d67;
-  --mint:#5598e7;--mint-ink:#aacdff;--mint-mute:#9ab3d8;--mint-soft:#77a0dc;--mint-line:#476a9c;--mint-edge:#344e73;--mint-deep:#2e4362;
-  --mint-wash:#1d2633;--mint-wash-2:#233247;--on-mint:#0f1a28;
-  --amber:#e1b671;--holiday-ink:#eecb95;--holiday-line:#886d41;
-  --red:#e18881;--red-ink:#f4abab;--red-line:#925651;
-  --rest:#b99bde;--rest-ink:#dbc6f7;
-  --leave-ink:#c3c2b7;
-  --av-1:#8dc096;--av-2:#b89dd9;--av-3:#deb77a;--av-4:#de9589;--av-5:#7fafe2;--av-6:#7abfbf;
-  --backdrop:rgba(0,0,0,.62);--shadow:rgba(0,0,0,.4);--rail-bg:rgba(26,26,25,.96);--fade-0:rgba(21,21,21,0);--outside-bg:rgba(0,0,0,.22);
-  --elev-1:none;
-  --elev-2:0 24px 70px -20px rgba(0,0,0,.7);
-  --btn-elev:none;--primary-elev:none;--field-inset:none
-;--primary-bg:#f9f9f7;--on-primary:#151515}
+  --bg:#1d1b17;--surface:#25221d;--surface-2:#2a2721;--surface-3:#312d26;--surface-raised:#2a2721;--field:#201e1a;--cell-bg:rgba(255,245,220,.01);
+  --t-half:6%;--t-weak:11%;--t-strong:18%;--t-fill:22%;
+  --line:#3a362e;--line-soft:#2f2b25;--grid:#36322a;--line-field:#423d34;--line-strong:#4f493e;--line-hover:#8a8270;
+  --ink:#ede6d4;--text:#e2dbc9;--soft:#cfc7b4;--muted:#b9b19e;--dim:#988f7c;--faint:#6f685a;
+  --mint:#91b4e1;--mint-ink:#b6d0f2;--mint-mute:#9eb3ce;--mint-soft:#81a1ca;--mint-line:#516b8b;--mint-edge:#3a4e68;--mint-deep:#32445a;
+  --mint-wash:#1e2733;--mint-wash-2:#243142;--on-mint:#1d1b17;
+  --amber:#dcb87a;--holiday-ink:#e9cd9d;--holiday-line:#846e49;
+  --red:#db8e76;--red-ink:#f3b2a4;--red-line:#8c5b4b;
+  --rest:#bc9dd0;--rest-ink:#dbc3eb;
+  --leave-ink:#cfc7b4;
+  --av-1:#90b697;--av-2:#b19ac0;--av-3:#cfb384;--av-4:#cc9685;--av-5:#88a8c9;--av-6:#86b5b4;
+  --backdrop:rgba(8,6,3,.62);--shadow:rgba(0,0,0,.45);--rail-bg:rgba(27,25,21,.96);--fade-0:rgba(29,27,23,0);--outside-bg:rgba(0,0,0,.2);
+  --elev-1:0 1px 1px rgba(0,0,0,.25),0 10px 24px -14px rgba(0,0,0,.6);
+  --elev-2:0 28px 70px -20px rgba(0,0,0,.75);
+  --btn-elev:none;--primary-elev:none;--field-inset:inset 0 1px 0 rgba(0,0,0,.2)
+;--primary-bg:#ede6d4;--on-primary:#1d1b17;--brand:#db8e76}
+/* Defter sayfası çevirme: eski sayfanın kopyası kenarından kalkıp döner */
+.page-ghost{position:fixed!important;z-index:9;margin:0!important;overflow:hidden!important;pointer-events:none;background:var(--bg)!important;backface-visibility:hidden;will-change:transform,filter;animation:page-next 600ms cubic-bezier(.42,.05,.25,1) forwards}
+.page-ghost.turn-next{transform-origin:left center}
+.page-ghost.turn-prev{transform-origin:right center;animation-name:page-prev}
+@keyframes page-next{0%{transform:perspective(1800px) rotateY(0);filter:brightness(1);box-shadow:0 0 0 rgba(40,30,10,0)}
+ 30%{box-shadow:18px 0 40px -10px rgba(40,30,10,.28)}
+ 100%{transform:perspective(1800px) rotateY(-96deg);filter:brightness(.72);box-shadow:30px 0 60px -10px rgba(40,30,10,0);opacity:1}}
+@keyframes page-prev{0%{transform:perspective(1800px) rotateY(0);filter:brightness(1);box-shadow:0 0 0 rgba(40,30,10,0)}
+ 30%{box-shadow:-18px 0 40px -10px rgba(40,30,10,.28)}
+ 100%{transform:perspective(1800px) rotateY(96deg);filter:brightness(.72);box-shadow:-30px 0 60px -10px rgba(40,30,10,0);opacity:1}}
+@media (prefers-reduced-motion:reduce){.page-ghost{display:none}}
 /* Kâğıt dokusu: tüm sayfanın üstünde çok hafif, dokunmayı engellemeyen lif/gren katmanı */
-:root{--paper:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.24 0 0 0 0 0.2 0 0 0 0 0.12 0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23n)'/%3E%3C/svg%3E"),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.3 0 0 0 0 0.25 0 0 0 0 0.15 0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23n)'/%3E%3C/svg%3E");--paper-o:.11}
-html[data-theme="dark"]{--paper:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.96 0 0 0 0 0.94 0 0 0 0 0.88 0 0 0 0.8 0'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23n)'/%3E%3C/svg%3E"),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.9 0 0 0 0 0.88 0 0 0 0 0.82 0 0 0 0.45 0'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23n)'/%3E%3C/svg%3E");--paper-o:.06}
+:root{--paper:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.24 0 0 0 0 0.2 0 0 0 0 0.12 0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23n)'/%3E%3C/svg%3E"),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.3 0 0 0 0 0.25 0 0 0 0 0.15 0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23n)'/%3E%3C/svg%3E");--paper-o:.14}
+html[data-theme="dark"]{--paper:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.96 0 0 0 0 0.94 0 0 0 0 0.88 0 0 0 0.8 0'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23n)'/%3E%3C/svg%3E"),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.9 0 0 0 0 0.88 0 0 0 0 0.82 0 0 0 0.45 0'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23n)'/%3E%3C/svg%3E");--paper-o:.07}
 html::after{content:"";position:fixed;inset:0;z-index:2147483000;pointer-events:none;background-image:var(--paper);background-size:180px 180px,600px 600px;opacity:var(--paper-o)}
 @media print{html::after{display:none}}
 
