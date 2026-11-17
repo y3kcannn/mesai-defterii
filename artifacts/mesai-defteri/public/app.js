@@ -140,7 +140,22 @@ function mesaiDefteri() {
         const from = this.view, i = views.indexOf(from), n = i + (dx < 0 ? 1 : -1);
         const go = (Math.abs(dx) > 90 || (Math.abs(dx) > 40 && dt < 300)) && n >= 0 && n < views.length;
         if (!go || reduceMotion()) { back(p); if (go) this.view = views[n]; return; }
-        this.pageTurn(dx < 0 ? 1 : -1, () => { this.view = views[n]; });
+        lock = true;
+        set(p, 'transform 220ms cubic-bezier(.4,0,1,1),opacity 220ms ease', `translateX(${dx < 0 ? -48 : 48}px)`, '0');
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+          set(p, ''); p.style.willChange = '';
+          if (this.view !== from) { lock = false; return; } // bu arada sekmeye dokunulduysa ona dokunma
+          this.view = views[n];
+          this.$nextTick(() => {
+            const q = visible();
+            if (!q) { lock = false; return; }
+            set(q, 'none', `translateX(${dx < 0 ? 48 : -48}px)`, '0');
+            void q.offsetWidth; // başlangıç konumu uygulansın, sonra geçiş başlasın
+            set(q, ease);
+            done(q, 360);
+          });
+        }, 210);
       }, {passive: true});
     },
 
@@ -839,32 +854,6 @@ function mesaiDefteri() {
       if (document.startViewTransition && !reduceMotion()) document.startViewTransition(apply).ready.catch(() => {}); // yarıda kesilen geçiş hata sayılmasın
       else apply();
     },
-    // Defter sayfası çevirme: görünen sayfanın kopyası kenarından kalkıp döner, altında yeni sayfa belirir.
-    // dir > 0: ileri (sağdan sola çevrilir), dir < 0: geri. change(): sayfayı değiştiren iş.
-    pageTurn(dir, change) {
-      document.querySelectorAll('.page-ghost').forEach(g => g.remove());
-      const old = [...document.querySelectorAll('.main-panel')].find(el => el.offsetParent);
-      if (!old || reduceMotion()) { change(); return; }
-      const r = old.getBoundingClientRect(), top = old.scrollTop, g = old.cloneNode(true);
-      g.setAttribute('x-ignore', '');
-      g.removeAttribute('x-show');
-      g.querySelectorAll('[id]').forEach(n => n.removeAttribute('id'));
-      g.classList.add('page-ghost', dir > 0 ? 'turn-next' : 'turn-prev');
-      g.setAttribute('aria-hidden', 'true');
-      Object.assign(g.style, {left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px', transform: '', opacity: '', transition: ''});
-      document.body.appendChild(g);
-      g.scrollTop = top;
-      old.style.transform = old.style.opacity = old.style.transition = old.style.willChange = '';
-      change();
-      g.addEventListener('animationend', e => { if (e.target === g) g.remove(); });
-      setTimeout(() => g.remove(), 900);
-    },
-    // Sekme değişimi: sekme sırasına göre ileri/geri sayfa çevrilir
-    goView(v) {
-      if (v === this.view || this.modal) { this.view = v; return; }
-      const order = ['ledger', 'people', 'chart'];
-      this.pageTurn(order.indexOf(v) - order.indexOf(this.view), () => { this.view = v; });
-    },
     // Ay değişince takvim/tablo kayma yönü
     slideMonth(dir) {
       if (reduceMotion()) return;
@@ -924,10 +913,11 @@ function mesaiDefteri() {
         g.scrollLeft = c ? Math.max(0, c.offsetLeft - 65 - Math.floor((g.clientWidth - 134) / 2 / c.offsetWidth) * (c.offsetWidth + 1)) : 0;
       }, 60);
     },
-    changeMonth(delta) { const date = new Date(this.year, this.month + delta, 1); this.pageTurn(delta, () => { this.month = date.getMonth(); this.year = date.getFullYear(); }); },
+    changeMonth(delta) { const date = new Date(this.year, this.month + delta, 1); this.month = date.getMonth(); this.year = date.getFullYear(); this.slideMonth(delta); },
     goCurrentMonth() {
       const d = (this.today.getFullYear() - this.year) * 12 + this.today.getMonth() - this.month;
-      if (d) this.pageTurn(d, () => { this.month = this.today.getMonth(); this.year = this.today.getFullYear(); });
+      this.month = this.today.getMonth(); this.year = this.today.getFullYear();
+      if (d) this.slideMonth(d);
     },
 
     // ── Kayıt ve eşitleme ───────────────────────────────────────────────────

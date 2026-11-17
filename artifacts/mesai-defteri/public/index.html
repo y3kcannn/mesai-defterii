@@ -57,9 +57,9 @@
     <div class="workspace">
       <nav class="rail" aria-label="Ana gezinme">
         <div class="rail-group">
-          <button class="rail-button" :class="{active: view==='ledger'}" @click="goView('ledger')" title="Aylık takvim"><span class="rail-icon"><svg class="ic" aria-hidden="true"><use href="#i-calendar"/></svg></span><span>Takvim</span></button>
-          <button class="rail-button" :class="{active: view==='people'}" @click="goView('people')" title="Personel"><span class="rail-icon"><svg class="ic" aria-hidden="true"><use href="#i-users"/></svg></span><span>Personel</span></button>
-          <button class="rail-button" :class="{active: view==='chart'}" @click="goView('chart')" title="Ekip tablosu"><span class="rail-icon"><svg class="ic" aria-hidden="true"><use href="#i-table"/></svg></span><span>Tablo</span></button>
+          <button class="rail-button" :class="{active: view==='ledger'}" @click="view='ledger'" title="Aylık takvim"><span class="rail-icon"><svg class="ic" aria-hidden="true"><use href="#i-calendar"/></svg></span><span>Takvim</span></button>
+          <button class="rail-button" :class="{active: view==='people'}" @click="view='people'" title="Personel"><span class="rail-icon"><svg class="ic" aria-hidden="true"><use href="#i-users"/></svg></span><span>Personel</span></button>
+          <button class="rail-button" :class="{active: view==='chart'}" @click="view='chart'" title="Ekip tablosu"><span class="rail-icon"><svg class="ic" aria-hidden="true"><use href="#i-table"/></svg></span><span>Tablo</span></button>
         </div>
       </nav>
 
