@@ -4,7 +4,7 @@
 //
 // Kurallar (günlük saat = 7,5):
 //   Hafta içi        girilen saatin tamamı fazla mesai ................ ×1,5
-//   Hafta tatili     çalışılan gün en az 7,5 saat sayılır, üstü de ..... ×1,5
+//   Hafta tatili     çalışılan gün 1 tam gün (7,5 saat) ................ ×1,5, aşan saatler hafta içi ×1,5
 //   Resmî tatil      ilk 7,5 saat ×1, aşan saatler ................... ×1,5
 //   Bayram           ilk 7,5 saat ×2, aşan saatler ................... ×1,5
 //   Çakışma          hafta tatili resmî tatil/bayrama denk gelirse tatil/bayram kuralı geçerlidir
@@ -18,7 +18,7 @@ const hesapla = (() => {
   const ASIM = 1.5;
   const SATIRLAR = [
     ['hafta-ici', 'Hafta içi'],
-    ['hafta-tatili', 'Hafta tatili'],
+    ['hafta-tatili', 'Hafta tatili çalışma'],
     ['resmi-tatil', 'Resmî tatil'],
     ['bayram', 'Bayram'],
     ['tatil-asim', 'Tatilde 7,5 saat üstü'],
@@ -38,7 +38,12 @@ const hesapla = (() => {
       if (saat > gunluk) parca.push({ satir: 'tatil-asim', saat: yuvarla(saat - gunluk), katsayi: ASIM });
       return parca;
     }
-    if (haftaGunu(kayit.date) === haftaTatili) return [{ satir: 'hafta-tatili', saat: Math.max(saat, gunluk), katsayi: KATSAYI.normal }];
+    if (haftaGunu(kayit.date) === haftaTatili) {
+      // Bordrodaki gibi: hafta tatili tam gün (7,5 saat) yazılır, aşan saatler hafta içi fazla mesaisine gider
+      const parca = [{ satir: 'hafta-tatili', saat: gunluk, katsayi: KATSAYI.normal }];
+      if (saat > gunluk) parca.push({ satir: 'tatil-asim', saat: yuvarla(saat - gunluk), katsayi: ASIM });
+      return parca;
+    }
     return [{ satir: 'hafta-ici', saat, katsayi: KATSAYI.normal }];
   };
 
