@@ -9,6 +9,7 @@
 //   Bayram           ilk 7,5 saat ×2, aşan saatler ................... ×1,5
 //   İzinli hafta     hafta tatilinden önceki 6 günde izin varsa izin günü hafta tatili sayılır: o hafta tatilinde
 //                    çalışılan ilk 7,5 saat ödenmez (normal iş günü), aşan saatler hafta içi ×1,5
+//   Yalnız fazla     tatil günü ayrıca ödendiyse girilen saatler tek başına ×1,5 (7,5 saat eklenmez)
 //   Çakışma          hafta tatili resmî tatil/bayrama denk gelirse tatil/bayram kuralı geçerlidir
 //   Devreden mesai   takvimdeki gün sonraki aya devredilirse kendi kurallarıyla o ayın bordrosuna girer;
 //                    takvimde olmayan saatler (tarih YYYY-AA-00) türünün katsayısıyla, bölünmeden
@@ -39,6 +40,8 @@ const hesapla = (() => {
     if (saat <= 0) return [];
     // Eski tip devreden mesai (yalnız saat, tarih YYYY-AA-00): türünün katsayısıyla, bölünmeden
     if (kayit.paidMonth && String(kayit.date).endsWith('-00')) return [{ satir: 'eksik', saat, katsayi: KATSAYI[kayit.type] ?? KATSAYI.normal }];
+    // Yalnız fazla mesai: günün kendisi ayrıca ödendi (tatil/hafta tatili), girilen saatler ×1,5
+    if (kayit.type === 'fazla') return [{ satir: 'hafta-ici', saat, katsayi: KATSAYI.normal }];
     if (kayit.type === 'holiday' || kayit.type === 'bayram') {
       const satir = kayit.type === 'bayram' ? 'bayram' : 'resmi-tatil';
       const parca = [{ satir, saat: Math.min(saat, gunluk), katsayi: KATSAYI[kayit.type] }];
