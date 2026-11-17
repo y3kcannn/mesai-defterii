@@ -361,7 +361,6 @@ h1{display:flex;align-items:baseline;gap:8px;font-size:29px;line-height:1.1;font
 .row-actions{display:flex;gap:6px;margin-left:auto;flex-shrink:0}
 .people-foot{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin-top:22px;padding-top:16px;border-top:1px solid var(--line)}
 .people-foot-actions{display:flex;gap:8px;margin-left:auto}
-.app-version{display:block;width:100%;margin:0;font:10px var(--mono);letter-spacing:var(--track);color:var(--dim)}
 
 /* ---------- Tablo (kişi × gün) ---------- */
 .chart-panel{min-width:0}
@@ -848,3 +847,6 @@ html[data-theme="dark"] .theme-btn .moon{opacity:0;transform:rotate(-70deg) scal
   .rot-phone,.rot-arc,.rot-arrow,.rot-grid rect.on{animation:none!important}
   .rot-arc,.rot-arrow{opacity:1;stroke-dashoffset:0}.rot-grid rect.on{opacity:.95}
 }
+.crew-switch{margin:0 0 12px}
+.team-pick{margin:6px 0 4px}
+@media (max-width:520px){.page-heading:has(.crew-btn){flex-direction:column;align-items:stretch;gap:10px}.page-heading:has(.crew-btn) .heading-actions{display:grid;grid-template-columns:1fr 1fr}}

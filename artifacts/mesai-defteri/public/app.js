@@ -83,7 +83,7 @@ function mesaiDefteri() {
   const slid = new WeakSet(); // animationend dinleyicisi eklenmiş ay ızgaraları
 
   return {
-    today:new Date(), online:navigator.onLine, syncPending:0, syncError:null, monthNames, view:'ledger', people:[], entries:[], selectedId:null, chartPrev:null, photoId:null, crop:null,
+    today:new Date(), online:navigator.onLine, syncPending:0, syncError:null, monthNames, view:'ledger', people:[], entries:[], selectedId:null, chartPrev:null, photoId:null, crop:null, crew:'yol', crewOpen:false,
     pat:null, patFirst:'', patMsg:'', newPattern:'', theme:document.documentElement?.dataset.theme||'light', netShown:0, year:new Date().getFullYear(), month:new Date().getMonth(),
     result:null, calcError:false, calcErrorMessage:'', calcRequest:0, modal:'', editingEntry:null, editingPerson:null,
     entryForm:{day:1,ym:'',carry:false,mode:'work',type:'normal',hours:2,hoursText:'2'}, hourPresets:[0.5,1,1.5,2,3,4],
@@ -164,6 +164,7 @@ function mesaiDefteri() {
       const savedPeople = read('mesai-defteri-people', null), savedEntries = read('mesai-defteri-entries', null);
       if (savedPeople === null) { this.people = demoPeople; this.entries = demoEntries; this.persist(); }
       else { this.people = validPeople(savedPeople); this.entries = validEntries(savedEntries); }
+      try { const c = localStorage.getItem('mesai-ekip'); if (c === 'tunel' || c === 'yol') this.crew = c; } catch {}
       this.selectedId = this.preferredId();
 
       bulut.reset(this.people, this.entries);
@@ -210,7 +211,8 @@ function mesaiDefteri() {
     preferredId() {
       let id = null;
       try { id = localStorage.getItem('mesai-defteri-secili'); } catch {}
-      return this.people.some(p => p.id === id) ? id : (this.people[0]?.id || null);
+      const list = this.crewPeople;
+      return list.some(p => p.id === id) ? id : (list[0]?.id || null);
     },
 
     // ── Biçim ───────────────────────────────────────────────────────────────
@@ -230,6 +232,18 @@ function mesaiDefteri() {
 
     // ── Kişi ve kilit ───────────────────────────────────────────────────────
 
+    // Ekip: Yol (açık saha) ya da Tünel; seçilen ekibin dışındakiler hiçbir listede görünmez
+    crews: [{id: 'yol', label: 'Yol ekibi', icon: 'i-road'}, {id: 'tunel', label: 'Tünel ekibi', icon: 'i-tunnel'}],
+    get crewInfo() { return this.crews.find(c => c.id === this.crew) || this.crews[0]; },
+    get crewPeople() { return this.people.filter(p => (p.team === 'tunel' ? 'tunel' : 'yol') === this.crew); },
+    setCrew(id) {
+      this.crewOpen = false;
+      if (id === this.crew) return;
+      this.crew = id;
+      try { localStorage.setItem('mesai-ekip', id); } catch {}
+      if (!this.crewPeople.some(p => p.id === this.selectedId)) this.selectedId = this.crewPeople[0]?.id || null;
+      this.calculate();
+    },
     get activePerson() { return this.people.find(p => p.id === this.selectedId) || null; },
     // Maaş gizliliği: desen kilitli kişinin tutarları desen çizilene kadar gizli (oturum boyunca açık kalır)
     isLocked(person) { return this.hasLock(person) && !this.unlockedIds.includes(person.id); },
@@ -443,7 +457,7 @@ function mesaiDefteri() {
       const byPerson = entryIndex(this.entries).month.get(mk) || new Map();
       // Sütun tarihlerinin haftanın günü bir kez hesaplanır
       const colDay = cols.map(col => parseDate(col.key).getDay());
-      return this.people.map(p => {
+      return this.crewPeople.map(p => {
         const rest = p.restDay ?? 0, daily = Number(p.dailyHours) || 7.5, flashOn = flashIds.includes(p.id);
         const own = byPerson.get(p.id) || [], byDate = new Map();
         let carry = 0, total = 0;
@@ -546,7 +560,7 @@ function mesaiDefteri() {
     // Tatil gününde tür varsayılanı: bayram / resmî tatil / normal
     defaultType(date) { const special = holidayOf(date)?.[0]; return special === 'bayram' ? 'bayram' : special ? 'holiday' : 'normal'; },
     openMulti() {
-      if (!this.people.length) return;
+      if (!this.crewPeople.length) return;
       const now = new Date(), day = now.getFullYear() === this.year && now.getMonth() === this.month ? now.getDate() : 1;
       this.editingEntry = null;
       this.entryForm = {day, ym: this.monthKey, carry: false, mode: 'work', multi: true, people: this.selectedId ? [this.selectedId] : [], type: this.defaultType(this.dateKey(day)), hours: 0, hoursText: ''};
@@ -686,7 +700,7 @@ function mesaiDefteri() {
     selectPerson(id) { this.selectedId = id; this.view = 'ledger'; },
     openPersonForm(person = null) {
       this.editingPerson = person; this.removePin = false; this.patReset();
-      this.personForm = person ? {restDay: 0, ...person} : {name: '', role: '', netSalary: 65000, dailyHours: 7.5, restDay: 0, cumulativeTaxBase: 0, startDate: '', leaveCarry: 0};
+      this.personForm = person ? {restDay: 0, team: 'yol', ...person} : {name: '', role: '', team: this.crew, netSalary: 65000, dailyHours: 7.5, restDay: 0, cumulativeTaxBase: 0, startDate: '', leaveCarry: 0};
       this.modal = 'person';
     },
     async savePerson() {
@@ -694,7 +708,7 @@ function mesaiDefteri() {
       if (!name) return;
       if (this.patFirst && !this.newPattern) { this.notify('Deseni onaylamak için tekrar çizin'); return; }
       const locked = !!editing && this.isLocked(editing);
-      const record = {id: editing?.id || newId('p', 4), name, role: String(pf.role || '').trim(), netSalary: Number(pf.netSalary) || 65000, dailyHours: Number(pf.dailyHours) || 7.5,
+      const record = {id: editing?.id || newId('p', 4), name, role: String(pf.role || '').trim(), team: pf.team === 'tunel' ? 'tunel' : 'yol', netSalary: Number(pf.netSalary) || 65000, dailyHours: Number(pf.dailyHours) || 7.5,
         restDay: Number(pf.restDay) || 0, cumulativeTaxBase: Number(pf.cumulativeTaxBase) || 0, startDate: String(pf.startDate || ''), leaveCarry: Number(pf.leaveCarry) || 0, example: false,
         ...(pf.photo !== undefined && {photo: pf.photo || ''})};
       // Kilitliyken maaş alanları değiştirilemez
@@ -948,14 +962,7 @@ function mesaiDefteri() {
         this.calculate();
       } catch (error) { console.error('Eşitleme hatası:', error); }
     },
-    exportData() {
-      const blob = new Blob([JSON.stringify({people: this.people, entries: this.entries, ...(bulut.failed?.length && {unsent: bulut.failed}), exportedAt: new Date().toISOString()}, null, 2)], {type: 'application/json'});
-      const url = URL.createObjectURL(blob), a = document.createElement('a');
-      a.href = url; a.download = 'mesai-defteri-yedek.json';
-      document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 10000);
-      this.notify('Yedek indirildi');
-    },
+
 
     // ── Pencere ve bildirim ─────────────────────────────────────────────────
 

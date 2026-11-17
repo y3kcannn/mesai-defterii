@@ -71,3 +71,7 @@ alter table people drop constraint if exists people_photo_size;
 alter table people add constraint people_photo_size check (photo is null
   or (photo like 'data:image/%' and length(photo) < 120000)
   or (photo like 'https://osctjbicyfkcmhigwgbs.supabase.co/storage/v1/object/public/avatars/%' and length(photo) < 300));
+
+-- Ekip: yol (açık saha) ya da tünel
+alter table people add column if not exists team text not null default 'yol';
+alter table people add constraint people_team_check check (team in ('yol','tunel'));

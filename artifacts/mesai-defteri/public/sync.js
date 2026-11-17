@@ -15,7 +15,7 @@ const bulut = (() => {
   const num = (v, d = 0) => Number.isFinite(Number(v)) ? Number(v) : d;
   const toRow = {
     people: p => ({
-      id: p.id, name: p.name || '', role: p.role || '', net_salary: num(p.netSalary), daily_hours: num(p.dailyHours, 7.5), rest_day: num(p.restDay),
+      id: p.id, name: p.name || '', role: p.role || '', net_salary: num(p.netSalary), daily_hours: num(p.dailyHours, 7.5), rest_day: num(p.restDay), team: p.team === 'tunel' ? 'tunel' : 'yol',
       cumulative_tax_base: num(p.cumulativeTaxBase), start_date: p.startDate || null, leave_carry: num(p.leaveCarry), example: !!p.example, pin_hash: p.pinHash || null,
       ...(p.photo !== undefined && { photo: p.photo || null }), // fotoğrafı hiç yüklenmemiş kayıt sunucudakini silmesin
     }),
@@ -23,7 +23,7 @@ const bulut = (() => {
   };
   const fromRow = {
     people: r => ({
-      id: r.id, name: r.name, role: r.role || '', netSalary: +r.net_salary, dailyHours: +r.daily_hours, restDay: +(r.rest_day ?? 0),
+      id: r.id, name: r.name, role: r.role || '', netSalary: +r.net_salary, dailyHours: +r.daily_hours, restDay: +(r.rest_day ?? 0), team: r.team === 'tunel' ? 'tunel' : 'yol',
       cumulativeTaxBase: +r.cumulative_tax_base, startDate: r.start_date || '', leaveCarry: +(r.leave_carry ?? 0), example: !!r.example,
       ...(r.pin_hash && { pinHash: r.pin_hash }), ...(r.photo && { photo: r.photo }),
     }),
