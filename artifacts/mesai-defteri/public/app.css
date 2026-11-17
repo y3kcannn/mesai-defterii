@@ -845,3 +845,6 @@ html[data-theme="dark"] .theme-btn .moon{opacity:0;transform:rotate(-70deg) scal
 .crew-switch{margin:0 0 12px}
 .team-pick{margin:6px 0 4px}
 @media (max-width:520px){.page-heading:has(.crew-btn){flex-direction:column;align-items:stretch;gap:10px}.page-heading:has(.crew-btn) .heading-actions{display:grid;grid-template-columns:1fr 1fr}}
+.lock-toggle{margin-right:auto}
+.lock-toggle.on{border-color:var(--mint-line);background:var(--mint-wash);color:var(--mint-ink)}
+.pattern-set .pattern-pad{width:min(100%,200px);margin-inline:auto}

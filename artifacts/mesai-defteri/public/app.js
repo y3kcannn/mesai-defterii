@@ -83,7 +83,7 @@ function mesaiDefteri() {
   const slid = new WeakSet(); // animationend dinleyicisi eklenmiş ay ızgaraları
 
   return {
-    today:new Date(), online:navigator.onLine, syncPending:0, syncError:null, monthNames, view:'ledger', people:[], entries:[], selectedId:null, chartPrev:null, photoId:null, crop:null, crew:'yol', crewOpen:false,
+    today:new Date(), online:navigator.onLine, syncPending:0, syncError:null, monthNames, view:'ledger', people:[], entries:[], selectedId:null, chartPrev:null, photoId:null, crop:null, crew:'yol', crewOpen:false, lockOpen:false,
     pat:null, patFirst:'', patMsg:'', newPattern:'', theme:document.documentElement?.dataset.theme||'light', netShown:0, year:new Date().getFullYear(), month:new Date().getMonth(),
     result:null, calcError:false, calcErrorMessage:'', calcRequest:0, modal:'', editingEntry:null, editingPerson:null,
     entryForm:{day:1,ym:'',carry:false,mode:'work',type:'normal',hours:2,hoursText:'2'}, hourPresets:[0.5,1,1.5,2,3,4],
@@ -635,7 +635,7 @@ function mesaiDefteri() {
 
     selectPerson(id) { this.selectedId = id; this.view = 'ledger'; },
     openPersonForm(person = null) {
-      this.editingPerson = person; this.removePin = false; this.patReset();
+      this.editingPerson = person; this.removePin = false; this.patReset(); this.lockOpen = false;
       this.personForm = person ? {restDay: 0, team: 'yol', ...person} : {name: '', role: '', team: this.crew, netSalary: 65000, dailyHours: 7.5, restDay: 0, cumulativeTaxBase: 0, startDate: '', leaveCarry: 0};
       this.modal = 'person';
     },
