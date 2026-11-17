@@ -847,3 +847,7 @@ html[data-theme="dark"] .rot-phone>rect:first-child{stroke:var(--soft)}
 .day-total.moved::before{content:"→ ";color:var(--dim);font-size:.8em}
 .move-next input:checked+.rest-box{background:var(--mint);border-color:var(--mint);color:var(--on-mint)}
 .move-next input:checked+.rest-box .ic{animation:check-draw var(--dur-3) var(--ease-out) both}
+/* Geçmiş aydan mesai: ay seçimi tarih alanının sağında */
+.date-month-select{margin-left:auto;border:0;background:transparent;font:500 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:right;cursor:pointer;padding:0 2px}
+.date-field.past{border-color:var(--mint-line)}
+.date-field .date-month-select{flex:0 0 auto;width:auto;height:42px;text-align-last:right}
