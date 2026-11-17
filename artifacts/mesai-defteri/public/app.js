@@ -38,11 +38,11 @@ function mesaiDefteri() {
   const avatarCache = new Map(); // id|ad|boyut → SVG (her çizimde yeniden üretilmesin)
   let chartTimer = null;
   return {
-     today:new Date(), online:navigator.onLine, syncPending:0, syncError:null, monthNames, view:'ledger', people:[], entries:[], selectedId:null, chartPrev:null, photoId:null, crop:null, pat:null, patFirst:'', patMsg:'', newPattern:'', newLockKind:'pin', faceIdAvail:false, faceIds:(()=>{try{return JSON.parse(localStorage.getItem('mesai-faceid')||'{}')||{}}catch{return {}}})(), faceIdSkip:[], theme:document.documentElement?.dataset.theme||'light', netShown:0,  year:new Date().getFullYear(), month:new Date().getMonth(),
+     today:new Date(), online:navigator.onLine, syncPending:0, syncError:null, monthNames, view:'ledger', people:[], entries:[], selectedId:null, chartPrev:null, photoId:null, crop:null, pat:null, patFirst:'', patMsg:'', newPattern:'', newLockKind:'pattern', theme:document.documentElement?.dataset.theme||'light', netShown:0,  year:new Date().getFullYear(), month:new Date().getMonth(),
      result:null, calcError:false, calcErrorMessage:'', calcRequest:0, modal:'', editingEntry:null, editingPerson:null,
      entryForm:{day:1,ym:'',carry:false,mode:'work',type:'normal',hours:2,hoursText:'2'}, hourPresets:[0.5,1,1.5,2,3,4], personForm:{name:'',role:'',netSalary:65000,dailyHours:7.5,restDay:0,cumulativeTaxBase:0,startDate:'',leaveCarry:0}, toast:'', toastTimer:null, chartShow:{weekday:true,weekend:true,holiday:true,bayram:true,leave:true}, unlockedIds:[], pinInput:'', pinError:false, flashKey:'', flashIds:[], flashTimer:null, newPin:'', removePin:false,
      weekdays:['PZT','SAL','ÇAR','PER','CUM','CMT','PAZ'], dayNames:['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'], restDayOptions:[1,2,3,4,5,6,0], leaveTypes:[{value:'izin-yillik',label:'Yıllık izin',short:'YILLIK'},{value:'izin-ucretsiz',label:'Ücretsiz izin',short:'ÜCRETSİZ'},{value:'izin-rapor',label:'Raporlu',short:'RAPOR'},{value:'izin-mazeret',label:'Mazeret izni',short:'MAZERET'}], entryTypes:[{value:'normal',label:'Normal'},{value:'holiday',label:'Resmî tatil'},{value:'bayram',label:'Bayram'}],
-    init(){this.faceIdCheck();
+    init(){
       const savedPeople=read('mesai-defteri-people',null), savedEntries=read('mesai-defteri-entries',null);
       if(savedPeople===null){this.people=demoPeople;this.entries=demoEntries;this.persist();}
       else {this.people=validPeople(savedPeople);this.entries=validEntries(savedEntries);}
@@ -89,18 +89,6 @@ function mesaiDefteri() {
     patPoints(){const s=this.pat?.seq||[];const pts=s.map(i=>`${(i%3+.5)/3*100},${(Math.floor(i/3)+.5)/3*100}`);if(this.pat?.target&&this.pat.cur&&s.length)pts.push(`${this.pat.cur.x*100},${this.pat.cur.y*100}`);return pts.join(' ');},
     patOn(i){return (this.pat?.seq||[]).includes(i);},
     patReset(){this.patFirst='';this.newPattern='';this.patMsg='Deseni çizin (en az 4 nokta)';this.pat=null;},
-    // Face ID (WebAuthn, yalnız bu cihaz): kilidi açmak için cihazın biyometrik doğrulaması
-    async faceIdCheck(){try{this.faceIdAvail=!!(window.PublicKeyCredential&&await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable());}catch{this.faceIdAvail=false;}},
-    faceIdMap(){try{return JSON.parse(localStorage.getItem('mesai-faceid')||'{}')||{};}catch{return {};}},
-    get faceIdReady(){return this.faceIdAvail&&!!this.faceIds[this.activePerson?.id];},
-    get faceIdOffer(){const id=this.activePerson?.id;return this.faceIdAvail&&!!this.activePerson?.pinHash&&!this.salaryLocked&&!this.faceIds[id]&&!this.faceIdSkip.includes(id);},
-    async faceIdEnable(){const p=this.activePerson;if(!p)return;try{const b64=a=>btoa(String.fromCharCode(...new Uint8Array(a)));
-      const cred=await navigator.credentials.create({publicKey:{challenge:crypto.getRandomValues(new Uint8Array(32)),rp:{name:'Mesai Defteri'},user:{id:new TextEncoder().encode(p.id).slice(0,64),name:p.name,displayName:p.name},pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],authenticatorSelection:{authenticatorAttachment:'platform',userVerification:'required',residentKey:'discouraged'},timeout:60000}});
-      const m=this.faceIdMap();m[p.id]=b64(cred.rawId);localStorage.setItem('mesai-faceid',JSON.stringify(m));this.faceIds=m;this.notify('Face ID bu cihazda açıldı');}catch(e){if(e?.name!=='NotAllowedError')this.notify('Face ID açılamadı');}},
-    faceIdLater(){this.faceIdSkip=[...this.faceIdSkip,this.activePerson?.id];},
-    async faceIdUnlock(){const id=this.faceIds[this.activePerson?.id];if(!id)return;try{const raw=Uint8Array.from(atob(id),c=>c.charCodeAt(0));
-      await navigator.credentials.get({publicKey:{challenge:crypto.getRandomValues(new Uint8Array(32)),allowCredentials:[{type:'public-key',id:raw,transports:['internal']}],userVerification:'required',timeout:60000}});this.unlockActive();}
-      catch(e){if(e?.name!=='NotAllowedError')this.notify('Face ID doğrulanamadı');}},
     async tryUnlock(){const pin=String(this.pinInput).replace(/\D/g,'').slice(0,4);this.pinInput=pin;this.pinError=false;if(pin.length<4||!this.activePerson)return;if(await this.hashPin(this.activePerson.id,pin)===this.activePerson.pinHash){this.unlockActive();}else{this.pinError=true;this.pinInput='';}},
     pinPress(d){if(this.pinInput.length>=4)return;this.pinInput+=d;this.tryUnlock();},
     pinBack(){this.pinInput=this.pinInput.slice(0,-1);this.pinError=false;},
@@ -293,7 +281,7 @@ function mesaiDefteri() {
       this.persist();this.closeModal();this.calculate();this.flash(date,f.people);
       this.notify(skipped.length?`${added} kişiye eklendi · ${skipped.join(', ')} için kayıt mevcut`:`${added} kişiye ${leave?this.leaveLabel(f.type).toLocaleLowerCase('tr-TR'):'mesai'} eklendi`);},
     deleteEntry(){if(!this.editingEntry)return;const gone=this.editingEntry;this.entries=this.entries.filter(e=>e.id!==this.editingEntry.id);this.persist();this.closeModal();this.calculate();if(!gone.paidMonth)this.flash(gone.date,[gone.personId]);this.notify('Kayıt silindi');},
-     openPersonForm(person=null){this.editingPerson=person;this.newPin='';this.removePin=false;this.newLockKind=this.lockKind(person);this.patReset();this.personForm=person?{restDay:0,...person}:{name:'',role:'',netSalary:65000,dailyHours:7.5,restDay:0,cumulativeTaxBase:0,startDate:'',leaveCarry:0};this.modal='person';},
+     openPersonForm(person=null){this.editingPerson=person;this.newPin='';this.removePin=false;this.newLockKind='pattern';this.patReset();this.personForm=person?{restDay:0,...person}:{name:'',role:'',netSalary:65000,dailyHours:7.5,restDay:0,cumulativeTaxBase:0,startDate:'',leaveCarry:0};this.modal='person';},
     // Profil fotoğrafı: ortadan kare kırpılır (portrede yüz için biraz yukarıdan), 480 px JPEG (en fazla ~100 KB)
     // Fotoğraf önizleme: avatara dokununca büyük görünür, buradan değiştirilir ya da kaldırılır
     get photoPerson(){return this.people.find(p=>p.id===this.photoId)||null;},
