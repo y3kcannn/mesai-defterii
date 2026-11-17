@@ -42,7 +42,14 @@ function mesaiDefteri() {
      result:null, calcError:false, calcErrorMessage:'', calcRequest:0, modal:'', editingEntry:null, editingPerson:null,
      entryForm:{day:1,ym:'',carry:false,mode:'work',type:'normal',hours:2,hoursText:'2'}, hourPresets:[0.5,1,1.5,2,3,4], personForm:{name:'',role:'',netSalary:65000,dailyHours:7.5,restDay:0,cumulativeTaxBase:0,startDate:'',leaveCarry:0}, toast:'', toastTimer:null, chartShow:{weekday:true,weekend:true,holiday:true,bayram:true,leave:true}, unlockedIds:[], pinInput:'', pinError:false, flashKey:'', flashIds:[], flashTimer:null, newPin:'', removePin:false,
      weekdays:['PZT','SAL','ÇAR','PER','CUM','CMT','PAZ'], dayNames:['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'], restDayOptions:[1,2,3,4,5,6,0], leaveTypes:[{value:'izin-yillik',label:'Yıllık izin',short:'YILLIK'},{value:'izin-ucretsiz',label:'Ücretsiz izin',short:'ÜCRETSİZ'},{value:'izin-rapor',label:'Raporlu',short:'RAPOR'},{value:'izin-mazeret',label:'Mazeret izni',short:'MAZERET'}], entryTypes:[{value:'normal',label:'Normal'},{value:'holiday',label:'Resmî tatil'},{value:'bayram',label:'Bayram'}],
-    init(){
+    // Sekmeler arası kaydırma: sola kaydır sonraki, sağa kaydır önceki sekme (Takvim · Personel · Tablo)
+    swipeInit(){const views=['ledger','people','chart'];let s=null;
+      const skip=t=>this.modal||t.closest('.chart-grid,.crop-box,.pattern-pad,input,select,textarea,.dialog,.modal-backdrop');
+      addEventListener('touchstart',e=>{s=e.touches.length===1&&!skip(e.target)?{x:e.touches[0].clientX,y:e.touches[0].clientY,t:Date.now()}:null;},{passive:true});
+      addEventListener('touchend',e=>{if(!s)return;const t=e.changedTouches[0],dx=t.clientX-s.x,dy=t.clientY-s.y,dt=Date.now()-s.t;s=null;
+        if(dt>700||Math.abs(dx)<70||Math.abs(dx)<Math.abs(dy)*1.6)return;const i=views.indexOf(this.view),n=i+(dx<0?1:-1);if(n<0||n>=views.length)return;
+        this.view=views[n];this.$nextTick(()=>{const p=[...document.querySelectorAll('.main-panel')].find(el=>el.offsetParent);if(p){p.classList.remove('slide-next','slide-prev');void p.offsetWidth;p.classList.add(dx<0?'slide-next':'slide-prev');}});},{passive:true});},
+    init(){this.swipeInit();
       const savedPeople=read('mesai-defteri-people',null), savedEntries=read('mesai-defteri-entries',null);
       if(savedPeople===null){this.people=demoPeople;this.entries=demoEntries;this.persist();}
       else {this.people=validPeople(savedPeople);this.entries=validEntries(savedEntries);}
