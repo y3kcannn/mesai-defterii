@@ -868,3 +868,4 @@ html,body{overscroll-behavior-x:none}
 @keyframes chase-hop{50%{transform:translateY(-1px)}}
 .chase.rtl{transform:scaleX(-1)}
 @media (min-width:761px){.chase{bottom:10px}}
+.cg-cell.moved{position:relative}.cg-cell.moved::before{content:"→";position:absolute;top:3px;left:4px;font-size:10px;line-height:1;opacity:.75}
