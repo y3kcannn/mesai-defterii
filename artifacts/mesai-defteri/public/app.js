@@ -62,7 +62,20 @@ function mesaiDefteri() {
           q.style.transition='none';q.style.transform=`translateX(${dx<0?48:-48}px)`;q.style.opacity='0';void q.offsetWidth;q.style.transition=ease;q.style.transform='';q.style.opacity='';
           setTimeout(()=>{q.style.transition='';lock=false;},360);});},210);},{passive:true});},
     // Piksel kedi ile fare: sekme değişince ve arada bir ekranın altından koşarak geçer
-    init(){this.swipeInit();
+    // Ekranın altında iki küçük piksel ninja: sekme değişince ve arada bir yetenekleriyle kapışırlar
+    ninjaInit(){if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+      const C={h:'#2b3033',r:'#c8433a',s:'#f0c9a0',e:'#151a1c',b:'#3a4247',l:'#22272a',H:'#e9ece8',R:'#2f9c95',B:'#d5dad6',L:'#8b9592',o:'#f08a2c',y:'#ffd34d',w:'#ffffff',c:'#4aa8e8',d:'#bfe6ff',g:'#b9bdb8'};
+      const svg=(rows,px=2)=>{const w=Math.max(...rows.map(r=>r.length)),h=rows.length;return `<svg viewBox="0 0 ${w} ${h}" width="${w*px}" height="${h*px}" shape-rendering="crispEdges">${rows.map((r,y)=>[...r].map((c,x)=>C[c]?`<rect x="${x}" y="${y}" width="1" height="1" fill="${C[c]}"/>`:'').join('')).join('')}</svg>`;};
+      const ninja=k=>{const [h,r,b,l]=k?['H','R','B','L']:['h','r','b','l'];return svg(['..hhhh..','.hhhhhh.','rrrrrrr.','rhssses.','..ssss..','.bbbbbb.','bbbbbbbs','.bbbbbb.','.bb..bb.','.ll..ll.','ll....ll'].map(x=>x.replace(/h/g,h).replace(/r/g,r).replace(/b/g,b).replace(/l/g,l)));};
+      const fire=svg(['.yoo.','yyooo','wyyoo','yyooo','.yoo.']),water=svg(['.dcc.','ddccc','wddcc','ddccc','.dcc.']);
+      const burst=svg(['....y....','.y..w..y.','..yyoyy..','..ywwwy..','ywowwwowy','..ywwwy..','..yyoyy..','.y..w..y.','....y....']),puff=svg(['.ggg.','ggggg','ggggg','.ggg.']);
+      const el=document.createElement('div');el.className='ninja';el.setAttribute('aria-hidden','true');
+      el.innerHTML=`<span class="nj nj-a">${ninja(0)}</span><span class="nj nj-b">${ninja(1)}</span><span class="nj-fx nj-fire">${fire}</span><span class="nj-fx nj-water">${water}</span><span class="nj-fx nj-burst">${burst}</span><span class="nj-fx nj-puff nj-puff-a">${puff}</span><span class="nj-fx nj-puff nj-puff-b">${puff}</span>`;
+      document.body.appendChild(el);
+      let busy=false;const run=()=>{if(busy||document.hidden)return;busy=true;el.classList.remove('go');void el.offsetWidth;el.classList.add('go');setTimeout(()=>{el.classList.remove('go');busy=false;},3600);};
+      this.$watch('view',run);
+      const idle=()=>setTimeout(()=>{run();idle();},50000+Math.random()*40000);idle();},
+    init(){this.swipeInit();this.ninjaInit();
       const savedPeople=read('mesai-defteri-people',null), savedEntries=read('mesai-defteri-entries',null);
       if(savedPeople===null){this.people=demoPeople;this.entries=demoEntries;this.persist();}
       else {this.people=validPeople(savedPeople);this.entries=validEntries(savedEntries);}
