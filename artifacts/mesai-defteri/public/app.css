@@ -852,3 +852,19 @@ html[data-theme="dark"] .rot-phone>rect:first-child{stroke:var(--soft)}
 .date-field.past{border-color:var(--mint-line)}
 .date-field .date-month-select{flex:0 0 auto;width:auto;height:42px;text-align-last:right}
 html,body{overscroll-behavior-x:none}
+/* Piksel kedi ve fare: ekranın altından koşarak geçer (çok küçük, dokunmayı engellemez) */
+.chase{position:fixed;left:0;right:0;bottom:calc(var(--nav-h) + max(8px,env(safe-area-inset-bottom)) + 10px);height:18px;pointer-events:none;z-index:30;overflow:hidden;opacity:0}
+.chase>span{position:absolute;bottom:0;left:0;line-height:0;transform:translateX(-60px)}
+.chase svg{display:block;image-rendering:pixelated}
+.chase .f2{display:none}
+.chase.go{opacity:1}
+.chase.go .f1{animation:chase-f1 .16s steps(1) infinite}.chase.go .f2{display:inline;animation:chase-f2 .16s steps(1) infinite}
+@keyframes chase-f1{50%{opacity:0}}@keyframes chase-f2{0%{opacity:0}50%{opacity:1}}
+.chase.go .chase-mouse{animation:chase-run 3.6s linear forwards}
+.chase.go .chase-cat{animation:chase-run 3.6s linear .45s forwards}
+.chase.go .chase-mouse svg{animation:chase-hop .32s steps(2) infinite}
+.chase.go .chase-cat svg{animation:chase-hop .4s steps(2) infinite}
+@keyframes chase-run{from{transform:translateX(-60px)}to{transform:translateX(calc(100vw + 20px))}}
+@keyframes chase-hop{50%{transform:translateY(-1px)}}
+.chase.rtl{transform:scaleX(-1)}
+@media (min-width:761px){.chase{bottom:10px}}
