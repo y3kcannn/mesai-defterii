@@ -878,3 +878,4 @@ html,body{overscroll-behavior-x:none}
 .cg-day.lead-end,.cg-cell.lead-end{box-shadow:2px 0 0 var(--line-strong)}
 .day-cell.outside.carried-in{cursor:pointer;background:var(--surface)}
 .day-cell.outside.carried-in .day-total{color:var(--soft)}
+.leave-options>button:last-of-type:nth-of-type(odd){grid-column:1/-1}
