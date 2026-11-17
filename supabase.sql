@@ -34,7 +34,7 @@ alter table public.entries add column if not exists paid_month text; -- devreden
 
 alter table public.entries drop constraint if exists entries_type_check;
 alter table public.entries add constraint entries_type_check
-  check (type in ('normal','holiday','bayram','izin-yillik','izin-ucretsiz','izin-rapor','izin-mazeret'));
+  check (type in ('normal','fazla','holiday','bayram','izin-yillik','izin-ucretsiz','izin-rapor','izin-mazeret'));
 
 -- Yabancı anahtar için indeks (kişi silinince kayıtların hızlı silinmesi, kişi bazlı sorgular)
 create index if not exists entries_person_id_date_idx on public.entries (person_id, date);
