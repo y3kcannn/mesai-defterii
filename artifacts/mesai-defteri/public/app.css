@@ -585,9 +585,7 @@ select.form-input{padding-right:32px;background-image:linear-gradient(45deg,tran
 .leave-big.over b{color:var(--holiday-ink)}
 .leave-note{margin:8px 0 0;font-size:12px;line-height:1.5;color:var(--dim)}
 /* Kişi formu: profil fotoğrafı */
-.photo-row{display:flex;align-items:center;gap:14px;margin-top:4px}
-.photo-actions{display:flex;gap:6px;flex-wrap:wrap}
-.photo-pick{position:relative;display:inline-flex;align-items:center;gap:8px;cursor:pointer}
+.photo-row{display:flex;align-items:center;gap:14px;margin-top:4px}.photo-pick{position:relative;display:inline-flex;align-items:center;gap:8px;cursor:pointer}
 .photo-pick input{position:absolute;inset:0;opacity:0;cursor:pointer}
 .photo-remove{color:var(--red-ink)}
 /* Fotoğraf önizleme */
@@ -843,7 +841,6 @@ html[data-theme="dark"] .theme-btn .moon{opacity:0;transform:rotate(-70deg) scal
   .rot-arc,.rot-arrow{opacity:1;stroke-dashoffset:0}.rot-grid rect.on{opacity:.95}
 }
 .crew-switch{margin:0 0 12px}
-.team-pick{margin:6px 0 4px}
 @media (max-width:520px){.page-heading:has(.crew-btn){flex-direction:column;align-items:stretch;gap:10px}.page-heading:has(.crew-btn) .heading-actions{display:grid;grid-template-columns:1fr 1fr}}
 .lock-toggle{margin-right:auto}
 .lock-toggle.on{border-color:var(--mint-line);background:var(--mint-wash);color:var(--mint-ink)}

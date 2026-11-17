@@ -714,6 +714,8 @@ function mesaiDefteri() {
 
     // Fotoğraf önizleme: avatara dokununca büyük görünür, buradan değiştirilir ya da kaldırılır
     get photoPerson() { return this.people.find(p => p.id === this.photoId) || null; },
+    // Personel formundaki avatar: fotoğraf önizlemesine geçer (fotoğraf oradan eklenir/değiştirilir)
+    formPhoto() { const id = this.editingPerson?.id; if (!id) return; this.closeModal(); this.openPhoto(id); },
     openPhoto(id) { this.photoId = id; this.modal = 'photo'; },
     setPersonPhoto(id, photo) { this.people = this.people.map(p => p.id === id ? {...p, photo} : p); this.persist(); this.notify(photo ? 'Fotoğraf güncellendi' : 'Fotoğraf kaldırıldı'); },
     // Fotoğraf seçilince kırpma ekranı açılır: sürükle ve yakınlaştır, kare alan 480 px JPEG (en fazla ~100 KB) kaydedilir
