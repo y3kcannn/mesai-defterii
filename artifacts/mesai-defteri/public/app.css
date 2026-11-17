@@ -779,3 +779,8 @@ html[data-theme="dark"] .rot-phone>rect:first-child{stroke:var(--soft)}
 
 /* Hafta tatili: toplam saat bilgisi */
 .rest-total{margin:10px 0 0;font:500 12px var(--mono);color:var(--rest-ink);letter-spacing:.02em}
+/* Özel gün işareti gün türünün renginde */
+.rest-work.holiday{background:color-mix(in srgb,var(--surface),var(--amber) var(--t-weak));border-color:var(--holiday-line)}
+.rest-work.bayram{background:color-mix(in srgb,var(--surface),var(--red) var(--t-weak));border-color:var(--red-line)}
+.rest-total.holiday{color:var(--holiday-ink)}.rest-total.bayram{color:var(--red-ink)}
+.button-primary:disabled{opacity:.45;cursor:not-allowed}

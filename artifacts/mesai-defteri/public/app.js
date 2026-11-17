@@ -227,15 +227,18 @@ function mesaiDefteri() {
        try {const data=hesapla(payload);if(request===this.calcRequest)this.result=data;}
        catch(error){if(request===this.calcRequest){this.result=null;this.calcError=true;this.calcErrorMessage=error instanceof Error?error.message:'Hesaplanamadı';}console.error('Hesaplama hatası:',error);}
     },
-    openEntry(day){if(!this.activePerson)return;const existing=this.monthEntries.find(entry=>!entry.paidMonth&&entry.date===this.dateKey(day));if(existing){this.editEntry(existing);return;}this.editingEntry=null;const special=holidayOf(this.dateKey(day))?.[0];this.entryForm={day,ym:this.monthKey,carry:false,mode:'work',type:special==='bayram'?'bayram':special?'holiday':'normal',hours:0,hoursText:'',restWorked:true};this.setHours(this.isRestDay&&!special?0:2);this.modal='entry';},
+    openEntry(day){if(!this.activePerson)return;const existing=this.monthEntries.find(entry=>!entry.paidMonth&&entry.date===this.dateKey(day));if(existing){this.editEntry(existing);return;}this.editingEntry=null;const special=holidayOf(this.dateKey(day))?.[0];this.entryForm={day,ym:this.monthKey,carry:false,mode:'work',type:special==='bayram'?'bayram':special?'holiday':'normal',hours:0,hoursText:'',restWorked:false};this.setHours(this.restMode?0:2);this.modal='entry';},
     setMode(mode){this.entryForm.mode=mode;this.entryForm.type=mode==='leave'?(this.isLeave(this.entryForm.type)?this.entryForm.type:'izin-yillik'):(this.isLeave(this.entryForm.type)?'normal':this.entryForm.type);},
     setHours(h){this.entryForm.hours=h;this.entryForm.hoursText=String(h).replace('.',',');},
     parseHours(){this.entryForm.hours=Number(String(this.entryForm.hoursText).replace(',','.'))||0;},
     get restHours(){return Number(this.activePerson?.dailyHours)||7.5;},
     get isRestDay(){return !this.entryForm.carry&&this.formDate(Number(this.entryForm.day)).getDay()===(this.activePerson?.restDay??0);},
     // Hafta tatili: çalışıldıysa günlük saat (7,5) otomatik eklenir, girilen saat bunun üstüne ek fazla mesaidir
-    get restMode(){return !this.entryForm.multi&&this.entryForm.mode!=='leave'&&this.entryForm.type==='normal'&&this.isRestDay;},
-    editEntry(entry){this.editingEntry=entry;this.entryForm={day:Number(entry.date.slice(-2)),ym:entry.date.slice(0,7),carry:!!entry.paidMonth,mode:this.isLeave(entry.type)?'leave':'work',type:entry.type,hours:0,hoursText:'',restWorked:true};const h=Number(entry.hours)||0;this.setHours(this.restMode?Math.max(0,Math.round((h-this.restHours)*100)/100):h);this.modal='entry';},
+    // Özel gün (hafta tatili, resmî tatil, bayram): çalışıldı işaretlenirse 1 gün (7,5 saat) o günün katsayısıyla yazılır
+    get dayKind(){if(this.entryForm.carry)return 'normal';const h=holidayOf(this.formDate&&this.entryForm.day?iso(this.formDate(Number(this.entryForm.day))):'')?.[0];return h==='bayram'?'bayram':h?'holiday':this.isRestDay?'rest':'normal';},
+    get restMode(){return !this.entryForm.multi&&!this.entryForm.carry&&this.entryForm.mode!=='leave'&&this.dayKind!=='normal';},
+    get dayKindInfo(){return {rest:['Hafta tatili çalışıldı','×1,5','rest'],holiday:['Resmî tatil çalışıldı','×1','holiday'],bayram:['Bayram çalışıldı','×2','bayram']}[this.dayKind]||['','',''];},
+    editEntry(entry){this.editingEntry=entry;this.entryForm={day:Number(entry.date.slice(-2)),ym:entry.date.slice(0,7),carry:!!entry.paidMonth,mode:this.isLeave(entry.type)?'leave':'work',type:entry.type,hours:0,hoursText:'',restWorked:!this.isLeave(entry.type)};const h=Number(entry.hours)||0;this.setHours(this.restMode?Math.max(0,Math.round((h-this.restHours)*100)/100):h);this.modal='entry';},
     saveEntry(){
       if(this.entryForm.multi)return this.saveMulti();
       if(!this.activePerson)return;
@@ -243,7 +246,7 @@ function mesaiDefteri() {
       const rest=this.restMode;
       if(rest&&!this.entryForm.restWorked){if(this.editingEntry)this.deleteEntry();else this.closeModal();return;}
       const text=this.entryForm.hoursText;let hours=leave?0:text==null||String(text).trim()===''?Number(this.entryForm.hours):Number(String(text).trim().replace(',','.'));
-      if(rest){if(!Number.isFinite(hours)||hours<0){this.notify('Geçerli bir süre girin');return;}hours=this.restHours+hours;}
+      if(rest){if(!Number.isFinite(hours)||hours<0){this.notify('Geçerli bir süre girin');return;}hours=this.restHours+hours;this.entryForm.type=this.dayKind==='rest'?'normal':this.dayKind;}
       if(!leave&&(!Number.isFinite(hours)||hours<=0)){this.notify('Geçerli bir süre girin');return;}
       if(leave&&!this.isLeave(this.entryForm.type))this.entryForm.type='izin-yillik';
       if(!this.entryForm.carry&&hours>24){this.notify('Günlük en fazla 24 saat girilebilir');return;}
