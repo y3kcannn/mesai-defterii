@@ -18,6 +18,9 @@ alter table public.people add column if not exists rest_day smallint not null de
 alter table public.people add column if not exists pin_hash text;                        -- maaş PIN'inin SHA-256 özeti
 alter table public.people add column if not exists start_date text;                      -- işe giriş tarihi (YYYY-MM-DD)
 alter table public.people add column if not exists leave_carry numeric not null default 0; -- devreden yıllık izin (gün)
+alter table public.people add column if not exists photo text; -- profil fotoğrafı (küçük JPEG data URL)
+alter table public.people drop constraint if exists people_photo_size;
+alter table public.people add constraint people_photo_size check (photo is null or (length(photo) < 120000 and photo like 'data:image/%'));
 
 -- Günlük kayıtlar (mesai, tatil, izin)
 create table if not exists public.entries (

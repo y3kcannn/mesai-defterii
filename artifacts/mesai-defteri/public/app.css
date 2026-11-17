@@ -790,3 +790,12 @@ html[data-theme="dark"] .rot-phone>rect:first-child{stroke:var(--soft)}
 /* Saat alanı bloğu: etiket aralığı formdaki diğer alanlarla aynı */
 .field-label-row{flex-direction:row;justify-content:space-between;align-items:baseline}
 .field-label-row small{font:11px var(--mono);color:var(--dim);letter-spacing:.02em}
+/* Profil fotoğrafı */
+.avatar.photo{padding:0;background:var(--surface-3)}
+.avatar.photo img{width:100%;height:100%;object-fit:cover;display:block}
+.avatar.xl{width:64px;height:64px}
+.photo-row{display:flex;align-items:center;gap:14px;margin-top:4px}
+.photo-actions{display:flex;gap:6px;flex-wrap:wrap}
+.photo-pick{position:relative;display:inline-flex;align-items:center;gap:8px;cursor:pointer}
+.photo-pick input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.photo-remove{color:var(--red-ink)}
