@@ -1,9 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" fill="#101718"/>
-  <g id="mark">
-    <path fill="#a5d8b6" d="M160 101h28v24h136v-24h28v24h63v40H97v-40h63z"/>
-    <path fill="#223030" d="M97 175h72v72H97zM179 175h72v72h-72zM261 175h72v72h-72zM97 257h72v72H97zM343 339h72v72h-72z"/>
-    <path fill="#a5d8b6" d="M343 175h72v72h-72zM179 257h72v72h-72zM261 257h72v72h-72zM343 257h72v72h-72zM97 339h72v72H97zM179 339h72v72h-72z"/>
-    <path fill="#d7b67b" d="M261 339h72v72h-72z"/>
-  </g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16221f"/><stop offset="1" stop-color="#0c1313"/></linearGradient></defs><rect width="1024" height="1024" fill="url(#bg)"/><rect x="218.0" y="218.0" width="176" height="176" rx="22" fill="#22302d"/><rect x="424.0" y="218.0" width="176" height="176" rx="22" fill="#22302d"/><rect x="630.0" y="218.0" width="176" height="176" rx="22" fill="#a5d8b6"/><rect x="218.0" y="424.0" width="176" height="176" rx="22" fill="#22302d"/><rect x="424.0" y="424.0" width="176" height="176" rx="22" fill="#a5d8b6"/><rect x="630.0" y="424.0" width="176" height="176" rx="22" fill="#a5d8b6"/><rect x="218.0" y="630.0" width="176" height="176" rx="22" fill="#a5d8b6"/><rect x="424.0" y="630.0" width="176" height="176" rx="22" fill="#a5d8b6"/><circle cx="718.0" cy="718.0" r="74.0" fill="none" stroke="#d7b67b" stroke-width="28"/><path d="M718.0 674.0V718.0l30 20" fill="none" stroke="#d7b67b" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/></svg>

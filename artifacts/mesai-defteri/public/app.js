@@ -237,7 +237,7 @@ function mesaiDefteri() {
     // Özel gün (hafta tatili, resmî tatil, bayram): çalışıldı işaretlenirse 1 gün (7,5 saat) o günün katsayısıyla yazılır
     get dayKind(){if(this.entryForm.carry)return 'normal';const h=holidayOf(this.formDate&&this.entryForm.day?iso(this.formDate(Number(this.entryForm.day))):'')?.[0];return h==='bayram'?'bayram':h?'holiday':this.isRestDay?'rest':'normal';},
     get restMode(){return !this.entryForm.multi&&!this.entryForm.carry&&this.entryForm.mode!=='leave'&&this.dayKind!=='normal';},
-    get dayKindInfo(){return {rest:['Hafta tatili çalışıldı','×1,5','rest'],holiday:['Resmî tatil çalışıldı','×1','holiday'],bayram:['Bayram çalışıldı','×2','bayram']}[this.dayKind]||['','',''];},
+    get dayKindInfo(){return {rest:['Hafta tatilinde çalışıldı','×1,5','rest'],holiday:['Resmî tatilde çalışıldı','×1','holiday'],bayram:['Bayramda çalışıldı','×2','bayram']}[this.dayKind]||['','',''];},
     editEntry(entry){this.editingEntry=entry;this.entryForm={day:Number(entry.date.slice(-2)),ym:entry.date.slice(0,7),carry:!!entry.paidMonth,mode:this.isLeave(entry.type)?'leave':'work',type:entry.type,hours:0,hoursText:'',restWorked:!this.isLeave(entry.type)};const h=Number(entry.hours)||0;this.setHours(this.restMode?Math.max(0,Math.round((h-this.restHours)*100)/100):h);this.modal='entry';},
     saveEntry(){
       if(this.entryForm.multi)return this.saveMulti();
