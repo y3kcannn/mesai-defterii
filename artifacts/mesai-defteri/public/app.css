@@ -876,3 +876,5 @@ html,body{overscroll-behavior-x:none}
 .cg-day.lead{background:var(--surface-3,var(--surface-2))}.cg-day.lead small{color:var(--soft)}
 .cg-cell.lead:not(.normal):not(.weekend):not(.holiday):not(.bayram){background:color-mix(in srgb,var(--surface) 70%,var(--grid))}
 .cg-day.lead-end,.cg-cell.lead-end{box-shadow:2px 0 0 var(--line-strong)}
+.day-cell.outside.carried-in{cursor:pointer;background:var(--surface)}
+.day-cell.outside.carried-in .day-total{color:var(--soft)}
