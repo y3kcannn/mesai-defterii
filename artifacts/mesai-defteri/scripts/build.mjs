@@ -31,6 +31,9 @@ function gitSha() {
 }
 
 const version = (process.env.APP_VERSION || gitSha() || contentHash(pub)).replace(/[^\w.-]/g, '');
+// Görünen sürüm: 3.<yayın sırası>. GitHub Actions çalıştırma numarasından türetilir (49. yayın = 3.19).
+const runNo = Number(process.env.GITHUB_RUN_NUMBER);
+const label = process.env.APP_LABEL || (Number.isFinite(runNo) && runNo > 30 ? `3.${runNo - 30}` : 'dev');
 const builtAt = new Date().toISOString();
 
 rmSync(dist, { recursive: true, force: true });
@@ -42,7 +45,7 @@ const swPath = join(dist, 'sw.js');
 writeFileSync(swPath, readFileSync(swPath, 'utf8').replaceAll('__APP_VERSION__', version));
 
 // version.json
-writeFileSync(join(dist, 'version.json'), JSON.stringify({ version, builtAt }) + '\n');
+writeFileSync(join(dist, 'version.json'), JSON.stringify({ version, label, builtAt }) + '\n');
 
 // index.html
 const idxPath = join(dist, 'index.html');
@@ -52,7 +55,7 @@ html = html.replace(/(<(?:script|link)\b[^>]*?\s(?:src|href)=")((?:\.\/|\/)[^"?#
 
 const snippet = `<meta name="app-version" content="${version}">
 <script>
-window.APP_VERSION=${JSON.stringify(version)};window.APP_BUILT_AT=${JSON.stringify(builtAt)};
+window.APP_VERSION=${JSON.stringify(version)};window.APP_LABEL=${JSON.stringify(label)};window.APP_BUILT_AT=${JSON.stringify(builtAt)};
 (function(){
   var V=window.APP_VERSION,K='app-update-reload';
   function reloadFor(v){try{if(sessionStorage.getItem(K)===v)return;sessionStorage.setItem(K,v);}catch(e){}location.reload();}
@@ -89,5 +92,5 @@ const missing = [...new Set(refs)].filter(f => !existsSync(join(dist, f)));
 if (missing.length) throw new Error('referenced but missing in dist: ' + missing.join(', '));
 if (swSrc.includes('__APP_VERSION__')) throw new Error('sw.js: version placeholder not replaced');
 
-console.log(`built dist/ version=${version} builtAt=${builtAt}`);
+console.log(`built dist/ version=${version} label=${label} builtAt=${builtAt}`);
 if (!existsSync(join(dist, 'version.json'))) process.exit(1);

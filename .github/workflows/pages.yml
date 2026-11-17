@@ -21,7 +21,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      # Sığ checkout (fetch-depth 1); sürüm numarası $GITHUB_SHA'dan alınır.
+      # Sığ checkout (fetch-depth 1); önbellek sürümü $GITHUB_SHA'dan, görünen sürüm (3.N) $GITHUB_RUN_NUMBER'dan alınır.
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
