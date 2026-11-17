@@ -83,7 +83,7 @@ function mesaiDefteri() {
   const slid = new WeakSet(); // animationend dinleyicisi eklenmiş ay ızgaraları
 
   return {
-    today:new Date(), online:navigator.onLine, syncPending:0, syncError:null, monthNames, view:'ledger', people:[], entries:[], selectedId:null, chartPrev:null, photoId:null, crop:null, crew:'yol', crewOpen:false, lockOpen:false,
+    today:new Date(), online:navigator.onLine, syncPending:0, syncError:null, monthNames, view:'ledger', people:[], entries:[], selectedId:null, chartPrev:null, photoId:null, crop:null, crew:'yol', lockOpen:false,
     pat:null, patFirst:'', patMsg:'', newPattern:'', theme:document.documentElement?.dataset.theme||'light', netShown:0, year:new Date().getFullYear(), month:new Date().getMonth(),
     result:null, calcError:false, calcErrorMessage:'', calcRequest:0, modal:'', editingEntry:null, editingPerson:null,
     entryForm:{day:1,ym:'',carry:false,mode:'work',type:'normal',hours:2,hoursText:'2'}, hourPresets:[0.5,1,1.5,2,3,4],
@@ -171,9 +171,9 @@ function mesaiDefteri() {
     // Ekip: Yol (açık saha) ya da Tünel; seçilen ekibin dışındakiler hiçbir listede görünmez
     crews: [{id: 'yol', label: 'Yol ekibi', icon: 'i-road'}, {id: 'tunel', label: 'Tünel ekibi', icon: 'i-tunnel'}],
     get crewInfo() { return this.crews.find(c => c.id === this.crew) || this.crews[0]; },
+    crewCount(id) { return this.people.filter(p => (p.team === 'tunel' ? 'tunel' : 'yol') === id).length; },
     get crewPeople() { return this.people.filter(p => (p.team === 'tunel' ? 'tunel' : 'yol') === this.crew); },
     setCrew(id) {
-      this.crewOpen = false;
       if (id === this.crew) return;
       this.crew = id;
       try { localStorage.setItem('mesai-ekip', id); } catch {}
