@@ -37,17 +37,17 @@ button{appearance:button}
 :root{
   color-scheme:light;
   /* Zeminler: sayfa < kart < yükseltilmiş; alanlar karttan bir tık içeride */
-  --bg:#f9f9f7;--surface:#ffffff;--surface-2:#f3f3f0;--surface-3:#ecece8;--surface-raised:#ffffff;--field:#f6f6f3;
+  --bg:#e8e7e1;--surface:#f2f1ec;--surface-2:#ebeae4;--surface-3:#e2e1da;--surface-raised:#f4f3ee;--field:#eceae4;
   --cell-bg:rgba(255,255,255,0);
   /* Dolgu oranları: zayıf = gün işareti (tatil, hafta tatili, izin), yarım = arife/ay dışı tatil, güçlü = mesai girilmiş gün, tablo = kişi×gün tablosu */
   --t-half:11%;--t-weak:21%;--t-strong:36%;--t-fill:40%;
   /* Çizgiler: sıcak gri, sert değil */
-  --line:#e6e6e6;--line-soft:#eeeeeb;--grid:#e6e6e6;--line-field:#dcdcd7;--line-strong:#cfcec8;--line-hover:#a3a29c;
+  --line:#d8d6ce;--line-soft:#e1dfd8;--grid:#d8d6ce;--line-field:#cfcdc5;--line-strong:#bfbdb4;--line-hover:#a3a29c;
   /* Metin: saf siyah yok, sıcak grafit */
   --ink:#131313;--text:#1c1c1b;--soft:#2e2e2c;--muted:#55544f;--dim:#7a7974;--faint:#a3a29c;
   /* Vurgu mavisi = seçili, normal mesai, eşitlendi */
   --mint:#3968b9;--mint-ink:#2d5496;--mint-mute:#6a88be;--mint-soft:#7f9fd3;--mint-line:#a9bee3;--mint-edge:#c8d6ee;--mint-deep:#a9bee3;
-  --mint-wash:#eaf0f9;--mint-wash-2:#dce6f5;--on-mint:#ffffff;
+  --mint-wash:#dfe5ee;--mint-wash-2:#d2dcea;--on-mint:#ffffff;
   /* Hardal = resmî tatil, bekleyen eşitleme */
   --amber:#b0801f;--holiday:var(--amber);--holiday-ink:#6e5214;--holiday-line:#dcc593;
   /* Kiremit = bayram, tehlike, çevrimdışı/hata */
@@ -59,7 +59,7 @@ button{appearance:button}
   /* Avatar tonları */
   --av-1:#4e8e68;--av-2:#7a6cbf;--av-3:#b38737;--av-4:#bd6555;--av-5:#4f83aa;--av-6:#3e8d87;
   /* Katmanlar ve derinlik (sıcak gölge, siyah değil) */
-  --backdrop:rgba(19,19,19,.28);--shadow:rgba(0,0,0,.08);--rail-bg:rgba(243,243,240,.96);--fade-0:rgba(249,249,247,0);--outside-bg:rgba(0,0,0,.025);
+  --backdrop:rgba(19,19,19,.28);--shadow:rgba(0,0,0,.08);--rail-bg:rgba(226,225,218,.96);--fade-0:rgba(232,231,225,0);--outside-bg:rgba(60,55,40,.035);
   /* Derinlik: parlak iç kenar yok; kartlar yumuşak, sıcak bir gölgeyle, düğmeler yalnız 1px taban çizgisiyle ayrılır */
   --elev-1:0 1px 2px rgba(0,0,0,.03);
   --elev-2:0 18px 48px -22px rgba(0,0,0,.22);
