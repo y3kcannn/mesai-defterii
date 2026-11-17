@@ -159,22 +159,8 @@ function mesaiDefteri() {
       }, {passive: true});
     },
 
-    // Kâğıt dokusu sayfayla birlikte kaysın: görünen sayfanın kaydırma konumu dokunun konumuna yansıtılır
-    paperInit() {
-      const root = document.documentElement;
-      let raf = 0, src = null;
-      const apply = () => { raf = 0; const y = src ? src.scrollTop : 0; root.style.setProperty('--paper-y', (-y) + 'px'); };
-      addEventListener('scroll', e => {
-        const t = e.target === document ? document.scrollingElement : e.target;
-        if (!(t === document.scrollingElement || t.classList?.contains('main-panel'))) return;
-        src = t; if (!raf) raf = requestAnimationFrame(apply);
-      }, {capture: true, passive: true});
-      this.$watch('view', () => this.$nextTick(() => { src = [...document.querySelectorAll('.main-panel')].find(el => el.offsetParent) || null; apply(); }));
-    },
-
     init() {
       this.swipeInit();
-      this.paperInit();
       const savedPeople = read('mesai-defteri-people', null), savedEntries = read('mesai-defteri-entries', null);
       if (savedPeople === null) { this.people = demoPeople; this.entries = demoEntries; this.persist(); }
       else { this.people = validPeople(savedPeople); this.entries = validEntries(savedEntries); }

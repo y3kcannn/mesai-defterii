@@ -91,8 +91,9 @@ html[data-theme="dark"]{
 /* Kâğıt dokusu: soğuk preslenmiş resim kâğıdı fotoğrafından dikişsiz desen; yumuşak ışık karışımıyla iki temada da çalışır */
 :root{--paper-o:.9}
 html[data-theme="dark"]{--paper-o:.55}
-html::after{content:"";position:fixed;inset:0;z-index:2147483000;pointer-events:none;background:url(paper.jpg) 0 var(--paper-y,0px)/360px 360px repeat;mix-blend-mode:soft-light;opacity:var(--paper-o)}
-@media print{html::after{display:none}}
+body{position:relative;min-height:100%}
+body::after{content:"";position:absolute;inset:0;z-index:2147483000;pointer-events:none;background:url(paper.jpg) 0 0/360px 360px repeat;mix-blend-mode:soft-light;opacity:var(--paper-o)}
+@media print{body::after{display:none}}
 
 /* Türetilmiş dolgular: iki temada da aynı formül (ana renk × --t-* oranı) */
 :root{
