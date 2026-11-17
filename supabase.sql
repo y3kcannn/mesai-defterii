@@ -60,3 +60,14 @@ begin
     alter publication supabase_realtime add table public.entries;
   end if;
 end $$;
+
+-- Hareketli profil fotoğrafı (GIF): herkese açık 'avatars' deposu, en fazla 4 MB
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('avatars','avatars',true,4194304,array['image/gif']) on conflict (id) do nothing;
+create policy "avatars anon insert" on storage.objects for insert to anon with check (bucket_id='avatars');
+create policy "avatars anon delete" on storage.objects for delete to anon using (bucket_id='avatars');
+create policy "avatars anon read" on storage.objects for select to anon using (bucket_id='avatars');
+alter table people drop constraint if exists people_photo_size;
+alter table people add constraint people_photo_size check (photo is null
+  or (photo like 'data:image/%' and length(photo) < 120000)
+  or (photo like 'https://osctjbicyfkcmhigwgbs.supabase.co/storage/v1/object/public/avatars/%' and length(photo) < 300));

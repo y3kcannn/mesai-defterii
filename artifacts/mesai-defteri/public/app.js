@@ -771,10 +771,22 @@ function mesaiDefteri() {
       const f = ev.target.files?.[0];
       ev.target.value = '';
       if (!f) return;
+      if (f.type === 'image/gif') return this.pickGif(f);
       const url = URL.createObjectURL(f), img = new Image();
       img.onload = () => { cropImg = img; this.crop = {src: url, w: img.width, h: img.height, zoom: 1, x: 0, y: 0, back: this.modal}; this.modal = 'crop'; this.$nextTick(() => this.cropReset()); };
       img.onerror = () => { URL.revokeObjectURL(url); this.notify('Fotoğraf okunamadı'); };
       img.src = url;
+    },
+    // GIF kırpılmaz (hareket kaybolur); olduğu gibi yüklenir, avatarda ortalanıp kareye sığdırılır
+    async pickGif(f) {
+      if (f.size > 4 * 1024 * 1024) { this.notify('GIF en fazla 4 MB olabilir'); return; }
+      const back = this.modal, id = back === 'photo' && this.photoId ? this.photoId : (this.personForm?.id || 'yeni');
+      this.notify('GIF yükleniyor…');
+      try {
+        const url = await bulut.uploadPhoto(f, id);
+        if (back === 'photo' && this.photoId) this.setPersonPhoto(this.photoId, url);
+        else { this.personForm = {...this.personForm, photo: url}; this.notify('GIF eklendi'); }
+      } catch { this.notify('GIF yüklenemedi, bağlantıyı kontrol edin'); }
     },
     cropBox() { return this.$refs.cropBox?.clientWidth || 300; },
     cropScale() { const c = this.crop; return this.cropBox() / Math.min(c.w, c.h) * c.zoom; },
