@@ -8,7 +8,8 @@
 //   Resmî tatil      ilk 7,5 saat ×1, aşan saatler ................... ×1,5
 //   Bayram           ilk 7,5 saat ×2, aşan saatler ................... ×1,5
 //   Çakışma          hafta tatili resmî tatil/bayrama denk gelirse tatil/bayram kuralı geçerlidir
-//   Eksik mesai      önceki aydan aktarılan saatler, türünün katsayısıyla, bölünmeden
+//   Devreden mesai   takvimdeki gün sonraki aya devredilirse kendi kurallarıyla o ayın bordrosuna girer;
+//                    takvimde olmayan saatler (tarih YYYY-AA-00) türünün katsayısıyla, bölünmeden
 //
 // Bordrodaki gibi her satır ayrı yuvarlanır; net toplam satırların toplamıdır.
 // Tatilde 7,5 saati aşan saatler bordroda hafta içi fazla mesaisine yazıldığı için ödeme satırında oraya eklenir.
@@ -31,7 +32,8 @@ const hesapla = (() => {
   const parcala = (kayit, { gunluk = 7.5, haftaTatili = 0 } = {}) => {
     const saat = Number(kayit.hours) || 0;
     if (saat <= 0) return [];
-    if (kayit.paidMonth) return [{ satir: 'eksik', saat, katsayi: KATSAYI[kayit.type] ?? KATSAYI.normal }];
+    // Eski tip devreden mesai (yalnız saat, tarih YYYY-AA-00): türünün katsayısıyla, bölünmeden
+    if (kayit.paidMonth && String(kayit.date).endsWith('-00')) return [{ satir: 'eksik', saat, katsayi: KATSAYI[kayit.type] ?? KATSAYI.normal }];
     if (kayit.type === 'holiday' || kayit.type === 'bayram') {
       const satir = kayit.type === 'bayram' ? 'bayram' : 'resmi-tatil';
       const parca = [{ satir, saat: Math.min(saat, gunluk), katsayi: KATSAYI[kayit.type] }];

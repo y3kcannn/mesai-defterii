@@ -71,7 +71,8 @@ function mesaiDefteri() {
     moneyInput(v){const n=Number(v);return Number.isFinite(n)&&n?n.toLocaleString('tr-TR',{minimumFractionDigits:n%1?2:0,maximumFractionDigits:2}):'';},
     get activePerson(){return this.people.find(p=>p.id===this.selectedId)||null;},
     // Maaş gizliliği: PIN'li kişinin tutarları PIN girilene kadar gizli (oturum boyunca açık kalır)
-    isLocked(person){return !!person?.pinHash&&!this.unlockedIds.includes(person.id);},
+    isLocked(person){return this.hasLock(person)&&!this.unlockedIds.includes(person.id);},
+    hasLock(p){return String(p?.pinHash||'').startsWith('pat:');},
     get salaryLocked(){return this.isLocked(this.activePerson);},
     async hashPin(id,pin){const data=new TextEncoder().encode(`mesai:${id}:${pin}`);const buf=await crypto.subtle.digest('SHA-256',data);return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');},
     // Kilit türü pinHash önekinden okunur: 'pat:' desen, aksi halde 4 haneli PIN
@@ -89,10 +90,6 @@ function mesaiDefteri() {
     patPoints(){const s=this.pat?.seq||[];const pts=s.map(i=>`${(i%3+.5)/3*100},${(Math.floor(i/3)+.5)/3*100}`);if(this.pat?.target&&this.pat.cur&&s.length)pts.push(`${this.pat.cur.x*100},${this.pat.cur.y*100}`);return pts.join(' ');},
     patOn(i){return (this.pat?.seq||[]).includes(i);},
     patReset(){this.patFirst='';this.newPattern='';this.patMsg='Deseni çizin (en az 4 nokta)';this.pat=null;},
-    async tryUnlock(){const pin=String(this.pinInput).replace(/\D/g,'').slice(0,4);this.pinInput=pin;this.pinError=false;if(pin.length<4||!this.activePerson)return;if(await this.hashPin(this.activePerson.id,pin)===this.activePerson.pinHash){this.unlockActive();}else{this.pinError=true;this.pinInput='';}},
-    pinPress(d){if(this.pinInput.length>=4)return;this.pinInput+=d;this.tryUnlock();},
-    pinBack(){this.pinInput=this.pinInput.slice(0,-1);this.pinError=false;},
-    pinKey(e){if(!this.salaryLocked||this.modal||this.view!=='ledger'||/^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName))return;if(/^\d$/.test(e.key))this.pinPress(e.key);else if(e.key==='Backspace')this.pinBack();},
     lockSalary(){this.unlockedIds=this.unlockedIds.filter(id=>id!==this.selectedId);},
     get syncLabel(){if(!this.online)return this.syncPending?`ÇEVRİMDIŞI · ${this.syncPending} BEKLİYOR`:'ÇEVRİMDIŞI';if(this.syncError)return 'HATA · YENİDEN DENENİYOR';if(this.syncPending)return 'KAYDEDİLİYOR…';return bulut.on?'KAYDEDİLDİ':'ÇEVRİMİÇİ';},
     get monthName(){return monthNames[this.month];},
@@ -109,20 +106,23 @@ function mesaiDefteri() {
     // Net ödeme dökümü: satırlar hesaplama motorundan (hesaplama.js) gelir
     get netSlip(){const p=this.activePerson;if(!p||!this.result)return null;const salary=Number(p.netSalary)||0;return {salary,lines:this.result.lines,net:Math.round((salary-this.unpaidDeduction+this.result.netTotal)*100)/100};},
     // Yıllık izin (4857 s. İş Kanunu md. 53): 1-5 yıl 14, 5-15 yıl 20, 15+ yıl 26 gün; hak 1. yılı doldurunca doğar
+    // Yıllık izin (İş Kanunu md. 53–56): her hizmet yılı dolduğunda hak eklenir (1–4. yıl 14, 5–14. yıl 20, 15+ 26 gün);
+    // kullanılmayan izin silinmez, birikir. Hafta tatili ve resmî tatil/bayram günleri izinden sayılmaz.
+    // leaveCarry: uygulama öncesi kalan (+) ya da kullanılmış (−) gün düzeltmesi.
+    leaveDayCounts(e,p){const [y,m,d]=e.date.split('-').map(Number),dt=new Date(y,m-1,d);return dt.getDay()!==(p.restDay??0)&&!holidayOf(e.date);},
     get leaveBalance(){const p=this.activePerson;if(!p)return null;const sd=String(p.startDate||'');if(!/^\d{4}-\d{2}-\d{2}$/.test(sd))return {noStart:true};
-      const [sy,sm,sdd]=sd.split('-').map(Number),start=new Date(sy,sm-1,sdd),now=this.today;let years=now.getFullYear()-sy;if(new Date(now.getFullYear(),sm-1,sdd)>now)years--;
-      const yearStart=years>=1?new Date(sy+years,sm-1,sdd):start,next=new Date(sy+Math.max(years,0)+1,sm-1,sdd);
-      const entitled=years<1?0:years<5?14:years<15?20:26,carry=Number(p.leaveCarry)||0;
-      const ys=iso(yearStart),ye=iso(next),used=this.entries.filter(e=>e.personId===p.id&&e.type==='izin-yillik'&&e.date>=ys&&e.date<ye).length;
-      const fmt=d=>longDateFmt.format(d);
-      return {years,entitled,carry,used,left:entitled+carry-used,from:fmt(yearStart),next:fmt(next)};},
+      const [sy,sm,sdd]=sd.split('-').map(Number),start=new Date(sy,sm-1,sdd),now=this.today;let years=now.getFullYear()-sy;if(new Date(now.getFullYear(),sm-1,sdd)>now)years--;years=Math.max(0,years);
+      const rate=k=>k<5?14:k<15?20:26;let earned=0;for(let k=1;k<=years;k++)earned+=rate(k);
+      const carry=Number(p.leaveCarry)||0,next=new Date(sy+years+1,sm-1,sdd);
+      const all=this.entries.filter(e=>e.personId===p.id&&e.type==='izin-yillik'),used=all.filter(e=>this.leaveDayCounts(e,p)).length,skipped=all.length-used;
+      return {years,earned,carry,used,skipped,left:earned+carry-used,nextRate:rate(years+1),next:longDateFmt.format(next),start:longDateFmt.format(start)};},
     // Ekip grafiği: kişi × gün tablosu (görüntülenen ay)
     get chartTodayDay(){const t=this.today;return t.getFullYear()===this.year&&t.getMonth()===this.month?t.getDate():0;},
     get chartDays(){const wd=['Pz','Pt','Sa','Ça','Pe','Cu','Ct'],today=this.chartTodayDay;return Array.from({length:this.monthDays},(_,i)=>{const d=i+1,h=holidayOf(this.dateKey(d));return {day:d,wd:wd[new Date(this.year,this.month,d).getDay()],cls:[h?'hol-'+h[0]:'',d===today?'today':''].join(' ')};});},
     get chartRows(){const short={'izin-yillik':'Y','izin-ucretsiz':'Ü','izin-rapor':'R','izin-mazeret':'M'};
       // Getter'lar her erişimde yeniden hesaplanır: döngü dışında bir kez okunur
       const mk=this.monthKey,days=this.monthDays,today=this.chartTodayDay,show=this.chartShow,year=this.year,month=this.month,keys=Array.from({length:days},(_,i)=>this.dateKey(i+1));
-      const byPerson=new Map();for(const e of this.entries)if((e.paidMonth||e.date.slice(0,7))===mk){const l=byPerson.get(e.personId);l?l.push(e):byPerson.set(e.personId,[e]);}
+      const byPerson=new Map();for(const e of this.entries)if((e.date.endsWith('-00')?e.paidMonth:e.date.slice(0,7))===mk){const l=byPerson.get(e.personId);l?l.push(e):byPerson.set(e.personId,[e]);}
       return this.people.map(p=>{const rest=p.restDay??0,flashOn=this.flashIds.includes(p.id);let total=0;
       const own=byPerson.get(p.id)||[],byDate=new Map();for(const e of own)if(!e.paidMonth&&!byDate.has(e.date))byDate.set(e.date,e);
       const cat=e=>{if(e.type!=='normal')return e.type;if(e.paidMonth)return 'weekday';const [y,m,d]=e.date.split('-').map(Number);return new Date(y,m-1,d).getDay()===rest?'weekend':'weekday';};for(const e of own)if(!this.isLeave(e.type)&&show[cat(e)])total+=this.paidHours(e,p);
@@ -136,10 +136,13 @@ function mesaiDefteri() {
     // Bordrodaki gibi: ücretsiz izin günü başına net maaş / 30 kesilir
     get unpaidDeduction(){return Math.round((Number(this.activePerson?.netSalary)||0)/30*this.deductedDays*100)/100;},
     get monthEntries(){if(!this.activePerson)return [];const id=this.selectedId,mk=this.monthKey;return this.entries.filter(e=>e.personId===id&&(e.paidMonth||e.date.slice(0,7))===mk);},
+    get calendarEntries(){if(!this.activePerson)return [];const id=this.selectedId,mk=this.monthKey;return this.entries.filter(e=>e.personId===id&&!e.date.endsWith('-00')&&e.date.slice(0,7)===mk);},
+    nextMonthKey(ym){const [y,m]=ym.split('-').map(Number),d=new Date(y,m,1);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;},
+    monthLabel(ym){const [y,m]=String(ym).split('-').map(Number);return monthNames[m-1]+' '+y;},
     // Bordrodaki gibi döküm: hafta içi / hafta sonu (kişinin hafta tatili) / resmî tatil / bayram / eksik mesai
     get breakdown(){const p=this.activePerson;if(!p)return [];const daily=Number(p.dailyHours)||7.5,rest=p.restDay??0;const rows=[['weekday','Hafta içi','normal'],['weekend','Hafta tatili','rest'],['holiday','Resmî tatil','holiday'],['bayram','Bayram','bayram'],['overflow','7,5 saati aşan (tatil)','normal']].map(([key,label,cls])=>({key,label,cls,hours:0}));const row=k=>rows.find(r=>r.key===k);
       const ROW={'hafta-ici':'weekday','hafta-tatili':'weekend','resmi-tatil':'holiday','bayram':'bayram','tatil-asim':'overflow'};
-      for(const e of this.workEntries){const parts=hesapla.parcala(e,{gunluk:daily,haftaTatili:rest});if(e.paidMonth){rows.push({key:'carry-'+e.id,label:'Devreden mesai'+(e.type==='normal'?'':' · '+(this.entryTypes.find(t=>t.value===e.type)?.label||'')),cls:e.type==='normal'?'normal':e.type,hours:Number(e.hours)||0,entry:e});continue;}for(const p of parts)row(ROW[p.satir]).hours+=p.saat;}
+      for(const e of this.workEntries){const parts=hesapla.parcala(e,{gunluk:daily,haftaTatili:rest});if(e.paidMonth){const legacy=e.date.endsWith('-00'),[,mm,dd]=e.date.split('-').map(Number);rows.push({key:'carry-'+e.id,label:legacy?'Devreden mesai'+(e.type==='normal'?'':' · '+(this.entryTypes.find(t=>t.value===e.type)?.label||'')):'Devreden · '+dd+' '+monthNames[mm-1].slice(0,3),cls:e.type==='normal'?'normal':e.type,hours:legacy?Number(e.hours)||0:parts.reduce((s,x)=>s+x.saat,0),entry:e});continue;}for(const p of parts)row(ROW[p.satir]).hours+=p.saat;}
       const out=rows.filter(r=>r.key!=='overflow'||r.hours).map(r=>({...r,days:r.hours/daily}));
       const leaves=this.leaveEntries;for(const t of this.leaveTypes){const n=leaves.filter(e=>e.type===t.value).length;if(n)out.push({key:t.value,label:t.label,cls:'leave '+t.value,hours:0,days:n,leave:true});}
       return out;},
@@ -153,8 +156,8 @@ function mesaiDefteri() {
       const first=new Date(this.year,this.month,1), start=(first.getDay()+6)%7, days=this.monthDays, prevDays=new Date(this.year,this.month,0).getDate();
       const count=Math.ceil((start+days)/7)*7, rest=this.activePerson?.restDay??0, todayDay=this.chartTodayDay;
       // Ayın kayıtları güne göre bir kez gruplanır (her hücrede tüm kayıtları taramak yerine)
-      const byDate=new Map();for(const e of this.monthEntries){const l=byDate.get(e.date);l?l.push(e):byDate.set(e.date,[e]);}
-      return Array.from({length:count},(_,i)=>{const day=i-start+1,current=day>0&&day<=days,actualDay=day<1?prevDays+day:day>days?day-days:day;const dt=new Date(this.year,this.month,day);const key=`${dt.getFullYear()}-${dt.getMonth()}-${actualDay}`;const all=current?byDate.get(this.dateKey(day))||[]:[];const entries=all.filter(e=>!this.isLeave(e.type));const leave=all.find(e=>this.isLeave(e.type));const holiday=holidayOf(iso(dt));return {key,day:current?day:actualDay,current,weekend:dt.getDay()===rest,special:holiday?.[0]||'',specialName:holiday?.[1]||'',today:current&&day===todayDay,flash:current&&this.flashKey===this.dateKey(day)&&this.flashIds.includes(this.selectedId),entryCount:entries.length,hours:entries.reduce((s,e)=>s+this.paidHours(e,this.activePerson),0),restWork:current&&dt.getDay()===rest&&entries.some(e=>e.type==='normal'),hasHoliday:entries.some(e=>e.type==='holiday'),hasBayram:entries.some(e=>e.type==='bayram'),leave:leave?.type||'',leaveShort:leave?this.leaveTypes.find(t=>t.value===leave.type)?.short:''};});
+      const byDate=new Map();for(const e of this.calendarEntries){const l=byDate.get(e.date);l?l.push(e):byDate.set(e.date,[e]);}
+      return Array.from({length:count},(_,i)=>{const day=i-start+1,current=day>0&&day<=days,actualDay=day<1?prevDays+day:day>days?day-days:day;const dt=new Date(this.year,this.month,day);const key=`${dt.getFullYear()}-${dt.getMonth()}-${actualDay}`;const all=current?byDate.get(this.dateKey(day))||[]:[];const entries=all.filter(e=>!this.isLeave(e.type));const leave=all.find(e=>this.isLeave(e.type));const holiday=holidayOf(iso(dt));return {key,day:current?day:actualDay,current,weekend:dt.getDay()===rest,special:holiday?.[0]||'',specialName:holiday?.[1]||'',today:current&&day===todayDay,flash:current&&this.flashKey===this.dateKey(day)&&this.flashIds.includes(this.selectedId),entryCount:entries.length,hours:entries.reduce((s,e)=>s+this.paidHours(e,this.activePerson),0),moved:entries.some(e=>e.paidMonth),restWork:current&&dt.getDay()===rest&&entries.some(e=>e.type==='normal'),hasHoliday:entries.some(e=>e.type==='holiday'),hasBayram:entries.some(e=>e.type==='bayram'),leave:leave?.type||'',leaveShort:leave?this.leaveTypes.find(t=>t.value===leave.type)?.short:''};});
     },
     dateKey(day){return `${this.year}-${String(this.month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;},
     isToday(day){return this.today.getFullYear()===this.year&&this.today.getMonth()===this.month&&this.today.getDate()===day;},
@@ -242,7 +245,7 @@ function mesaiDefteri() {
        try {const data=hesapla(payload);if(request===this.calcRequest)this.result=data;}
        catch(error){if(request===this.calcRequest){this.result=null;this.calcError=true;this.calcErrorMessage=error instanceof Error?error.message:'Hesaplanamadı';}console.error('Hesaplama hatası:',error);}
     },
-    openEntry(day){if(!this.activePerson)return;const existing=this.monthEntries.find(entry=>!entry.paidMonth&&entry.date===this.dateKey(day));if(existing){this.editEntry(existing);return;}this.editingEntry=null;const special=holidayOf(this.dateKey(day))?.[0];this.entryForm={day,ym:this.monthKey,carry:false,mode:'work',type:special==='bayram'?'bayram':special?'holiday':'normal',hours:0,hoursText:'',restWorked:false};this.setHours(this.restMode?0:2);this.modal='entry';},
+    openEntry(day){if(!this.activePerson)return;const existing=this.calendarEntries.find(entry=>entry.date===this.dateKey(day));if(existing){this.editEntry(existing);return;}this.editingEntry=null;const special=holidayOf(this.dateKey(day))?.[0];this.entryForm={day,ym:this.monthKey,carry:false,mode:'work',type:special==='bayram'?'bayram':special?'holiday':'normal',hours:0,hoursText:'',restWorked:false,moved:false};this.setHours(this.restMode?0:2);this.modal='entry';},
     setMode(mode){this.entryForm.mode=mode;this.entryForm.type=mode==='leave'?(this.isLeave(this.entryForm.type)?this.entryForm.type:'izin-yillik'):(this.isLeave(this.entryForm.type)?'normal':this.entryForm.type);},
     setHours(h){this.entryForm.hours=h;this.entryForm.hoursText=String(h).replace('.',',');},
     parseHours(){this.entryForm.hours=Number(String(this.entryForm.hoursText).replace(',','.'))||0;},
@@ -253,11 +256,12 @@ function mesaiDefteri() {
     get dayKind(){if(this.entryForm.carry)return 'normal';const h=holidayOf(this.formDate&&this.entryForm.day?iso(this.formDate(Number(this.entryForm.day))):'')?.[0];return h==='bayram'?'bayram':h?'holiday':this.isRestDay?'rest':'normal';},
     get restMode(){return !this.entryForm.multi&&!this.entryForm.carry&&this.entryForm.mode!=='leave'&&this.dayKind!=='normal';},
     get dayKindInfo(){return {rest:['Hafta tatilinde çalışıldı','×1,5','rest'],holiday:['Resmî tatilde çalışıldı','×1','holiday'],bayram:['Bayramda çalışıldı','×2','bayram']}[this.dayKind]||['','',''];},
-    editEntry(entry){this.editingEntry=entry;this.entryForm={day:Number(entry.date.slice(-2)),ym:entry.date.slice(0,7),carry:!!entry.paidMonth,mode:this.isLeave(entry.type)?'leave':'work',type:entry.type,hours:0,hoursText:'',restWorked:!this.isLeave(entry.type)};const h=Number(entry.hours)||0;this.setHours(this.restMode?Math.max(0,Math.round((h-this.restHours)*100)/100):h);this.modal='entry';},
+    editEntry(entry){this.editingEntry=entry;const legacy=entry.date.endsWith('-00');this.entryForm={moved:!legacy&&!!entry.paidMonth,day:Number(entry.date.slice(-2)),ym:entry.date.slice(0,7),carry:legacy,mode:this.isLeave(entry.type)?'leave':'work',type:entry.type,hours:0,hoursText:'',restWorked:!this.isLeave(entry.type)};const h=Number(entry.hours)||0;this.setHours(this.restMode?Math.max(0,Math.round((h-this.restHours)*100)/100):h);this.modal='entry';},
     saveEntry(){
       if(this.entryForm.multi)return this.saveMulti();
       if(!this.activePerson)return;
       const leave=this.entryForm.mode==='leave'&&!this.entryForm.carry;
+      if(leave&&this.entryForm.type==='izin-yillik'&&!this.leaveDayCounts({date:`${this.entryForm.ym||this.monthKey}-${String(this.entryForm.day).padStart(2,'0')}`},this.activePerson)){this.notify('Hafta tatili ve resmî tatil yıllık izinden sayılmaz');return;}
       const rest=this.restMode;
       if(rest&&!this.entryForm.restWorked){if(this.editingEntry)this.deleteEntry();else this.closeModal();return;}
       const text=this.entryForm.hoursText;let hours=leave?0:text==null||String(text).trim()===''?Number(this.entryForm.hours):Number(String(text).trim().replace(',','.'));
@@ -270,14 +274,14 @@ function mesaiDefteri() {
       if(!this.entryForm.carry&&!(Number.isInteger(day)&&day>=1&&day<=this.formMonthDays)){this.notify('Geçerli bir gün seçin');return;}
       const ym=this.entryForm.ym||this.monthKey,date=`${ym}-${String(this.entryForm.day).padStart(2,'0')}`;
       // Günlük kayıt: aynı kişinin aynı gününde ikinci kayıt açılmasın (takvim yalnızca birini düzenleyebiliyor)
-      if(!this.entryForm.carry&&this.entries.some(e=>e.personId===this.selectedId&&!e.paidMonth&&e.date===date&&e.id!==this.editingEntry?.id)){this.notify('Bu güne ait bir kayıt zaten var');return;}
-      const entry={id:this.editingEntry?.id||`m-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,personId:this.selectedId,date,type:this.entryForm.type,hours:Number(this.entryForm.hours),...(this.entryForm.carry&&{paidMonth:this.editingEntry?.paidMonth||this.monthKey})};if(this.editingEntry){this.entries=this.entries.map(e=>e.id===entry.id?entry:e);}else this.entries.push(entry);this.persist();this.closeModal();this.calculate();if(!entry.paidMonth)this.flash(entry.date,[entry.personId]);this.notify(leave?this.leaveLabel(entry.type)+' kaydedildi':'Mesai kaydedildi');},
+      if(!this.entryForm.carry&&this.entries.some(e=>e.personId===this.selectedId&&e.date===date&&e.id!==this.editingEntry?.id)){this.notify('Bu güne ait bir kayıt zaten var');return;}
+      const entry={id:this.editingEntry?.id||`m-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,personId:this.selectedId,date,type:this.entryForm.type,hours:Number(this.entryForm.hours),...(this.entryForm.carry?{paidMonth:this.editingEntry?.paidMonth||this.monthKey}:this.entryForm.moved&&!leave?{paidMonth:this.nextMonthKey(date.slice(0,7))}:{})};if(this.editingEntry){this.entries=this.entries.map(e=>e.id===entry.id?entry:e);}else this.entries.push(entry);this.persist();this.closeModal();this.calculate();if(!entry.paidMonth)this.flash(entry.date,[entry.personId]);this.notify(leave?this.leaveLabel(entry.type)+' kaydedildi':'Mesai kaydedildi');},
     saveMulti(){
       const f=this.entryForm,leave=f.mode==='leave',hours=leave?0:Number(String(f.hoursText??f.hours).trim().replace(',','.'));
       if(!f.people.length){this.notify('En az bir personel seçin');return;}
       if(!leave&&(!Number.isFinite(hours)||hours<=0||hours>24)){this.notify('Geçerli bir süre girin');return;}
       const date=`${f.ym||this.monthKey}-${String(f.day).padStart(2,'0')}`;let added=0;const skipped=[];
-      for(const personId of f.people){if(this.entries.some(e=>e.personId===personId&&!e.paidMonth&&e.date===date)){skipped.push(this.people.find(p=>p.id===personId)?.name);continue;}const p=this.people.find(x=>x.id===personId),daily=Number(p?.dailyHours)||7.5,[yy,mm,dd]=date.split('-').map(Number),restDay=!leave&&f.type==='normal'&&new Date(yy,mm-1,dd).getDay()===(p?.restDay??0);this.entries.push({id:`m-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,personId,date,type:f.type,hours:Math.round((restDay?daily+hours:hours)*100)/100});added++;}
+      for(const personId of f.people){if(this.entries.some(e=>e.personId===personId&&e.date===date)){skipped.push(this.people.find(p=>p.id===personId)?.name);continue;}const p=this.people.find(x=>x.id===personId),daily=Number(p?.dailyHours)||7.5,[yy,mm,dd]=date.split('-').map(Number),restDay=!leave&&f.type==='normal'&&new Date(yy,mm-1,dd).getDay()===(p?.restDay??0);this.entries.push({id:`m-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,personId,date,type:f.type,hours:Math.round((restDay?daily+hours:hours)*100)/100});added++;}
       this.persist();this.closeModal();this.calculate();this.flash(date,f.people);
       this.notify(skipped.length?`${added} kişiye eklendi · ${skipped.join(', ')} için o gün kayıt var`:`${added} kişiye ${leave?this.leaveLabel(f.type).toLocaleLowerCase('tr-TR'):'mesai'} eklendi`);},
     deleteEntry(){if(!this.editingEntry)return;const gone=this.editingEntry;this.entries=this.entries.filter(e=>e.id!==this.editingEntry.id);this.persist();this.closeModal();this.calculate();if(!gone.paidMonth)this.flash(gone.date,[gone.personId]);this.notify('Kayıt silindi');},
