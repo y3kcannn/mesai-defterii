@@ -34,7 +34,7 @@ button{appearance:button}
 ::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}
 [hidden]:where(:not([hidden=until-found])){display:none!important}
 }
-:root{
+:root{--dur-press-in:70ms;--dur-press-out:320ms;--ease-spring:cubic-bezier(.34,1.56,.64,1);--press-shade:rgba(60,45,20,.16);--press-dim:.95;
   color-scheme:light;
   /* Zeminler: sayfa < kart < yükseltilmiş; alanlar karttan bir tık içeride */
   --bg:#ece5d3;--surface:#f5efe1;--surface-2:#efe8d7;--surface-3:#e5dcc7;--surface-raised:#f7f2e6;--field:#f0e9d9;
@@ -70,7 +70,7 @@ button{appearance:button}
   --pad:18px;--shell-x:30px;--nav-h:0px;--ctl:33px
 }
 /* ===== Koyu tema: yeşil-siyah gece ===== */
-html[data-theme="dark"]{
+html[data-theme="dark"]{--press-shade:rgba(0,0,0,.45);--press-dim:1.12;
   color-scheme:dark;
   --bg:#1d1b17;--surface:#25221d;--surface-2:#2a2721;--surface-3:#312d26;--surface-raised:#2a2721;--field:#201e1a;--cell-bg:rgba(255,245,220,.01);
   --t-half:6%;--t-weak:11%;--t-strong:18%;--t-fill:22%;
@@ -342,8 +342,7 @@ h1{display:flex;align-items:baseline;gap:8px;font-size:29px;line-height:1.1;font
 .manage-intro{display:flex;gap:8px;align-items:center;padding:14px var(--pad);color:var(--soft);font-size:11px}
 .manage-count{margin-left:auto;color:var(--dim)}
 .person-list{border-top:0;position:relative;z-index:1} /* başlık kartının gölgesi ilk satırın üstüne düşmesin */
-.person-row{display:flex;align-items:center;gap:14px;padding:14px var(--pad);border-bottom:1px solid var(--line-soft);animation:fade-up var(--dur-4) var(--ease-out) both}
-.person-row:nth-child(2){animation-delay:40ms}.person-row:nth-child(3){animation-delay:80ms}.person-row:nth-child(4){animation-delay:120ms}.person-row:nth-child(5){animation-delay:160ms}.person-row:nth-child(n+6){animation-delay:200ms}
+.person-row{display:flex;align-items:center;gap:14px;padding:14px var(--pad);border-bottom:1px solid var(--line-soft)}
 .person-row:last-child{border-bottom:0}
 .person-info{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1}
 .person-info>b{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--ink)}
@@ -635,9 +634,13 @@ select.form-input{padding-right:32px;background-image:linear-gradient(45deg,tran
    eğriler: --ease-out girişler · --ease-in çıkışlar · --ease-io yer değiştiren/döngüsel. Yalnız transform/opacity canlanır;
    renk/çerçeve geçişleri --dur-2. Tümü en alttaki prefers-reduced-motion kuralıyla kapanır.
    ===================================================================== */
-.btn,.icon-button,.month-current,.button-primary,.chart-toggle,.multi-person,.mode-switch button,.type-option,.hour-chip{transition:transform var(--dur-1) var(--ease-out),background-color var(--dur-2),border-color var(--dur-2),color var(--dur-2)}
+.btn,.icon-button,.month-current,.button-primary,.chart-toggle,.multi-person,.mode-switch button,.type-option,.hour-chip{transition:transform var(--dur-press-out) var(--ease-spring),box-shadow var(--dur-press-out) var(--ease-out),background-color var(--dur-2),border-color var(--dur-2),color var(--dur-2),filter var(--dur-2)}
 /* Basış: ölçek yerine 1px çökme (1px çizgiler bulanıklaşmaz) */
-.btn:active:not(:disabled),.icon-button:active,.month-current:active,.button-primary:active,.chart-toggle:active,.multi-person:active,.mode-switch button:active,.type-option:active,.hour-chip:active{transform:translateY(1px);transition-duration:var(--dur-1)}
+.btn:active:not(:disabled),.icon-button:active,.month-current:active,.button-primary:active:not(:disabled),.chart-toggle:active,.multi-person:active,.mode-switch button:active,.type-option:active,.hour-chip:active{transform:scale(.96);box-shadow:inset 0 2px 3px var(--press-shade);filter:brightness(var(--press-dim));transition-duration:var(--dur-press-in),var(--dur-press-in),var(--dur-2),var(--dur-2),var(--dur-2),var(--dur-press-in);transition-timing-function:var(--ease-out)}
+.rail-button{transition:color var(--dur-2),background-color var(--dur-2),border-color var(--dur-2),transform var(--dur-press-out) var(--ease-spring)}
+.rail-button:active{transform:scale(.94);transition-duration:var(--dur-2),var(--dur-2),var(--dur-2),var(--dur-press-in)}
+.day-cell:not(:disabled){transition:background-color var(--dur-2) var(--ease-out),box-shadow var(--dur-2) var(--ease-out),transform var(--dur-press-out) var(--ease-spring)}
+.day-cell:active:not(:disabled){transform:scale(.95);transition-duration:var(--dur-2),var(--dur-2),var(--dur-press-in)}
 /* Ay okları üzerine gelince gidecekleri yöne 1px kayar */
 .icon-button:hover:has([href="#i-chev-l"]) .ic{transform:translateX(-1px)}
 .icon-button:hover:has([href="#i-chev-r"]) .ic{transform:translateX(1px)}
@@ -649,7 +652,7 @@ select.form-input{padding-right:32px;background-image:linear-gradient(45deg,tran
 /* Sayfa geçişi: yalnız sayfanın blokları sırayla belirir (paneli ayrıca soldurmak çift solma yapıyordu) */
 .main-panel>*{animation:fade-up var(--dur-4) var(--ease-out) both}
 .main-panel>*:nth-child(2){animation-delay:40ms}.main-panel>*:nth-child(3){animation-delay:80ms}.main-panel>*:nth-child(n+4){animation-delay:120ms}
-.main-panel>.person-list{animation:none}
+
 .avatar{transition:transform var(--dur-2) var(--ease-out)}
 .cg-name:active .avatar,.multi-person:active .avatar{transform:translateY(1px)}
 /* Tema geçişi: düğmeden yayılan dairesel perde */

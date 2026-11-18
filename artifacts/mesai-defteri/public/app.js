@@ -97,6 +97,8 @@ function mesaiDefteri() {
 
     // Sekmeler arası kaydırma: panel parmağı izler; bırakınca yumuşakça kayarak çıkar, yeni sekme aynı yönden girer
     init() {
+      // iOS Safari :active durumunu ancak sayfada bir dokunma dinleyicisi varsa uygular (basma hissi için)
+      document.addEventListener('touchstart', () => {}, {passive: true});
       const savedPeople = read('mesai-defteri-people', null), savedEntries = read('mesai-defteri-entries', null);
       if (savedPeople === null) { this.people = demoPeople; this.entries = demoEntries; this.persist(); }
       else { this.people = validPeople(savedPeople); this.entries = validEntries(savedEntries); }
