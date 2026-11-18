@@ -851,3 +851,4 @@ html[data-theme="dark"] .theme-btn .moon{opacity:0;transform:rotate(-70deg) scal
 .crew-option.chosen .crew-ic{border-color:var(--mint-line);color:var(--mint-ink)}
 .crew-count{margin-left:auto;margin-right:8px;font:11px var(--mono);letter-spacing:var(--track);color:var(--dim)}
 .crew-option .type-check{display:block!important;visibility:hidden;margin-left:0;width:16px}.crew-option.chosen .type-check{visibility:visible}
+@media (max-width:760px){.rail::after{content:"";position:absolute;left:-1px;right:-1px;top:calc(100% + 1px);height:160px;background:var(--bg);pointer-events:none}}
