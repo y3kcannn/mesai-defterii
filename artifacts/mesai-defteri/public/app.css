@@ -999,3 +999,7 @@ button.sa-line:active{background:var(--mint-wash-2)}
 html[data-theme="dark"] .git-hint.ok{color:#7cc79a}
 
 .tool-card-ic{width:48px;height:48px}.tool-card-ic .ic{width:30px;height:30px;stroke-width:1.5}
+
+.tool-card-ic{width:52px;height:52px;display:grid;place-items:center;background:var(--surface-2);border:1px solid var(--line)}
+.tool-card-ic .tic{width:42px;height:42px;display:block}
+.sa-here{width:100%;justify-content:center;height:42px}

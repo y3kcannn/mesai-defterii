@@ -55,7 +55,7 @@ const bulut = (() => {
     // Hareketli profil fotoğrafı (GIF) depolamaya yüklenir; kayıtta yalnız adresi tutulur
     async uploadPhoto(file, id) {
       if (!on) throw new Error('Bağlantı yok');
-      const path = `${id}-${Date.now()}.gif`, ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), 90000);
+      const path = `${id}-${Date.now()}.gif`, ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), 180000);
       try {
         const r = await fetch(`${SUPABASE_URL}/storage/v1/object/avatars/${encodeURIComponent(path)}`, { method: 'POST', body: file, signal: ctl.signal, headers: { apikey: SUPABASE_KEY, authorization: `Bearer ${SUPABASE_KEY}`, 'content-type': 'image/gif', 'cache-control': 'max-age=31536000' } });
         if (!r.ok) throw new Error(String(r.status));

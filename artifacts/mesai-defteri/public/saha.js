@@ -112,7 +112,20 @@ function dilimTool() {
       Object.assign(this.d, {to: this.d.from, toZone: 'auto', from, fromZone: String(zone || this.d.fromZone),
         a: from === 'geo' ? sFix(t.geo.lat, 9) : sFix(t.y, 3), b: from === 'geo' ? sFix(t.geo.lon, 9) : sFix(t.x, 3)});
     },
-    copy(text) { navigator.clipboard?.writeText(text).then(() => this.$dispatch('toast', 'Kopyalandı')).catch(() => {}); },
+    clear() { this.d.a = ''; this.d.b = ''; },
+    // Telefonun konumunu kaynak sisteme çevirip yazar (dilim otomatik seçilir)
+    locating: false,
+    here() {
+      if (!navigator.geolocation) return this.$dispatch('toast', 'Konum desteklenmiyor');
+      this.locating = true;
+      navigator.geolocation.getCurrentPosition(({coords: c}) => {
+        this.locating = false;
+        if (this.d.from === 'geo') return Object.assign(this.d, {a: sFix(c.latitude, 8), b: sFix(c.longitude, 8)});
+        const z = this.d.from === 'tm3' ? nearestDom(c.longitude) : utmZoneOf(c.longitude), r = tmForward(c.latitude, c.longitude, sys(this.d.from, z, this.d.ell));
+        Object.assign(this.d, {fromZone: String(z), a: sFix(r.y, 3), b: sFix(r.x, 3)});
+        this.$dispatch('toast', `Konum alındı · ±${Math.round(c.accuracy)} m`);
+      }, () => { this.locating = false; this.$dispatch('toast', 'Konum alınamadı'); }, {enableHighAccuracy: true, timeout: 20000, maximumAge: 0});
+    },
   };
 }
 
@@ -126,6 +139,7 @@ function gitTool() {
     // Ekranda çizilen (yumuşatılmış, sarılmamış) açılar
     roseRot: 0, arrowRot: 0, arrived: false, raf: 0, buzzed: false,
     init() { this.$watch('g', v => { sSave('saha-git', v); this.arrived = false; }); },
+    clear() { if (this.running) this.stop(); this.g.a = ''; this.g.b = ''; },
     doms: TM3_DOMS, zones: UTM_ZONES, fix: sFix, grp: sGroup,
     get labels() { return this.g.kind === 'geo' ? ['Enlem (°)', 'Boylam (°)'] : ['Sağa (Y)', 'Yukarı (X)']; },
     get target() { return readPoint(this.g); },
@@ -191,6 +205,7 @@ function temelTool() {
   return {
     t: sStore('saha-temel', {mode: 'inv', ay: '', ax: '', by: '', bx: '', ang: '', dist: ''}),
     init() { this.$watch('t', v => sSave('saha-temel', v)); },
+    clear() { Object.assign(this.t, {ay: '', ax: '', by: '', bx: '', ang: '', dist: ''}); },
     fix: sFix, grp: sGroup,
     // 2. temel ödev: A ve B'den semt ve mesafe
     get inv() {
@@ -224,7 +239,16 @@ function alanTool() {
     },
     add() { this.p.rows.push({y: '', x: ''}); },
     del(i) { if (this.p.rows.length > 3) this.p.rows.splice(i, 1); },
-    clear() { if (confirm('Tüm noktalar silinsin mi?')) this.p.rows = [{y: '', x: ''}, {y: '', x: ''}, {y: '', x: ''}]; },
+    clear() { this.p.rows = [{y: '', x: ''}, {y: '', x: ''}, {y: '', x: ''}]; },
+    // Excel/CAD'den çok satırlı liste yapıştırılırsa (No Y X ya da Y X) tüm köşeler bir kerede dolar
+    paste(e) {
+      const rows = e.clipboardData.getData('text').trim().split(/\r?\n/).map(l => l.trim().split(/[\s;\t]+/).filter(v => Number.isFinite(sNum(v)))).filter(r => r.length >= 2);
+      if (rows.length < 2) return;
+      e.preventDefault();
+      this.p.rows = rows.map(r => ({y: r.at(-2), x: r.at(-1)}));
+      if (this.p.rows.length < 3) this.p.rows.push({y: '', x: ''});
+      this.$dispatch('toast', rows.length + ' nokta yapıştırıldı');
+    },
     next(ev) { const all = [...this.$root.querySelectorAll('.alan-table input')], i = all.indexOf(ev.target); if (i >= 0 && i < all.length - 1) all[i + 1].focus(); else { this.add(); this.$nextTick(() => [...this.$root.querySelectorAll('.alan-table input')].at(-2)?.focus()); } },
   };
 }
@@ -235,6 +259,7 @@ function trigTool() {
   return {
     t: sStore('saha-trig', {s: '', z: '', i: '', r: '', h0: ''}),
     init() { this.$watch('t', v => sSave('saha-trig', v)); },
+    clear() { Object.assign(this.t, {s: '', z: '', i: '', r: '', h0: ''}); },
     fix: sFix, grp: sGroup,
     get res() {
       const s = sNum(this.t.s), z = sNum(this.t.z);
@@ -246,3 +271,14 @@ function trigTool() {
     },
   };
 }
+
+// Koordinat yapıştırma: "Y X" ikilisi tek alana yapıştırılırsa yanındaki alana bölünür
+document.addEventListener('paste', e => {
+  const el = e.target; if (e.defaultPrevented || !el.matches?.('input.sa-num')) return;
+  const parts = e.clipboardData.getData('text').trim().split(/\s*[;\t\n]\s*|\s*,\s+|\s+/).filter(Boolean);
+  if (parts.length !== 2 || !parts.every(v => Number.isFinite(sNum(v)))) return;
+  const ins = [...el.closest('.sa-card').querySelectorAll('input.sa-num')].filter(i => i.offsetParent), k = ins.indexOf(el);
+  if (!ins[k + 1]) return;
+  e.preventDefault();
+  [el, ins[k + 1]].forEach((i, j) => { i.value = parts[j]; i.dispatchEvent(new Event('input', {bubbles: true})); });
+});

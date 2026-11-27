@@ -173,12 +173,12 @@ function mesaiDefteri() {
     // Ekip: Yol (açık saha) ya da Tünel; seçilen ekibin dışındakiler hiçbir listede görünmez
     // Ayarlar menüsündeki araçlar (yenileri buraya eklenir; her araç kendi görünümünü açar)
     tools: [
-      {id: 'nivelman', label: 'Nivelman', desc: 'Geri–ileri okumalarından kot', icon: 'i-level'},
-      {id: 'git', label: 'Noktaya git', desc: 'Koordinata pusulayla git', icon: 'i-compass'},
-      {id: 'dilim', label: 'Dilim dönüşümü', desc: 'TM 3° · UTM 6° · coğrafi', icon: 'i-swap'},
-      {id: 'temel', label: 'Semt ve mesafe', desc: 'İki nokta arası semt, mesafe ya da yeni nokta', icon: 'i-ruler'},
-      {id: 'alan', label: 'Alan hesabı', desc: 'Köşe koordinatlarından alan', icon: 'i-area'},
-      {id: 'trig', label: 'Trigonometrik yükseklik', desc: 'Eğik mesafe ve zenitten kot', icon: 'i-station'},
+      {id: 'nivelman', label: 'Nivelman', desc: 'Geri–ileri okumalarından kot', icon: 'i-t-level'},
+      {id: 'git', label: 'Noktaya git', desc: 'Koordinata pusulayla git', icon: 'i-t-compass'},
+      {id: 'dilim', label: 'Dilim dönüşümü', desc: 'TM 3° · UTM 6° · coğrafi', icon: 'i-t-globe'},
+      {id: 'temel', label: 'Semt ve mesafe', desc: 'İki nokta arası semt, mesafe ya da yeni nokta', icon: 'i-t-poles'},
+      {id: 'alan', label: 'Alan hesabı', desc: 'Köşe koordinatlarından alan', icon: 'i-t-parcel'},
+      {id: 'trig', label: 'Trigonometrik yükseklik', desc: 'Eğik mesafe ve zenitten kot', icon: 'i-t-station'},
     ],
     crews: [{id: 'yol', label: 'Yol ekibi', icon: 'i-road'}, {id: 'tunel', label: 'Tünel ekibi', icon: 'i-tunnel'}],
     get crewInfo() { return this.crews.find(c => c.id === this.crew) || this.crews[0]; },
@@ -754,7 +754,7 @@ function mesaiDefteri() {
     },
     // GIF kırpılmaz (hareket kaybolur); olduğu gibi yüklenir, avatarda ortalanıp kareye sığdırılır
     async pickGif(f) {
-      if (f.size > 4 * 1024 * 1024) { this.notify('GIF en fazla 4 MB olabilir'); return; }
+      if (f.size > 15 * 1024 * 1024) { this.notify('GIF en fazla 15 MB olabilir'); return; }
       const back = this.modal, id = back === 'photo' && this.photoId ? this.photoId : (this.personForm?.id || 'yeni');
       this.notify('GIF yükleniyor…');
       try {
