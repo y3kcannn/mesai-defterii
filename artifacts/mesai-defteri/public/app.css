@@ -990,3 +990,4 @@ html[data-theme="dark"] .git-hint.ok{color:#7cc79a}
 .sa-out>template+div,.sa-out>div{min-width:0}
 .mode-switch.sa-seg button{padding:0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sa-body .form-grid{row-gap:12px!important}
+.tool-card-ic{width:48px;height:48px}.tool-card-ic .ic{width:30px;height:30px;stroke-width:1.5}
