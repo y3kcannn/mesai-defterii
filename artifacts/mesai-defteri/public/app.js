@@ -412,30 +412,42 @@ function mesaiDefteri() {
           if (e.paidMonth) return 'weekday';
           return parseDate(e.date).getDay() === rest ? 'weekend' : 'weekday';
         };
-        for (const e of own) if (!isLeave(e.type) && show[cat(e)]) total += this.paidHours(e, p);
+        // Hafta tatili çalışması iki parçadır: 7,5 saat hafta tatili, aşan saatler hafta içi fazla mesai.
+        // Filtrede hangisi açıksa yalnız o parça görünür ve toplanır.
+        const isRestWork = e => e.type === 'normal' && !e.paidMonth && parseDate(e.date).getDay() === rest && !this.restLost(e, p);
+        const restParts = e => {
+          const parts = hesapla.parcala(e, {gunluk: daily, haftaTatili: rest, izinler: this.leaveSet(p.id)});
+          const ht = parts.filter(x => x.satir === 'hafta-tatili').reduce((s, x) => s + x.saat, 0);
+          return {weekend: ht, weekday: parts.reduce((s, x) => s + x.saat, 0) - ht};
+        };
+        const shownHours = e => {
+          if (isRestWork(e)) { const r = restParts(e); return (show.weekend ? r.weekend : 0) + (show.weekday ? r.weekday : 0); }
+          return show[cat(e)] ? this.paidHours(e, p) : 0;
+        };
+        for (const e of own) if (!isLeave(e.type)) total += shownHours(e);
         const cells = cols.map((col, ci) => {
           const d = col.day, list = byDate.get(col.key) || [], work = list.filter(x => !isLeave(x.type)), e = list.find(x => isLeave(x.type)) || work[0];
           const cls = [colDay[ci] === rest ? 'rest' : '', !col.lead && d === today ? 'today' : '', col.lead ? 'lead' : '', col.lead && col.cls.includes('lead-end') ? 'lead-end' : '', flashOn && flashKey === col.key ? 'just-saved' : ''];
           let text = '';
           if (work.length > 1) {
-            const vis = work.filter(x => show[cat(x)]);
-            if (vis.length) {
-              const k = vis[0], c = cat(k);
-              cls.push(c === 'weekend' ? 'weekend' : k.type === 'fazla' ? 'normal' : k.type);
-              text = this.formatHours(vis.reduce((s, x) => s + this.paidHours(x, p), 0));
+            const sum = work.reduce((s, x) => s + shownHours(x), 0);
+            if (sum > 0) {
+              const k = work.find(x => shownHours(x) > 0), c = cat(k);
+              cls.push(c === 'weekend' && show.weekend ? 'weekend' : k.type === 'fazla' || c === 'weekend' ? 'normal' : k.type);
+              text = this.formatHours(sum);
             }
           } else if (e) {
             if (isLeave(e.type)) { if (show.leave) { cls.push('leave'); text = short[e.type] || 'İ'; } }
             else {
               const c = cat(e);
-              if (show[c]) {
+              if (isRestWork(e)) {
+                // Hafta tatili çalışması: ikisi açıksa 'HT+2', yalnız hafta tatili 'HT', yalnız hafta içi '2'
+                const r = restParts(e), x = Math.round(r.weekday * 100) / 100;
+                if (show.weekend) { cls.push('weekend'); text = x > 0 && show.weekday ? 'HT+' + this.formatHours(x) : 'HT'; }
+                else if (show.weekday && x > 0) { cls.push('normal'); text = this.formatHours(x); }
+              } else if (show[c]) {
                 cls.push(c === 'weekend' ? 'weekend' : e.type === 'fazla' ? 'normal' : e.type);
-                const h = this.paidHours(e, p);
-                // Hafta tatili çalışması: 'HT', günlük saati aşan kısım 'HT+2'
-                if (e.type === 'normal' && !e.paidMonth && parseDate(e.date).getDay() === rest && !this.restLost(e, p)) {
-                  const x = Math.round((h - daily) * 100) / 100;
-                  text = x > 0 ? 'HT+' + this.formatHours(x) : 'HT';
-                } else text = this.formatHours(h);
+                text = this.formatHours(this.paidHours(e, p));
               }
             }
           }
