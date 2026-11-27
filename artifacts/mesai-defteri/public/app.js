@@ -173,16 +173,12 @@ function mesaiDefteri() {
     // Ekip: Yol (açık saha) ya da Tünel; seçilen ekibin dışındakiler hiçbir listede görünmez
     // Ayarlar menüsündeki araçlar (yenileri buraya eklenir; her araç kendi görünümünü açar)
     tools: [
-      {id: 'nivelman', label: 'Nivelman Hesabı', desc: 'Geri–ileri okumalarıyla kot ve yükseklik farkı', icon: 'i-level'},
-      {id: 'dilim', label: 'Dilim dönüşümü', desc: 'TM 3° ↔ UTM 6° ↔ coğrafi koordinat', icon: 'i-swap'},
-      {id: 'git', label: 'Noktaya git', desc: 'Koordinatı gir, pusula seni noktaya götürsün', icon: 'i-compass'},
-      {id: 'temel', label: 'Temel ödevler', desc: 'Semt ve mesafeden nokta, iki noktadan semt', icon: 'i-ruler'},
-      {id: 'alan', label: 'Alan hesabı', desc: 'Köşe koordinatlarından alan ve çevre', icon: 'i-area'},
-      {id: 'trig', label: 'Trigonometrik yükseklik', desc: 'Eğik mesafe ve zenitten yükseklik farkı', icon: 'i-station'},
-      {id: 'dik', label: 'Dik koordinat', desc: 'Doğruya göre absis–ordinat ve aplikasyon', icon: 'i-perp'},
-      {id: 'kes', label: 'Doğru kesişimi', desc: 'İki doğrunun kesişim noktası', icon: 'i-cross'},
-      {id: 'egim', label: 'Eğim hesabı', desc: 'Yüzde, açı, oran ve eğik uzunluk', icon: 'i-slope'},
-      {id: 'birim', label: 'Birim çevirici', desc: 'Grad, derece, DMS, radyan; m², dönüm, hektar', icon: 'i-units'},
+      {id: 'nivelman', label: 'Nivelman', desc: 'Geri–ileri okumalarından kot', icon: 'i-level'},
+      {id: 'git', label: 'Noktaya git', desc: 'Koordinata pusulayla git', icon: 'i-compass'},
+      {id: 'dilim', label: 'Dilim dönüşümü', desc: 'TM 3° · UTM 6° · coğrafi', icon: 'i-swap'},
+      {id: 'temel', label: 'Semt ve mesafe', desc: 'İki nokta arası semt, mesafe ya da yeni nokta', icon: 'i-ruler'},
+      {id: 'alan', label: 'Alan hesabı', desc: 'Köşe koordinatlarından alan', icon: 'i-area'},
+      {id: 'trig', label: 'Trigonometrik yükseklik', desc: 'Eğik mesafe ve zenitten kot', icon: 'i-station'},
     ],
     crews: [{id: 'yol', label: 'Yol ekibi', icon: 'i-road'}, {id: 'tunel', label: 'Tünel ekibi', icon: 'i-tunnel'}],
     get crewInfo() { return this.crews.find(c => c.id === this.crew) || this.crews[0]; },
@@ -815,20 +811,21 @@ function mesaiDefteri() {
     // ── Görünüm ve animasyon ────────────────────────────────────────────────
 
     // Tema: düğmeden yayılan dairesel geçiş
-    toggleTheme(ev) {
-      const r = document.documentElement, b = ev?.currentTarget?.getBoundingClientRect();
+    themes: {light: 'Açık', dark: 'Koyu', ozalit: 'Ozalit'},
+    toggleTheme(ev, to) {
+      const r = document.documentElement, b = ev?.currentTarget?.getBoundingClientRect(), order = Object.keys(this.themes);
+      const t = to || order[(order.indexOf(this.theme) + 1) % order.length];
+      if (t === this.theme) return;
       if (b) {
         const x = b.left + b.width / 2, y = b.top + b.height / 2;
         r.style.setProperty('--vx', x + 'px'); r.style.setProperty('--vy', y + 'px');
         r.style.setProperty('--vr', Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y)) + 'px');
       }
-      // Yeni tema uygulama anında belirlenir: hızlı çift dokunuşta geçişler üst üste binse de tema doğru kalır
       const apply = () => {
-        const t = this.theme === 'dark' ? 'light' : 'dark';
         this.theme = t; r.dataset.theme = t;
         try { localStorage.setItem('mesai-tema', t); } catch {}
-        document.querySelector('meta[name=theme-color]')?.setAttribute('content', t === 'dark' ? '#1d1b17' : '#ece5d3');
-        document.querySelector('meta[name=apple-mobile-web-app-status-bar-style]')?.setAttribute('content', t === 'dark' ? 'black-translucent' : 'default');
+        document.querySelector('meta[name=theme-color]')?.setAttribute('content', {light: '#ece5d3', dark: '#1d1b17', ozalit: '#14283f'}[t]);
+        document.querySelector('meta[name=apple-mobile-web-app-status-bar-style]')?.setAttribute('content', t === 'light' ? 'default' : 'black-translucent');
       };
       if (document.startViewTransition && !reduceMotion()) document.startViewTransition(apply).ready.catch(() => {}); // yarıda kesilen geçiş hata sayılmasın
       else apply();

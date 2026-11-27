@@ -4,8 +4,8 @@
 // ── Jeodezi ────────────────────────────────────────────────────────────
 // Elipsoitler. ITRF96 (GRS80) ile WGS84 arasındaki fark saha için ihmal edilebilir (< 1 m).
 const ELLIPSOIDS = {
-  grs80: {label: 'ITRF96 / GRS80', a: 6378137, f: 1 / 298.257222101},
-  hayford: {label: 'ED50 / Hayford', a: 6378388, f: 1 / 297},
+  grs80: {label: 'ITRF96', a: 6378137, f: 1 / 298.257222101},
+  hayford: {label: 'ED50', a: 6378388, f: 1 / 297},
 };
 const toRad = d => d * Math.PI / 180, toDeg = r => r * 180 / Math.PI;
 
@@ -121,7 +121,7 @@ function dilimTool() {
 const angDelta = (to, from) => ((to - from + 540) % 360) - 180;
 function gitTool() {
   return {
-    g: sStore('saha-git', {kind: 'tm3', zone: '33', ell: 'grs80', a: '', b: '', name: ''}),
+    g: sStore('saha-git', {kind: 'tm3', zone: '33', ell: 'grs80', a: '', b: ''}),
     pos: null, acc: null, heading: null, running: false, err: '', watchId: null, onOri: null,
     // Ekranda çizilen (yumuşatılmış, sarılmamış) açılar
     roseRot: 0, arrowRot: 0, arrived: false, raf: 0, buzzed: false,
@@ -186,10 +186,10 @@ function gitTool() {
   };
 }
 
-// ── Temel ödevler ──────────────────────────────────────────────────────
+// ── Semt ve mesafe (1. ve 2. temel ödev, grad) ──────────────────────────────────────────────────────
 function temelTool() {
   return {
-    t: sStore('saha-temel', {unit: 'grad', ay: '', ax: '', by: '', bx: '', ang: '', dist: ''}),
+    t: sStore('saha-temel', {mode: 'inv', ay: '', ax: '', by: '', bx: '', ang: '', dist: ''}),
     init() { this.$watch('t', v => sSave('saha-temel', v)); },
     fix: sFix, grp: sGroup,
     // 2. temel ödev: A ve B'den semt ve mesafe
@@ -197,13 +197,13 @@ function temelTool() {
       const [ay, ax, by, bx] = [this.t.ay, this.t.ax, this.t.by, this.t.bx].map(sNum);
       if (![ay, ax, by, bx].every(Number.isFinite)) return null;
       const dy = by - ay, dx = bx - ax;
-      return {s: Math.hypot(dy, dx), t: norm(toUnit(Math.atan2(dy, dx), this.t.unit), this.t.unit), dy, dx};
+      return {s: Math.hypot(dy, dx), t: norm(toUnit(Math.atan2(dy, dx), 'grad'), 'grad'), dy, dx};
     },
     // 1. temel ödev: A, semt ve mesafeden B
     get fwd() {
       const [ay, ax, a, s] = [this.t.ay, this.t.ax, this.t.ang, this.t.dist].map(sNum);
       if (![ay, ax, a, s].every(Number.isFinite)) return null;
-      const r = fromUnit(a, this.t.unit);
+      const r = fromUnit(a, 'grad');
       return {y: ay + s * Math.sin(r), x: ax + s * Math.cos(r)};
     },
   };
@@ -233,99 +233,16 @@ function alanTool() {
 // D = S·sin Z, ΔH = S·cos Z + i − t (+ eğrilik/kırılma (1−k)D²/2R)
 function trigTool() {
   return {
-    t: sStore('saha-trig', {unit: 'grad', s: '', z: '', i: '', r: '', h0: '', ek: true}),
+    t: sStore('saha-trig', {s: '', z: '', i: '', r: '', h0: ''}),
     init() { this.$watch('t', v => sSave('saha-trig', v)); },
     fix: sFix, grp: sGroup,
     get res() {
       const s = sNum(this.t.s), z = sNum(this.t.z);
       if (!Number.isFinite(s) || !Number.isFinite(z)) return null;
-      const zr = fromUnit(z, this.t.unit), i = sNum(this.t.i) || 0, r = sNum(this.t.r) || 0, h0 = sNum(this.t.h0);
-      const d = s * Math.sin(zr), cr = this.t.ek ? (1 - 0.13) * d * d / (2 * 6371000) : 0;
+      const zr = fromUnit(z, 'grad'), i = sNum(this.t.i) || 0, r = sNum(this.t.r) || 0, h0 = sNum(this.t.h0);
+      const d = s * Math.sin(zr), cr = (1 - 0.13) * d * d / (2 * 6371000);
       const dh = s * Math.cos(zr) + i - r + cr;
       return {d, dh, cr, kot: Number.isFinite(h0) ? h0 + dh : null, pct: d ? (s * Math.cos(zr)) / d * 100 : null};
-    },
-  };
-}
-
-// ── Eğim ───────────────────────────────────────────────────────────────
-function egimTool() {
-  return {
-    e: sStore('saha-egim', {d: '', h: '', pct: '', d2: ''}),
-    init() { this.$watch('e', v => sSave('saha-egim', v)); },
-    fix: sFix,
-    get res() {
-      const d = sNum(this.e.d), h = sNum(this.e.h);
-      if (!Number.isFinite(d) || !Number.isFinite(h) || d === 0) return null;
-      const a = Math.atan2(h, d);
-      return {pct: h / d * 100, deg: toDeg(a), grad: a * 200 / Math.PI, n: h ? Math.abs(d / h) : null, s: Math.hypot(d, h)};
-    },
-    get back() { const p = sNum(this.e.pct), d = sNum(this.e.d2); return Number.isFinite(p) && Number.isFinite(d) ? d * p / 100 : null; },
-  };
-}
-
-// ── Birim çevirici (açı ve alan) ───────────────────────────────────────
-function birimTool() {
-  return {
-    b: sStore('saha-birim', {av: '', au: 'grad', arv: '', aru: 'm2'}),
-    init() { this.$watch('b', v => sSave('saha-birim', v)); },
-    fix: sFix, grp: sGroup, dms,
-    // Derece.dakikasaniye (ddd.mmss) girişi
-    get rad() {
-      const v = sNum(this.b.av); if (!Number.isFinite(v)) return null;
-      if (this.b.au === 'dms') { const sg = v < 0 ? -1 : 1, a = Math.abs(v), d = Math.floor(a), m = Math.floor((a - d) * 100 + 1e-9), s = ((a - d) * 100 - m) * 100; return sg * toRad(d + m / 60 + s / 3600); }
-      return this.b.au === 'grad' ? v * Math.PI / 200 : this.b.au === 'rad' ? v : toRad(v);
-    },
-    get area() {
-      const v = sNum(this.b.arv); if (!Number.isFinite(v)) return null;
-      const m2 = v * ({m2: 1, donum: 1000, ha: 10000, km2: 1e6}[this.b.aru]);
-      return {m2, donum: m2 / 1000, ha: m2 / 10000, km2: m2 / 1e6};
-    },
-  };
-}
-
-// ── Dik koordinat (doğruya göre) ve aplikasyon ─────────────────────────
-// A→B doğrusu boyunca a (absis), dik yönde h (ordinat; sağ +, sol −)
-function dikTool() {
-  return {
-    k: sStore('saha-dik', {ay: '', ax: '', by: '', bx: '', py: '', px: '', a: '', h: ''}),
-    init() { this.$watch('k', v => sSave('saha-dik', v)); },
-    fix: sFix, grp: sGroup,
-    get base() {
-      const [ay, ax, by, bx] = [this.k.ay, this.k.ax, this.k.by, this.k.bx].map(sNum);
-      if (![ay, ax, by, bx].every(Number.isFinite)) return null;
-      const L = Math.hypot(by - ay, bx - ax); if (!L) return null;
-      return {ay, ax, uy: (by - ay) / L, ux: (bx - ax) / L, L};
-    },
-    // Noktadan doğruya: absis, ordinat ve dik ayak
-    get toLine() {
-      const b = this.base, py = sNum(this.k.py), px = sNum(this.k.px);
-      if (!b || !Number.isFinite(py) || !Number.isFinite(px)) return null;
-      const dy = py - b.ay, dx = px - b.ax, a = dy * b.uy + dx * b.ux, h = dy * b.ux - dx * b.uy;
-      return {a, h, fy: b.ay + a * b.uy, fx: b.ax + a * b.ux};
-    },
-    // Absis/ordinattan nokta (aplikasyon)
-    get fromLine() {
-      const b = this.base, a = sNum(this.k.a), h = sNum(this.k.h);
-      if (!b || !Number.isFinite(a) || !Number.isFinite(h)) return null;
-      return {y: b.ay + a * b.uy + h * b.ux, x: b.ax + a * b.ux - h * b.uy};
-    },
-  };
-}
-
-// ── İki doğrunun kesişimi ──────────────────────────────────────────────
-function kesTool() {
-  return {
-    k: sStore('saha-kes', {a1y: '', a1x: '', a2y: '', a2x: '', b1y: '', b1x: '', b2y: '', b2x: ''}),
-    init() { this.$watch('k', v => sSave('saha-kes', v)); },
-    fix: sFix, grp: sGroup,
-    get res() {
-      const v = ['a1y', 'a1x', 'a2y', 'a2x', 'b1y', 'b1x', 'b2y', 'b2x'].map(f => sNum(this.k[f]));
-      if (!v.every(Number.isFinite)) return null;
-      const [p1y, p1x, p2y, p2x, q1y, q1x, q2y, q2x] = v, ry = p2y - p1y, rx = p2x - p1x, sy = q2y - q1y, sx = q2x - q1x;
-      const den = ry * sx - rx * sy;
-      if (Math.abs(den) < 1e-12) return {parallel: true};
-      const t = ((q1y - p1y) * sx - (q1x - p1x) * sy) / den, u = ((q1y - p1y) * rx - (q1x - p1x) * ry) / den;
-      return {y: p1y + t * ry, x: p1x + t * rx, onA: t >= 0 && t <= 1, onB: u >= 0 && u <= 1};
     },
   };
 }
