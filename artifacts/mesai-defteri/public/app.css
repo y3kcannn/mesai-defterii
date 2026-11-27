@@ -897,9 +897,6 @@ html[data-theme="dark"] .theme-btn .moon{opacity:0;transform:rotate(-70deg) scal
 
 /* Telefonu yan çevir: telefon yaylanarak yatar, ekranında tablo açılır */
 .rt{width:150px;height:150px;overflow:visible}
-.rt-arc,.rt-head{fill:none;stroke:var(--mint);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.rt-arc{stroke-dasharray:60;stroke-dashoffset:60;animation:rt-arc 3.2s var(--ease-io) infinite}
-.rt-head{opacity:0;animation:rt-head 3.2s var(--ease-io) infinite}
 .rt-phone{transform-box:view-box;transform-origin:70px 70px;animation:rt-turn 3.2s cubic-bezier(.5,-.25,.25,1.35) infinite}
 .rt-body{fill:var(--surface-raised);stroke:var(--soft);stroke-width:2}
 .rt-scr{fill:var(--field)}
@@ -911,11 +908,9 @@ html[data-theme="dark"] .theme-btn .moon{opacity:0;transform:rotate(-70deg) scal
 .rt-cell.c2{fill:color-mix(in srgb,var(--rest) 50%,var(--field))}
 .rt-cell.c3{fill:color-mix(in srgb,var(--amber) 55%,var(--field))}
 @keyframes rt-turn{0%,16%{transform:rotate(0)}44%,84%{transform:rotate(-90deg)}100%{transform:rotate(0)}}
-@keyframes rt-arc{0%,10%{stroke-dashoffset:60;opacity:1}40%{stroke-dashoffset:0;opacity:1}70%,100%{stroke-dashoffset:0;opacity:0}}
-@keyframes rt-head{0%,34%{opacity:0}42%,62%{opacity:1}72%,100%{opacity:0}}
 @keyframes rt-lines{0%,30%{opacity:1}40%,88%{opacity:0}100%{opacity:1}}
 @keyframes rt-cell{0%,44%{opacity:0;transform:translateY(3px)}54%,82%{opacity:1;transform:none}92%,100%{opacity:0}}
-@media (prefers-reduced-motion:reduce){.rt-phone,.rt-arc,.rt-head,.rt-lines,.rt-cell{animation:none!important}.rt-arc,.rt-head{opacity:1;stroke-dashoffset:0}}
+@media (prefers-reduced-motion:reduce){.rt-phone,.rt-arc,.rt-head,.rt-lines,.rt-cell{animation:none!important}}
 
 /* Ayarlar sayfası */
 .tool-cards{display:grid;gap:0;background:var(--surface);border:1px solid var(--line);box-shadow:var(--elev-1)}
