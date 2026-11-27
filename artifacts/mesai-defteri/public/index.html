@@ -26,6 +26,7 @@
   <script defer src="./hesaplama.js"></script>
   <script defer src="./sync.js"></script>
   <script defer src="./nivelman.js"></script>
+<script defer src="./saha.js"></script>
 <script defer src="./app.js"></script>
   <script defer src="./alpine.min.js"></script>
   <script>try{['mesai-renkler','mesai-renk'].forEach(function(k){localStorage.removeItem(k)});var t=localStorage.getItem('mesai-tema');if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t;document.querySelector('meta[name=theme-color]').content=t==='dark'?'#1d1b17':'#ece5d3';var sb=document.querySelector('meta[name=apple-mobile-web-app-status-bar-style]');if(sb)sb.content=t==='dark'?'black-translucent':'default';}catch(e){}</script>
@@ -48,7 +49,7 @@
 <symbol id="i-lock" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
 <symbol id="i-unlock" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></symbol>
 <symbol id="i-tunnel" viewBox="0 0 24 24"><path d="M2 20h20"/><path d="M4 20v-8a8 8 0 0 1 16 0v8"/><path d="M8 20v-7a4 4 0 0 1 8 0v7"/></symbol><symbol id="i-road" viewBox="0 0 24 24"><path d="M5 20 9 4"/><path d="M19 20 15 4"/><path d="M12 5v2"/><path d="M12 11v2"/><path d="M12 17v2"/></symbol><symbol id="i-leave" viewBox="0 0 24 24"><path d="M13 8c0-2.76-2.46-5-5.5-5S2 5.24 2 8h2l1-1 1 1h4"/><path d="M13 7.14A5.82 5.82 0 0 1 16.5 6c3.04 0 5.5 2.24 5.5 5h-3l-1-1-1 1h-3"/><path d="M5.89 9.71c-2.15 2.15-2.3 5.47-.35 7.43l4.24-4.25.7-.7.71-.71 2.12-2.12c-1.95-1.96-5.27-1.8-7.42.35"/><path d="M11 15.5c.5 2.5-.17 4.5-1 6.5h4c2-5.5-.5-12-1-14"/></symbol>
-<symbol id="i-settings" viewBox="0 0 24 24"><path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></symbol><symbol id="i-level" viewBox="0 0 24 24"><path d="M3 20h18"/><path d="m12 8-4 12"/><path d="m12 8 4 12"/><path d="M12 8v12"/><rect x="7" y="3" width="10" height="5"/><path d="M12 5.5h.01"/></symbol><symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol><symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol><symbol id="i-file" viewBox="0 0 24 24"><path d="M15 3H6v18h12V6z"/><path d="M14 3v4h4"/><path d="M9 13h6M9 17h6"/></symbol><symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></symbol><symbol id="i-printer" viewBox="0 0 24 24"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8"/><path d="M6 14h12v7H6z"/></symbol><symbol id="i-close" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+<symbol id="i-settings" viewBox="0 0 24 24"><path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></symbol><symbol id="i-level" viewBox="0 0 24 24"><path d="M3 20h18"/><path d="m12 8-4 12"/><path d="m12 8 4 12"/><path d="M12 8v12"/><rect x="7" y="3" width="10" height="5"/><path d="M12 5.5h.01"/></symbol><symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol><symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol><symbol id="i-file" viewBox="0 0 24 24"><path d="M15 3H6v18h12V6z"/><path d="M14 3v4h4"/><path d="M9 13h6M9 17h6"/></symbol><symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></symbol><symbol id="i-printer" viewBox="0 0 24 24"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8"/><path d="M6 14h12v7H6z"/></symbol><symbol id="i-swap" viewBox="0 0 24 24"><path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/></symbol><symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36z"/></symbol><symbol id="i-ruler" viewBox="0 0 24 24"><path d="M3 21 21 3"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="5" r="2"/><path d="M3 9h4M15 21v-4"/></symbol><symbol id="i-area" viewBox="0 0 24 24"><path d="M4 18 7 5l11 3 2 11z"/><circle cx="4" cy="18" r="1.5"/><circle cx="7" cy="5" r="1.5"/><circle cx="18" cy="8" r="1.5"/><circle cx="20" cy="19" r="1.5"/></symbol><symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="13" height="13"/><path d="M4 16V4h12"/></symbol><symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M6 6l1 15h10l1-15"/></symbol><symbol id="i-close" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
 <symbol id="i-check" viewBox="0 0 24 24"><path pathLength="1" d="M20 6 9 17l-5-5"/></symbol>
 <symbol id="i-chev-l" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
 <symbol id="i-chev-r" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
@@ -112,6 +113,93 @@
         <div class="page-heading"><div><div class="heading-row"><h1>Ayarlar</h1></div></div></div>
         <div class="manage-intro"><svg class="ic section-ic" aria-hidden="true"><use href="#i-settings"/></svg><span>ARAÇLAR</span></div>
         <div class="tool-cards"><template x-for="t in tools" :key="t.id"><button type="button" class="tool-card" @click="view=t.id"><span class="tool-card-ic"><svg class="ic" aria-hidden="true"><use :href="'#'+t.icon"/></svg></span><span class="tool-text"><b x-text="t.label"></b><small x-text="t.desc"></small></span><svg class="ic tool-go" aria-hidden="true"><use href="#i-chev-r"/></svg></button></template></div>
+      </main>
+
+      <main class="main-panel sa-panel" x-show="view==='dilim'" x-cloak x-data="dilimTool()">
+        <div class="page-heading"><div><button type="button" class="back-link" @click="view='tools'"><svg class="ic" aria-hidden="true"><use href="#i-chev-l"/></svg>Ayarlar</button><div class="heading-row"><h1>Dilim dönüşümü</h1></div></div></div>
+        <section class="nv-card sa-card"><div class="nv-head">KAYNAK</div><div class="sa-body">
+          <label class="field-label">Datum / elipsoit<select class="form-input" x-model="d.ell"><template x-for="(e,k) in ells" :key="k"><option :value="k" x-text="e.label"></option></template></select></label>
+          <div class="mode-switch sa-seg"><button type="button" :class="{chosen: d.from==='tm3'}" @click="d.from='tm3'">TM 3°</button><button type="button" :class="{chosen: d.from==='utm'}" @click="d.from='utm'">UTM 6°</button><button type="button" :class="{chosen: d.from==='geo'}" @click="d.from='geo'">Coğrafi</button></div>
+          <div class="form-grid"><label class="field-label" x-show="d.from==='tm3'">Dilim orta meridyeni <span class="input-unit">DOM</span><select class="form-input" x-model="d.fromZone"><template x-for="z in doms" :key="z"><option :value="String(z)" x-text="z+'°'"></option></template></select></label><label class="field-label" x-show="d.from==='utm'">UTM dilimi <span class="input-unit">ZON</span><select class="form-input" x-model="d.fromZone"><template x-for="z in zones" :key="z"><option :value="String(z)" x-text="z+' ('+(z*6-183)+'°)'"></option></template></select></label></div>
+          <div class="form-grid"><label class="field-label"><span x-text="labels[0]"></span><input class="form-input sa-num" type="text" inputmode="decimal" autocomplete="off" x-model="d.a" placeholder="0,000"></label><label class="field-label"><span x-text="labels[1]"></span><input class="form-input sa-num" type="text" inputmode="decimal" autocomplete="off" x-model="d.b" placeholder="0,000"></label></div>
+        </div></section>
+        <div class="sa-swap"><button type="button" class="btn" @click="swap()"><svg class="ic" aria-hidden="true"><use href="#i-swap"/></svg>Yönleri değiştir</button></div>
+        <section class="nv-card sa-card"><div class="nv-head">HEDEF</div><div class="sa-body">
+          <div class="mode-switch sa-seg"><button type="button" :class="{chosen: d.to==='tm3'}" @click="d.to='tm3'">TM 3°</button><button type="button" :class="{chosen: d.to==='utm'}" @click="d.to='utm'">UTM 6°</button><button type="button" :class="{chosen: d.to==='geo'}" @click="d.to='geo'">Coğrafi</button></div>
+          <div class="form-grid"><label class="field-label" x-show="d.to==='tm3'">Dilim orta meridyeni <span class="input-unit">DOM</span><select class="form-input" x-model="d.toZone"><option value="auto">Otomatik</option><template x-for="z in doms" :key="z"><option :value="String(z)" x-text="z+'°'"></option></template></select></label><label class="field-label" x-show="d.to==='utm'">UTM dilimi <span class="input-unit">ZON</span><select class="form-input" x-model="d.toZone"><option value="auto">Otomatik</option><template x-for="z in zones" :key="z"><option :value="String(z)" x-text="z+' ('+(z*6-183)+'°)'"></option></template></select></label></div>
+          <div class="sa-result" x-show="target">
+            <template x-if="target && !target.geo"><div class="sa-out">
+              <div><span>Sağa (Y)</span><b x-text="grp(target.y,3)"></b><button type="button" class="sa-copy" @click="navigator.clipboard?.writeText(fix(target.y,3)); notify('Kopyalandı')" aria-label="Kopyala"><svg class="ic" aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+              <div><span>Yukarı (X)</span><b x-text="grp(target.x,3)"></b><button type="button" class="sa-copy" @click="navigator.clipboard?.writeText(fix(target.x,3)); notify('Kopyalandı')" aria-label="Kopyala"><svg class="ic" aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+              <small x-text="(d.to==='tm3' ? 'DOM '+target.zone+'°' : 'UTM '+target.zone+'. dilim')+' · '+ells[d.ell].label"></small>
+            </div></template>
+            <template x-if="target && target.geo"><div class="sa-out">
+              <div><span>Enlem</span><b x-text="fix(target.geo.lat,9)+'°'"></b><button type="button" class="sa-copy" @click="navigator.clipboard?.writeText(fix(target.geo.lat,9)); notify('Kopyalandı')" aria-label="Kopyala"><svg class="ic" aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+              <div><span>Boylam</span><b x-text="fix(target.geo.lon,9)+'°'"></b><button type="button" class="sa-copy" @click="navigator.clipboard?.writeText(fix(target.geo.lon,9)); notify('Kopyalandı')" aria-label="Kopyala"><svg class="ic" aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+              <small x-text="dms(target.geo.lat)+' · '+dms(target.geo.lon)"></small>
+            </div></template>
+          </div>
+          <p class="sa-empty" x-show="!target">Koordinatları girin.</p>
+        </div></section>
+        <p class="sa-note">Dönüşüm aynı datum içinde yapılır. ED50 ile ITRF96 arasında geçiş için dönüşüm parametresi gerekir.</p>
+      </main>
+
+      <main class="main-panel sa-panel" x-show="view==='git'" x-cloak x-data="gitTool()" x-effect="view!=='git' && running && stop()">
+        <div class="page-heading"><div><button type="button" class="back-link" @click="view='tools'"><svg class="ic" aria-hidden="true"><use href="#i-chev-l"/></svg>Ayarlar</button><div class="heading-row"><h1>Noktaya git</h1></div></div></div>
+        <section class="nv-card sa-card"><div class="nv-head">HEDEF NOKTA</div><div class="sa-body">
+          <div class="mode-switch sa-seg"><button type="button" :class="{chosen: g.kind==='tm3'}" @click="g.kind='tm3'">TM 3°</button><button type="button" :class="{chosen: g.kind==='utm'}" @click="g.kind='utm'">UTM 6°</button><button type="button" :class="{chosen: g.kind==='geo'}" @click="g.kind='geo'">Coğrafi</button></div>
+          <div class="form-grid"><label class="field-label" x-show="g.kind==='tm3'">Dilim orta meridyeni <span class="input-unit">DOM</span><select class="form-input" x-model="g.zone"><template x-for="z in doms" :key="z"><option :value="String(z)" x-text="z+'°'"></option></template></select></label><label class="field-label" x-show="g.kind==='utm'">UTM dilimi <span class="input-unit">ZON</span><select class="form-input" x-model="g.zone"><template x-for="z in zones" :key="z"><option :value="String(z)" x-text="z+' ('+(z*6-183)+'°)'"></option></template></select></label><label class="field-label">Nokta adı <span class="input-unit">İSTEĞE BAĞLI</span><input class="form-input" type="text" autocapitalize="characters" x-model="g.name" placeholder="Örn. P12"></label></div>
+          <div class="form-grid"><label class="field-label"><span x-text="labels[0]"></span><input class="form-input sa-num" type="text" inputmode="decimal" autocomplete="off" x-model="g.a" placeholder="0,000"></label><label class="field-label"><span x-text="labels[1]"></span><input class="form-input sa-num" type="text" inputmode="decimal" autocomplete="off" x-model="g.b" placeholder="0,000"></label></div>
+        </div></section>
+        <section class="nv-card sa-card git-card">
+          <div class="git-dial" :class="{live: running && nav}">
+            <div class="git-rose" :style="'transform:rotate('+(-(heading??0))+'deg)'"><i class="n">K</i><i class="e">D</i><i class="s">G</i><i class="w">B</i></div>
+            <svg class="git-arrow" viewBox="0 0 100 100" :style="'transform:rotate('+arrow+'deg)'" x-show="nav" aria-hidden="true"><path d="M50 8 68 62 50 52 32 62Z"/></svg>
+            <div class="git-center"><b x-text="distText"></b><small x-text="g.name || 'Hedef'"></small></div>
+          </div>
+          <dl class="nv-sums">
+            <div><dt>Hedef yönü (semt)</dt><dd x-text="nav ? fix(nav.b,1)+'° · '+fix(nav.b*400/360,1)+'ᵍ' : '—'"></dd></div>
+            <div><dt>Telefonun yönü</dt><dd x-text="heading==null ? (running ? 'Pusula yok' : '—') : fix(heading,0)+'°'"></dd></div>
+            <div><dt>GPS doğruluğu</dt><dd x-text="acc==null ? '—' : '±'+fix(acc,0)+' m'"></dd></div>
+            <div x-show="here"><dt x-text="'Bulunduğun yer · '+(here?.lbl||'')"></dt><dd class="git-here" x-text="here ? grp(here.y,1)+' / '+grp(here.x,1) : ''"></dd></div>
+          </dl>
+          <p class="sa-warn" x-show="err" x-text="err"></p>
+          <div class="sa-actions"><button type="button" class="button-primary" x-show="!running" @click="start()" :disabled="!target"><svg class="ic" aria-hidden="true"><use href="#i-compass"/></svg>Başlat</button><button type="button" class="btn" x-show="running" @click="stop()">Durdur</button></div>
+        </section>
+        <p class="sa-note">Telefonu yere paralel tutun; okun gösterdiği yöne yürüyün. Metal ve araç yakınında pusula sapabilir. Telefon GPS'i 3–10 m doğrulukla çalışır.</p>
+      </main>
+
+      <main class="main-panel sa-panel" x-show="view==='temel'" x-cloak x-data="temelTool()">
+        <div class="page-heading"><div><button type="button" class="back-link" @click="view='tools'"><svg class="ic" aria-hidden="true"><use href="#i-chev-l"/></svg>Ayarlar</button><div class="heading-row"><h1>Temel ödevler</h1></div></div></div>
+        <section class="nv-card sa-card"><div class="nv-head">A NOKTASI</div><div class="sa-body">
+          <div class="mode-switch sa-seg"><button type="button" :class="{chosen: t.unit==='grad'}" @click="t.unit='grad'">Grad</button><button type="button" :class="{chosen: t.unit==='deg'}" @click="t.unit='deg'">Derece</button></div>
+          <div class="form-grid"><label class="field-label"><span x-text="'Sağa (Y)'"></span><input class="form-input sa-num" type="text" inputmode="decimal" autocomplete="off" x-model="t.ay" placeholder="0,000"></label><label class="field-label"><span x-text="'Yukarı (X)'"></span><input class="form-input sa-num" type="text" inputmode="decimal" autocomplete="off" x-model="t.ax" placeholder="0,000"></label></div>
+        </div></section>
+        <section class="nv-card sa-card"><div class="nv-head">1. TEMEL ÖDEV · SEMT VE MESAFEDEN NOKTA</div><div class="sa-body">
+          <div class="form-grid"><label class="field-label"><span x-text="'Semt ('+(t.unit==='grad' ? 'grad' : 'derece')+')'"></span><input class="form-input sa-num" type="text" inputmode="decimal" autocomplete="off" x-model="t.ang" placeholder="0,000"></label><label class="field-label"><span x-text="'Yatay mesafe (m)'"></span><input class="form-input sa-num" type="text" inputmode="decimal" autocomplete="off" x-model="t.dist" placeholder="0,000"></label></div>
+          <div class="sa-out" x-show="fwd"><div><span>B · Sağa (Y)</span><b x-text="grp(fwd?.y,3)"></b><button type="button" class="sa-copy" @click="navigator.clipboard?.writeText(fix(fwd.y,3)); notify('Kopyalandı')" aria-label="Kopyala"><svg class="ic" aria-hidden="true"><use href="#i-copy"/></svg></button></div><div><span>B · Yukarı (X)</span><b x-text="grp(fwd?.x,3)"></b><button type="button" class="sa-copy" @click="navigator.clipboard?.writeText(fix(fwd.x,3)); notify('Kopyalandı')" aria-label="Kopyala"><svg class="ic" aria-hidden="true"><use href="#i-copy"/></svg></button></div></div>
+        </div></section>
+        <section class="nv-card sa-card"><div class="nv-head">2. TEMEL ÖDEV · İKİ NOKTADAN SEMT VE MESAFE</div><div class="sa-body">
+          <div class="form-grid"><label class="field-label"><span x-text="'B · Sağa (Y)'"></span><input class="form-input sa-num" type="text" inputmode="decimal" autocomplete="off" x-model="t.by" placeholder="0,000"></label><label class="field-label"><span x-text="'B · Yukarı (X)'"></span><input class="form-input sa-num" type="text" inputmode="decimal" autocomplete="off" x-model="t.bx" placeholder="0,000"></label></div>
+          <div class="sa-out" x-show="inv"><div><span>Semt (A→B)</span><b x-text="fix(inv?.t,4)+(t.unit==='grad' ? 'ᵍ' : '°')"></b><button type="button" class="sa-copy" @click="navigator.clipboard?.writeText(fix(inv.t,4)); notify('Kopyalandı')" aria-label="Kopyala"><svg class="ic" aria-hidden="true"><use href="#i-copy"/></svg></button></div><div><span>Yatay mesafe</span><b x-text="fix(inv?.s,3)+' m'"></b><button type="button" class="sa-copy" @click="navigator.clipboard?.writeText(fix(inv.s,3)); notify('Kopyalandı')" aria-label="Kopyala"><svg class="ic" aria-hidden="true"><use href="#i-copy"/></svg></button></div><small x-text="inv ? 'ΔY '+fix(inv.dy,3)+' · ΔX '+fix(inv.dx,3) : ''"></small></div>
+        </div></section>
+      </main>
+
+      <main class="main-panel sa-panel" x-show="view==='alan'" x-cloak x-data="alanTool()">
+        <div class="page-heading"><div><button type="button" class="back-link" @click="view='tools'"><svg class="ic" aria-hidden="true"><use href="#i-chev-l"/></svg>Ayarlar</button><div class="heading-row"><h1>Alan hesabı</h1></div></div></div>
+        <section class="nv-card sa-card"><div class="nv-head">KÖŞE NOKTALARI · SIRAYLA</div>
+          <div class="nv-scroll"><table class="nv-table alan-table"><thead><tr><th class="nv-no">#</th><th>Sağa (Y)</th><th>Yukarı (X)</th><th></th></tr></thead>
+          <tbody><template x-for="(r,i) in p.rows" :key="i"><tr><td class="alan-i" x-text="i+1"></td><td class="nv-c"><input type="text" inputmode="decimal" autocomplete="off" enterkeyhint="next" x-model="r.y" placeholder="0,000" @keydown.enter.prevent="next($event)"></td><td class="nv-c"><input type="text" inputmode="decimal" autocomplete="off" enterkeyhint="next" x-model="r.x" placeholder="0,000" @keydown.enter.prevent="next($event)"></td><td class="alan-del"><button type="button" class="sa-copy" @click="del(i)" :disabled="p.rows.length<=3" aria-label="Noktayı sil"><svg class="ic" aria-hidden="true"><use href="#i-trash"/></svg></button></td></tr></template></tbody></table></div>
+          <div class="nv-rowbtns"><button class="btn" type="button" @click="add()"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg>Nokta ekle</button><button class="btn" type="button" @click="clear()">Temizle</button></div>
+        </section>
+        <section class="nv-card sa-card"><div class="nv-head">SONUÇ</div>
+          <dl class="nv-sums">
+            <div><dt>Alan</dt><dd x-text="res ? grp(res.area,2)+' m²' : 'En az 3 nokta'"></dd></div>
+            <div x-show="res"><dt>Dönüm</dt><dd x-text="res ? fix(res.area/1000,3) : ''"></dd></div>
+            <div x-show="res"><dt>Hektar</dt><dd x-text="res ? fix(res.area/10000,4) : ''"></dd></div>
+            <div x-show="res"><dt>Çevre</dt><dd x-text="res ? grp(res.per,2)+' m' : ''"></dd></div>
+          </dl>
+        </section>
       </main>
 
       <main class="main-panel nv-panel" x-show="view==='nivelman'" x-cloak x-data="nivelman()" x-init="nvInit()">

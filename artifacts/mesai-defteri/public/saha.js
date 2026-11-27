@@ -1,0 +1,204 @@
+// Saha araçları (Ayarlar): dilim dönüşümü, noktaya git (pusula), temel ödevler, alan hesabı.
+// Mesai hesabından bağımsızdır; girdiler tarayıcıda saklanır.
+
+// ── Jeodezi ────────────────────────────────────────────────────────────
+// Elipsoitler. ITRF96 (GRS80) ile WGS84 arasındaki fark saha için ihmal edilebilir (< 1 m).
+const ELLIPSOIDS = {
+  grs80: {label: 'ITRF96 / GRS80', a: 6378137, f: 1 / 298.257222101},
+  hayford: {label: 'ED50 / Hayford', a: 6378388, f: 1 / 297},
+};
+const toRad = d => d * Math.PI / 180, toDeg = r => r * 180 / Math.PI;
+
+// Transversal Merkatör (Krüger n-serisi, 6. derece; dilim içinde mm altı doğruluk)
+function tmSeries(ell) {
+  const n = ell.f / (2 - ell.f), n2 = n * n, n3 = n2 * n, n4 = n3 * n, n5 = n4 * n, n6 = n5 * n;
+  return {
+    n, A: ell.a / (1 + n) * (1 + n2 / 4 + n4 / 64 + n6 / 256),
+    alpha: [n / 2 - 2 * n2 / 3 + 5 * n3 / 16 + 41 * n4 / 180 - 127 * n5 / 288 + 7891 * n6 / 37800,
+      13 * n2 / 48 - 3 * n3 / 5 + 557 * n4 / 1440 + 281 * n5 / 630 - 1983433 * n6 / 1935360,
+      61 * n3 / 240 - 103 * n4 / 140 + 15061 * n5 / 26880 + 167603 * n6 / 181440,
+      49561 * n4 / 161280 - 179 * n5 / 168 + 6601661 * n6 / 7257600,
+      34729 * n5 / 80640 - 3418889 * n6 / 1995840,
+      212378941 * n6 / 319334400],
+    beta: [n / 2 - 2 * n2 / 3 + 37 * n3 / 96 - n4 / 360 - 81 * n5 / 512 + 96199 * n6 / 604800,
+      n2 / 48 + n3 / 15 - 437 * n4 / 1440 + 46 * n5 / 105 - 1118711 * n6 / 3870720,
+      17 * n3 / 480 - 37 * n4 / 840 - 209 * n5 / 4480 + 5569 * n6 / 90720,
+      4397 * n4 / 161280 - 11 * n5 / 504 - 830251 * n6 / 7257600,
+      4583 * n5 / 161280 - 108847 * n6 / 3991680,
+      20648693 * n6 / 638668800],
+    delta: [2 * n - 2 * n2 / 3 - 2 * n3 + 116 * n4 / 45 + 26 * n5 / 45 - 2854 * n6 / 675,
+      7 * n2 / 3 - 8 * n3 / 5 - 227 * n4 / 45 + 2704 * n5 / 315 + 2323 * n6 / 945,
+      56 * n3 / 15 - 136 * n4 / 35 - 1262 * n5 / 105 + 73814 * n6 / 2835,
+      4279 * n4 / 630 - 332 * n5 / 35 - 399572 * n6 / 14175,
+      4174 * n5 / 315 - 144838 * n6 / 6237,
+      601676 * n6 / 22275],
+  };
+}
+const TM_CACHE = {};
+const series = key => TM_CACHE[key] || (TM_CACHE[key] = tmSeries(ELLIPSOIDS[key]));
+
+// Coğrafi (derece) → sağa (Y) / yukarı (X)
+function tmForward(lat, lon, {ell = 'grs80', lon0, k0, fe = 500000}) {
+  const s = series(ell), c = 2 * Math.sqrt(s.n) / (1 + s.n), phi = toRad(lat), lam = toRad(lon - lon0);
+  const t = Math.sinh(Math.atanh(Math.sin(phi)) - c * Math.atanh(c * Math.sin(phi)));
+  const xi0 = Math.atan(t / Math.cos(lam)), eta0 = Math.atanh(Math.sin(lam) / Math.sqrt(1 + t * t));
+  let xi = xi0, eta = eta0;
+  s.alpha.forEach((a, j) => { const k = 2 * (j + 1); xi += a * Math.sin(k * xi0) * Math.cosh(k * eta0); eta += a * Math.cos(k * xi0) * Math.sinh(k * eta0); });
+  return {y: fe + k0 * s.A * eta, x: k0 * s.A * xi};
+}
+// Sağa (Y) / yukarı (X) → coğrafi (derece)
+function tmInverse(y, x, {ell = 'grs80', lon0, k0, fe = 500000}) {
+  const s = series(ell), xi = x / (k0 * s.A), eta = (y - fe) / (k0 * s.A);
+  let xi0 = xi, eta0 = eta;
+  s.beta.forEach((b, j) => { const k = 2 * (j + 1); xi0 -= b * Math.sin(k * xi) * Math.cosh(k * eta); eta0 -= b * Math.cos(k * xi) * Math.sinh(k * eta); });
+  const chi = Math.asin(Math.sin(xi0) / Math.cosh(eta0));
+  let phi = chi; s.delta.forEach((d, j) => { phi += d * Math.sin(2 * (j + 1) * chi); });
+  return {lat: toDeg(phi), lon: lon0 + toDeg(Math.atan2(Math.sinh(eta0), Math.cos(xi0)))};
+}
+
+// Türkiye dilimleri: 3° (DOM 27…45, k0 = 1) ve 6° UTM (35…38. dilim, k0 = 0,9996)
+const TM3_DOMS = [27, 30, 33, 36, 39, 42, 45];
+const UTM_ZONES = [35, 36, 37, 38];
+const utmLon0 = z => z * 6 - 183;
+const nearestDom = lon => TM3_DOMS.reduce((b, d) => Math.abs(d - lon) < Math.abs(b - lon) ? d : b, 27);
+const utmZoneOf = lon => Math.min(38, Math.max(35, Math.floor((lon + 180) / 6) + 1));
+const sys = (kind, z, ell) => kind === 'tm3' ? {ell, lon0: Number(z), k0: 1} : {ell, lon0: utmLon0(Number(z)), k0: 0.9996};
+
+// Yüzey (WGS84 küre yaklaşımı yerine elipsoit üzerinde Vincenty yerine yeterli: haversine + ilk semt)
+function distBearing(lat1, lon1, lat2, lon2) {
+  const R = 6371008.8, p1 = toRad(lat1), p2 = toRad(lat2), dp = p2 - p1, dl = toRad(lon2 - lon1);
+  const h = Math.sin(dp / 2) ** 2 + Math.cos(p1) * Math.cos(p2) * Math.sin(dl / 2) ** 2;
+  const d = 2 * R * Math.asin(Math.min(1, Math.sqrt(h)));
+  const b = (toDeg(Math.atan2(Math.sin(dl) * Math.cos(p2), Math.cos(p1) * Math.sin(p2) - Math.sin(p1) * Math.cos(p2) * Math.cos(dl))) + 360) % 360;
+  return {d, b};
+}
+
+// ── Biçim ──────────────────────────────────────────────────────────────
+const sNum = v => { const s = String(v ?? '').trim().replace(/\s/g, '').replace(',', '.'); return s === '' ? null : /^[-+]?\d*\.?\d+$/.test(s) ? Number(s) : NaN; };
+const sFix = (v, d = 3) => v == null || !Number.isFinite(v) ? '—' : v.toFixed(d).replace('.', ',');
+const sGroup = (v, d = 3) => { if (v == null || !Number.isFinite(v)) return '—'; const [i, f] = Math.abs(v).toFixed(d).split('.'); return (v < 0 ? '−' : '') + i.replace(/\B(?=(\d{3})+(?!\d))/g, '.') + (f ? ',' + f : ''); };
+const dms = deg => { if (!Number.isFinite(deg)) return '—'; const s = deg < 0 ? '−' : '', a = Math.abs(deg); let d = Math.floor(a), m = Math.floor((a - d) * 60), x = ((a - d) * 60 - m) * 60; if (x >= 59.9995) { x = 0; m++; } if (m === 60) { m = 0; d++; } return `${s}${d}° ${String(m).padStart(2, '0')}′ ${x.toFixed(3).replace('.', ',').padStart(6, '0')}″`; };
+const sStore = (key, def) => { try { return {...def, ...(JSON.parse(localStorage.getItem(key) || 'null') || {})}; } catch { return {...def}; } };
+const sSave = (key, v) => { try { localStorage.setItem(key, JSON.stringify(v)); } catch {} };
+const toUnit = (rad, unit) => unit === 'grad' ? rad * 200 / Math.PI : toDeg(rad);
+const fromUnit = (v, unit) => unit === 'grad' ? v * Math.PI / 200 : toRad(v);
+const norm = (v, unit) => { const full = unit === 'grad' ? 400 : 360; return ((v % full) + full) % full; };
+
+// Ortak: bir sistemdeki girdiyi coğrafiye çevir
+function readPoint(p) {
+  if (p.kind === 'geo') { const lat = sNum(p.a), lon = sNum(p.b); return Number.isFinite(lat) && Number.isFinite(lon) ? {lat, lon} : null; }
+  const y = sNum(p.a), x = sNum(p.b);
+  if (!Number.isFinite(y) || !Number.isFinite(x)) return null;
+  return tmInverse(y, x, sys(p.kind, p.zone, p.ell || 'grs80'));
+}
+
+// ── Dilim dönüşümü ─────────────────────────────────────────────────────
+function dilimTool() {
+  return {
+    d: sStore('saha-dilim', {ell: 'grs80', from: 'tm3', fromZone: '33', to: 'utm', toZone: 'auto', a: '', b: ''}),
+    init() { this.$watch('d', v => sSave('saha-dilim', v)); },
+    doms: TM3_DOMS, zones: UTM_ZONES, ells: ELLIPSOIDS, fix: sFix, grp: sGroup, dms,
+    get geo() { return readPoint({kind: this.d.from, zone: this.d.fromZone, ell: this.d.ell, a: this.d.a, b: this.d.b}); },
+    get target() {
+      const g = this.geo; if (!g) return null;
+      if (this.d.to === 'geo') return {geo: g};
+      const z = this.d.toZone === 'auto' ? (this.d.to === 'tm3' ? nearestDom(g.lon) : utmZoneOf(g.lon)) : Number(this.d.toZone);
+      return {zone: z, ...tmForward(g.lat, g.lon, sys(this.d.to, z, this.d.ell))};
+    },
+    get labels() { return this.d.from === 'geo' ? ['Enlem (°)', 'Boylam (°)'] : ['Sağa (Y)', 'Yukarı (X)']; },
+    swap() {
+      const t = this.target; if (!t) { [this.d.from, this.d.to] = [this.d.to, this.d.from]; return; }
+      const from = this.d.to, zone = t.zone;
+      Object.assign(this.d, {to: this.d.from, toZone: 'auto', from, fromZone: String(zone || this.d.fromZone),
+        a: from === 'geo' ? sFix(t.geo.lat, 9) : sFix(t.y, 3), b: from === 'geo' ? sFix(t.geo.lon, 9) : sFix(t.x, 3)});
+    },
+    copy(text) { navigator.clipboard?.writeText(text).then(() => this.$dispatch('toast', 'Kopyalandı')).catch(() => {}); },
+  };
+}
+
+// ── Noktaya git (pusula) ───────────────────────────────────────────────
+function gitTool() {
+  return {
+    g: sStore('saha-git', {kind: 'tm3', zone: '33', ell: 'grs80', a: '', b: '', name: ''}),
+    pos: null, acc: null, heading: null, running: false, err: '', watchId: null, onOri: null,
+    init() { this.$watch('g', v => sSave('saha-git', v)); },
+    doms: TM3_DOMS, zones: UTM_ZONES, fix: sFix, grp: sGroup,
+    get labels() { return this.g.kind === 'geo' ? ['Enlem (°)', 'Boylam (°)'] : ['Sağa (Y)', 'Yukarı (X)']; },
+    get target() { return readPoint(this.g); },
+    get nav() { return this.pos && this.target ? distBearing(this.pos.lat, this.pos.lon, this.target.lat, this.target.lon) : null; },
+    // Okun dönüşü: hedef semti − telefonun baktığı yön
+    get arrow() { const n = this.nav; return n == null ? 0 : n.b - (this.heading ?? 0); },
+    get here() { if (!this.pos) return null; const z = this.g.kind === 'utm' ? Number(this.g.zone) : null; const dom = this.g.kind === 'tm3' ? Number(this.g.zone) : nearestDom(this.pos.lon); return z ? {lbl: 'UTM ' + z, ...tmForward(this.pos.lat, this.pos.lon, sys('utm', z, 'grs80'))} : {lbl: 'DOM ' + dom, ...tmForward(this.pos.lat, this.pos.lon, sys('tm3', dom, 'grs80'))}; },
+    get distText() { const n = this.nav; if (!n) return '—'; return n.d >= 1000 ? sFix(n.d / 1000, 2) + ' km' : n.d >= 100 ? Math.round(n.d) + ' m' : sFix(n.d, 1) + ' m'; },
+    async start() {
+      this.err = '';
+      try {
+        if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+          const r = await DeviceOrientationEvent.requestPermission(); if (r !== 'granted') this.err = 'Pusula izni verilmedi; yön yalnız yürürken GPS ile bulunur.';
+        }
+      } catch { this.err = 'Pusula izni alınamadı.'; }
+      this.onOri = e => {
+        let h = null;
+        if (typeof e.webkitCompassHeading === 'number') h = e.webkitCompassHeading;
+        else if (e.absolute && typeof e.alpha === 'number') h = 360 - e.alpha;
+        if (h != null) { const o = screen.orientation?.angle || 0; this.heading = (h + o + 360) % 360; }
+      };
+      addEventListener('deviceorientationabsolute', this.onOri); addEventListener('deviceorientation', this.onOri);
+      if (!navigator.geolocation) { this.err = 'Bu cihazda konum yok.'; return; }
+      this.watchId = navigator.geolocation.watchPosition(p => {
+        this.pos = {lat: p.coords.latitude, lon: p.coords.longitude}; this.acc = p.coords.accuracy;
+        if (this.heading == null && p.coords.heading != null && p.coords.speed > 0.5) this.heading = p.coords.heading;
+      }, e => { this.err = e.code === 1 ? 'Konum izni verilmedi. Ayarlar → Safari → Konum.' : 'Konum alınamadı.'; }, {enableHighAccuracy: true, maximumAge: 1000, timeout: 20000});
+      this.running = true;
+    },
+    stop() {
+      if (this.watchId != null) navigator.geolocation.clearWatch(this.watchId);
+      removeEventListener('deviceorientationabsolute', this.onOri); removeEventListener('deviceorientation', this.onOri);
+      this.running = false; this.watchId = null;
+    },
+    destroy() { this.stop(); },
+  };
+}
+
+// ── Temel ödevler ──────────────────────────────────────────────────────
+function temelTool() {
+  return {
+    t: sStore('saha-temel', {unit: 'grad', ay: '', ax: '', by: '', bx: '', ang: '', dist: ''}),
+    init() { this.$watch('t', v => sSave('saha-temel', v)); },
+    fix: sFix, grp: sGroup,
+    // 2. temel ödev: A ve B'den semt ve mesafe
+    get inv() {
+      const [ay, ax, by, bx] = [this.t.ay, this.t.ax, this.t.by, this.t.bx].map(sNum);
+      if (![ay, ax, by, bx].every(Number.isFinite)) return null;
+      const dy = by - ay, dx = bx - ax;
+      return {s: Math.hypot(dy, dx), t: norm(toUnit(Math.atan2(dy, dx), this.t.unit), this.t.unit), dy, dx};
+    },
+    // 1. temel ödev: A, semt ve mesafeden B
+    get fwd() {
+      const [ay, ax, a, s] = [this.t.ay, this.t.ax, this.t.ang, this.t.dist].map(sNum);
+      if (![ay, ax, a, s].every(Number.isFinite)) return null;
+      const r = fromUnit(a, this.t.unit);
+      return {y: ay + s * Math.sin(r), x: ax + s * Math.cos(r)};
+    },
+  };
+}
+
+// ── Alan hesabı (koordinatlardan, Gauss) ───────────────────────────────
+function alanTool() {
+  return {
+    p: sStore('saha-alan', {rows: [{y: '', x: ''}, {y: '', x: ''}, {y: '', x: ''}]}),
+    init() { this.$watch('p', v => sSave('saha-alan', v)); },
+    fix: sFix, grp: sGroup,
+    get pts() { return this.p.rows.map(r => ({y: sNum(r.y), x: sNum(r.x)})).filter(q => Number.isFinite(q.y) && Number.isFinite(q.x)); },
+    get res() {
+      const q = this.pts; if (q.length < 3) return null;
+      let a = 0, per = 0;
+      for (let i = 0; i < q.length; i++) { const p1 = q[i], p2 = q[(i + 1) % q.length]; a += p1.y * p2.x - p2.y * p1.x; per += Math.hypot(p2.y - p1.y, p2.x - p1.x); }
+      return {area: Math.abs(a) / 2, per};
+    },
+    add() { this.p.rows.push({y: '', x: ''}); },
+    del(i) { if (this.p.rows.length > 3) this.p.rows.splice(i, 1); },
+    clear() { if (confirm('Tüm noktalar silinsin mi?')) this.p.rows = [{y: '', x: ''}, {y: '', x: ''}, {y: '', x: ''}]; },
+    next(ev) { const all = [...this.$root.querySelectorAll('.alan-table input')], i = all.indexOf(ev.target); if (i >= 0 && i < all.length - 1) all[i + 1].focus(); else { this.add(); this.$nextTick(() => [...this.$root.querySelectorAll('.alan-table input')].at(-2)?.focus()); } },
+  };
+}

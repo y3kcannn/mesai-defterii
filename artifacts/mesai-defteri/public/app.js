@@ -172,7 +172,13 @@ function mesaiDefteri() {
 
     // Ekip: Yol (açık saha) ya da Tünel; seçilen ekibin dışındakiler hiçbir listede görünmez
     // Ayarlar menüsündeki araçlar (yenileri buraya eklenir; her araç kendi görünümünü açar)
-    tools: [{id: 'nivelman', label: 'Nivelman Hesabı', desc: 'Geri–ileri okumalarıyla kot ve yükseklik farkı', icon: 'i-level'}],
+    tools: [
+      {id: 'nivelman', label: 'Nivelman Hesabı', desc: 'Geri–ileri okumalarıyla kot ve yükseklik farkı', icon: 'i-level'},
+      {id: 'dilim', label: 'Dilim dönüşümü', desc: 'TM 3° ↔ UTM 6° ↔ coğrafi koordinat', icon: 'i-swap'},
+      {id: 'git', label: 'Noktaya git', desc: 'Koordinatı gir, pusula seni noktaya götürsün', icon: 'i-compass'},
+      {id: 'temel', label: 'Temel ödevler', desc: 'Semt ve mesafeden nokta, iki noktadan semt', icon: 'i-ruler'},
+      {id: 'alan', label: 'Alan hesabı', desc: 'Köşe koordinatlarından alan ve çevre', icon: 'i-area'},
+    ],
     crews: [{id: 'yol', label: 'Yol ekibi', icon: 'i-road'}, {id: 'tunel', label: 'Tünel ekibi', icon: 'i-tunnel'}],
     get crewInfo() { return this.crews.find(c => c.id === this.crew) || this.crews[0]; },
     crewCount(id) { return this.people.filter(p => (p.team === 'tunel' ? 'tunel' : 'yol') === id).length; },
