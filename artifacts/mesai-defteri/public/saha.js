@@ -124,22 +124,20 @@ function gitTool() {
     g: sStore('saha-git', {kind: 'tm3', zone: '33', ell: 'grs80', a: '', b: '', name: ''}),
     pos: null, acc: null, heading: null, running: false, err: '', watchId: null, onOri: null,
     // Ekranda çizilen (yumuşatılmış, sarılmamış) açılar
-    roseRot: 0, arrowRot: 0, startD: null, arrived: false, raf: 0, buzzed: false,
-    init() { this.$watch('g', v => { sSave('saha-git', v); this.startD = null; this.arrived = false; }); },
+    roseRot: 0, arrowRot: 0, arrived: false, raf: 0, buzzed: false,
+    init() { this.$watch('g', v => { sSave('saha-git', v); this.arrived = false; }); },
     doms: TM3_DOMS, zones: UTM_ZONES, fix: sFix, grp: sGroup,
     get labels() { return this.g.kind === 'geo' ? ['Enlem (°)', 'Boylam (°)'] : ['Sağa (Y)', 'Yukarı (X)']; },
     get target() { return readPoint(this.g); },
     get nav() { return this.pos && this.target ? distBearing(this.pos.lat, this.pos.lon, this.target.lat, this.target.lon) : null; },
     get off() { const n = this.nav; return n && this.heading != null ? angDelta(n.b, this.heading) : null; },
     get aligned() { return this.off != null && Math.abs(this.off) < 12; },
-    get near() { return this.nav && this.nav.d < 25; },
-    get progress() { const n = this.nav; return n && this.startD ? Math.min(1, Math.max(0, 1 - n.d / this.startD)) : 0; },
     get hint() {
       if (!this.running) return this.target ? 'Başlat\'a basın' : 'Hedef koordinatı girin';
       if (!this.pos) return 'Konum aranıyor…';
       if (this.arrived) return 'Hedefe vardınız';
       if (this.off == null) return 'Yürüyün, yön bulunacak';
-      if (this.aligned) return this.near ? 'Çok yakın, yavaşlayın' : 'Doğru yöndesiniz';
+      if (this.aligned) return this.nav.d < 25 ? 'Çok yakın, yavaşlayın' : 'Doğru yöndesiniz';
       return this.off > 0 ? 'Sağa dönün' : 'Sola dönün';
     },
     get here() { if (!this.pos) return null; const z = this.g.kind === 'utm' ? Number(this.g.zone) : null; const dom = this.g.kind === 'tm3' ? Number(this.g.zone) : nearestDom(this.pos.lon); return z ? {lbl: 'UTM ' + z, ...tmForward(this.pos.lat, this.pos.lon, sys('utm', z, 'grs80'))} : {lbl: 'DOM ' + dom, ...tmForward(this.pos.lat, this.pos.lon, sys('tm3', dom, 'grs80'))}; },
@@ -151,7 +149,6 @@ function gitTool() {
       this.roseRot += angDelta(-h, this.roseRot) * k;
       if (n) this.arrowRot += angDelta(n.b - h, this.arrowRot) * k;
       if (n) {
-        if (this.startD == null || n.d > this.startD) this.startD = n.d;
         const hit = n.d <= Math.max(3, Math.min(this.acc ?? 5, 8));
         if (hit && !this.arrived) { this.arrived = true; if (!this.buzzed) { navigator.vibrate?.([80, 60, 80, 60, 200]); this.buzzed = true; } }
         if (!hit && n.d > 12) { this.arrived = false; this.buzzed = false; }
@@ -159,7 +156,7 @@ function gitTool() {
       this.raf = requestAnimationFrame(() => this.loop());
     },
     async start() {
-      this.err = ''; this.startD = null; this.arrived = false; this.buzzed = false;
+      this.err = ''; this.arrived = false; this.buzzed = false;
       try {
         if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
           const r = await DeviceOrientationEvent.requestPermission(); if (r !== 'granted') this.err = 'Pusula izni verilmedi; yön yalnız yürürken GPS ile bulunur.';
