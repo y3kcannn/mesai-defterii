@@ -127,10 +127,10 @@
           <div class="nv-head">HESAP</div>
           <div class="mode-switch nv-mode"><button type="button" :class="{chosen: nv.mode==='kot'}" @click="nv.mode='kot'">Kot ile</button><button type="button" :class="{chosen: nv.mode==='fark'}" @click="nv.mode='fark'">Yükseklik farkı</button></div>
           <div class="nv-grid">
-            <label class="field-label" x-show="nv.mode==='kot'">Başlangıç kotu <span class="input-unit">M</span><input class="form-input" type="text" inputmode="decimal" x-model="nv.startKot" placeholder="0,000" @blur="Number.isFinite(nvNum(nv.startKot)) && (nv.startKot=fmt(nvNum(nv.startKot)))"></label>
-            <label class="field-label" x-show="nv.mode==='kot'">Bitiş kotu <span class="input-unit">İSTEĞE BAĞLI</span><input class="form-input" type="text" inputmode="decimal" x-model="nv.endKot" placeholder="Bilinen kot" @blur="Number.isFinite(nvNum(nv.endKot)) && (nv.endKot=fmt(nvNum(nv.endKot)))"></label>
+            <label class="field-label" x-show="nv.mode==='kot'">Başlangıç kotu <span class="input-unit">M</span><input class="form-input" type="text" inputmode="decimal" x-model="nv.startKot" placeholder="0,000" @blur="tidyKot('startKot')"></label>
+            <label class="field-label" x-show="nv.mode==='kot'">Bitiş kotu <span class="input-unit">İSTEĞE BAĞLI</span><input class="form-input" type="text" inputmode="decimal" x-model="nv.endKot" placeholder="Bilinen kot" @blur="tidyKot('endKot')"></label>
             <label class="field-label">k katsayısı <span class="input-unit">MM/√KM</span><input class="form-input" type="text" inputmode="decimal" x-model="nv.k" placeholder="12"></label>
-            <label class="field-label">Hat uzunluğu L <span class="input-unit">KM</span><input class="form-input" type="text" inputmode="decimal" x-model="nv.lManual" :disabled="res.distM!=null" :placeholder="res.distM!=null ? fmt(res.L) : 'Mesafe yoksa girin'"></label>
+            <label class="field-label">Hat uzunluğu L <span class="input-unit">KM</span><input class="form-input" type="text" inputmode="decimal" x-model="nv.lManual" :disabled="res.distM!=null" :placeholder="res.distM!=null ? fmt(res.L,3) : 'Mesafe yoksa girin'"></label>
           </div>
         </section>
         <section class="nv-card">

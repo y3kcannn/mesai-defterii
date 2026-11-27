@@ -11,6 +11,9 @@ const nvNum = v => {
 };
 const nvFmt = (v, d = 3) => v == null || !Number.isFinite(v) ? '' : v.toFixed(d).replace('.', ',').replace(/^-(0,0+)$/, '$1');
 const nvSigned = (v, d = 3) => v == null || !Number.isFinite(v) ? '' : (v > 0 ? '+' : '') + nvFmt(v, d);
+// Girilen ondalık basamak sayısı (mikron/onda bir mm okumaları için 4–5 basamak korunur)
+const nvDec = v => { const m = String(v ?? '').trim().replace(',', '.').match(/\.(\d+)$/); return m ? m[1].length : 0; };
+const nvKeep = v => Math.min(5, Math.max(3, nvDec(v)));
 const nvRow = (no = '') => ({no, geri: '', ileri: '', mesafe: ''});
 const nvBlank = () => ({mode: 'kot', k: 12, startKot: '', endKot: '', lManual: '', tab: 'gidis', fixed: {gidis: false, donus: false},
   runs: {gidis: [nvRow(), nvRow()], donus: [nvRow(), nvRow()]}});
@@ -74,11 +77,18 @@ function nivelman() {
     calc(tab) { return nvCompute(this.nv.runs[tab], this.nvOpts(tab)); },
     get res() { return this.calc(this.nv.tab); },
     get showCorr() { return this.nv.mode === 'kot' && this.nv.fixed[this.nv.tab] && this.res.within; },
-    fmt: nvFmt, signed: nvSigned,
+    // Çıktı hassasiyeti: girilen okumaların en çok ondalığı (en az 3, en çok 5)
+    get dec() {
+      let d = 3;
+      for (const t of ['gidis', 'donus']) for (const r of this.nv.runs[t]) d = Math.max(d, nvKeep(r.geri), nvKeep(r.ileri));
+      return Math.max(d, nvKeep(this.nv.startKot), nvKeep(this.nv.endKot));
+    },
+    fmt(v, d) { return nvFmt(v, d ?? this.dec); }, signed(v, d) { return nvSigned(v, d ?? this.dec); },
+    tidyKot(f) { const v = nvNum(this.nv[f]); if (Number.isFinite(v)) this.nv[f] = nvFmt(v, nvKeep(this.nv[f])); },
     mm(v) { return v == null || !Number.isFinite(v) ? '—' : (v > 0 ? '+' : '') + v.toFixed(1).replace('.', ',') + ' mm'; },
     // Hücre etkinliği: ilk satırda İleri yok, son satırda Geri yok, ilk satırda mesafe yok
     off(i, f) { const n = this.rows.length; return (f === 'ileri' || f === 'mesafe') ? i === 0 : f === 'geri' ? i === n - 1 : false; },
-    tidy(r, f) { const v = nvNum(r[f]); if (Number.isFinite(v)) r[f] = f === 'mesafe' ? String(Math.round(v * 100) / 100).replace('.', ',') : nvFmt(v); },
+    tidy(r, f) { const v = nvNum(r[f]); if (Number.isFinite(v)) r[f] = f === 'mesafe' ? String(Math.round(v * 100) / 100).replace('.', ',') : nvFmt(v, nvKeep(r[f])); },
     // Enter → sonraki hücre (satır satır)
     nextCell(ev) {
       const all = [...this.$root.querySelectorAll('.nv-table input:not(:disabled)')], i = all.indexOf(ev.target);
@@ -125,13 +135,13 @@ function nivelman() {
         const rows = this.nv.runs[tab], r = this.calc(tab), fixOn = this.nv.mode === 'kot' && this.nv.fixed[tab] && r.within;
         if (!rows.some(x => x.no || x.geri || x.ileri)) continue;
         lines.push([], [tab === 'gidis' ? 'GİDİŞ' : 'DÖNÜŞ'], ['Nokta No', 'Geri (m)', 'İleri (m)', 'Mesafe (m)', 'Fark ΔH (m)', ...(this.nv.mode === 'kot' ? ['Kot (m)'] : []), ...(fixOn ? ['Düzeltilmiş kot (m)'] : [])]);
-        rows.forEach((x, i) => lines.push([x.no, nvFmt(nvNum(x.geri)), nvFmt(nvNum(x.ileri)), x.mesafe, nvSigned(r.dH[i]), ...(this.nv.mode === 'kot' ? [nvFmt(r.kot[i])] : []), ...(fixOn ? [nvFmt(r.corr[i])] : [])]));
-        lines.push(['ΣGeri', nvFmt(r.sumG)], ['Σİleri', nvFmt(r.sumI)], ['ΣGeri − Σİleri', nvSigned(r.sumG - r.sumI)]);
+        rows.forEach((x, i) => lines.push([x.no, this.fmt(nvNum(x.geri)), this.fmt(nvNum(x.ileri)), x.mesafe, this.signed(r.dH[i]), ...(this.nv.mode === 'kot' ? [this.fmt(r.kot[i])] : []), ...(fixOn ? [this.fmt(r.corr[i])] : [])]));
+        lines.push(['ΣGeri', this.fmt(r.sumG)], ['Σİleri', this.fmt(r.sumI)], ['ΣGeri − Σİleri', this.signed(r.sumG - r.sumI)]);
         if (r.closureMm != null) lines.push(['Kapanma hatası (mm)', r.closureMm.toFixed(1).replace('.', ',')]);
         if (r.tolMm != null) lines.push(['İzin (± mm)', r.tolMm.toFixed(1).replace('.', ','), 'L (km)', nvFmt(r.L)]);
       }
       const pr = this.pairs;
-      if (pr.length) { lines.push([], ['GİDİŞ–DÖNÜŞ'], ['Aralık', 'Gidiş ΔH', 'Dönüş ΔH', 'Fark (mm)', 'İzin (± mm)']); pr.forEach(x => lines.push([x.from + ' – ' + x.to, nvSigned(x.gd), nvSigned(x.dd), x.diff == null ? '' : x.diff.toFixed(1).replace('.', ','), x.tol == null ? '' : x.tol.toFixed(1).replace('.', ',')])); }
+      if (pr.length) { lines.push([], ['GİDİŞ–DÖNÜŞ'], ['Aralık', 'Gidiş ΔH', 'Dönüş ΔH', 'Fark (mm)', 'İzin (± mm)']); pr.forEach(x => lines.push([x.from + ' – ' + x.to, this.signed(x.gd), this.signed(x.dd), x.diff == null ? '' : x.diff.toFixed(1).replace('.', ','), x.tol == null ? '' : x.tol.toFixed(1).replace('.', ',')])); }
       const blob = new Blob(['﻿' + lines.map(l => l.map(q).join(';')).join('\r\n')], {type: 'text/csv;charset=utf-8'});
       const a = document.createElement('a'), d = new Date();
       a.href = URL.createObjectURL(blob); a.download = `nivelman-${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}.csv`;
