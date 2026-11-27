@@ -811,7 +811,7 @@ function mesaiDefteri() {
     // ── Görünüm ve animasyon ────────────────────────────────────────────────
 
     // Tema: düğmeden yayılan dairesel geçiş
-    themes: {light: 'Açık', dark: 'Koyu', ozalit: 'Ozalit'},
+    themes: {light: 'Açık', dark: 'Koyu'},
     toggleTheme(ev, to) {
       const r = document.documentElement, b = ev?.currentTarget?.getBoundingClientRect(), order = Object.keys(this.themes);
       const t = to || order[(order.indexOf(this.theme) + 1) % order.length];
@@ -824,7 +824,7 @@ function mesaiDefteri() {
       const apply = () => {
         this.theme = t; r.dataset.theme = t;
         try { localStorage.setItem('mesai-tema', t); } catch {}
-        document.querySelector('meta[name=theme-color]')?.setAttribute('content', {light: '#ece5d3', dark: '#1d1b17', ozalit: '#0f3459'}[t]);
+        document.querySelector('meta[name=theme-color]')?.setAttribute('content', {light: '#ece5d3', dark: '#1d1b17'}[t]);
         document.querySelector('meta[name=apple-mobile-web-app-status-bar-style]')?.setAttribute('content', t === 'light' ? 'default' : 'black-translucent');
       };
       if (document.startViewTransition && !reduceMotion()) document.startViewTransition(apply).ready.catch(() => {}); // yarıda kesilen geçiş hata sayılmasın
