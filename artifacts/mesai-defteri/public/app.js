@@ -96,9 +96,28 @@ function mesaiDefteri() {
     // ── Başlatma ────────────────────────────────────────────────────────────
 
     // Sekmeler arası kaydırma: panel parmağı izler; bırakınca yumuşakça kayarak çıkar, yeni sekme aynı yönden girer
+    // Görsel geri bildirim: sayfa geçiş yönü ve düğmelerde dokunma dalgası
+    motionInit() {
+      const order = ['ledger', 'people', 'chart', 'tools', 'nivelman'], root = document.documentElement;
+      this.$watch('view', (v, old) => { root.dataset.nav = order.indexOf(v) >= order.indexOf(old) ? 'fwd' : 'back'; });
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const SEL = '.btn,.icon-button,.button-primary,.month-current,.rail-button,.chart-toggle,.multi-person,.mode-switch button,.hour-chip,.type-option,.tool-card,.day-cell,.leave-options>button';
+      document.addEventListener('pointerdown', e => {
+        const el = e.target.closest(SEL);
+        if (!el || el.disabled) return;
+        const r = el.getBoundingClientRect(), size = Math.max(r.width, r.height) * 2.2;
+        if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
+        const wrap = document.createElement('span'), dot = document.createElement('i');
+        wrap.className = 'rpl'; dot.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX - r.left - size / 2}px;top:${e.clientY - r.top - size / 2}px`;
+        wrap.appendChild(dot); el.appendChild(wrap);
+        setTimeout(() => wrap.remove(), 650);
+      }, {passive: true});
+    },
+
     init() {
       // iOS Safari :active durumunu ancak sayfada bir dokunma dinleyicisi varsa uygular (basma hissi için)
       document.addEventListener('touchstart', () => {}, {passive: true});
+      this.motionInit();
       const savedPeople = read('mesai-defteri-people', null), savedEntries = read('mesai-defteri-entries', null);
       if (savedPeople === null) { this.people = demoPeople; this.entries = demoEntries; this.persist(); }
       else { this.people = validPeople(savedPeople); this.entries = validEntries(savedEntries); }
