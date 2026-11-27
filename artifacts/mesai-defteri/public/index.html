@@ -29,7 +29,7 @@
 <script defer src="./saha.js"></script>
 <script defer src="./app.js"></script>
   <script defer src="./alpine.min.js"></script>
-  <script>try{['mesai-renkler','mesai-renk','saha-egim','saha-birim','saha-dik','saha-kes'].forEach(function(k){localStorage.removeItem(k)});var c={light:'#ece5d3',dark:'#1d1b17',ozalit:'#14283f'},t=localStorage.getItem('mesai-tema');if(!c[t])t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t;document.querySelector('meta[name=theme-color]').content=c[t];var sb=document.querySelector('meta[name=apple-mobile-web-app-status-bar-style]');if(sb)sb.content=t==='light'?'default':'black-translucent';}catch(e){}</script>
+  <script>try{['mesai-renkler','mesai-renk','saha-egim','saha-birim','saha-dik','saha-kes'].forEach(function(k){localStorage.removeItem(k)});var c={light:'#ece5d3',dark:'#1d1b17',ozalit:'#0f3459'},t=localStorage.getItem('mesai-tema');if(!c[t])t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t;document.querySelector('meta[name=theme-color]').content=c[t];var sb=document.querySelector('meta[name=apple-mobile-web-app-status-bar-style]');if(sb)sb.content=t==='light'?'default':'black-translucent';}catch(e){}</script>
 </head>
 <body x-data="mesaiDefteri()" @keydown.escape.window="closeModal()">
   <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
