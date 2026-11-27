@@ -25,7 +25,8 @@
   <script defer src="./supabase-config.js"></script>
   <script defer src="./hesaplama.js"></script>
   <script defer src="./sync.js"></script>
-  <script defer src="./app.js"></script>
+  <script defer src="./nivelman.js"></script>
+<script defer src="./app.js"></script>
   <script defer src="./alpine.min.js"></script>
   <script>try{['mesai-renkler','mesai-renk'].forEach(function(k){localStorage.removeItem(k)});var t=localStorage.getItem('mesai-tema');if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t;document.querySelector('meta[name=theme-color]').content=t==='dark'?'#1d1b17':'#ece5d3';var sb=document.querySelector('meta[name=apple-mobile-web-app-status-bar-style]');if(sb)sb.content=t==='dark'?'black-translucent':'default';}catch(e){}</script>
 </head>
@@ -47,7 +48,7 @@
 <symbol id="i-lock" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
 <symbol id="i-unlock" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></symbol>
 <symbol id="i-tunnel" viewBox="0 0 24 24"><path d="M2 20h20"/><path d="M4 20v-8a8 8 0 0 1 16 0v8"/><path d="M8 20v-7a4 4 0 0 1 8 0v7"/></symbol><symbol id="i-road" viewBox="0 0 24 24"><path d="M5 20 9 4"/><path d="M19 20 15 4"/><path d="M12 5v2"/><path d="M12 11v2"/><path d="M12 17v2"/></symbol><symbol id="i-leave" viewBox="0 0 24 24"><path d="M13 8c0-2.76-2.46-5-5.5-5S2 5.24 2 8h2l1-1 1 1h4"/><path d="M13 7.14A5.82 5.82 0 0 1 16.5 6c3.04 0 5.5 2.24 5.5 5h-3l-1-1-1 1h-3"/><path d="M5.89 9.71c-2.15 2.15-2.3 5.47-.35 7.43l4.24-4.25.7-.7.71-.71 2.12-2.12c-1.95-1.96-5.27-1.8-7.42.35"/><path d="M11 15.5c.5 2.5-.17 4.5-1 6.5h4c2-5.5-.5-12-1-14"/></symbol>
-<symbol id="i-close" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+<symbol id="i-settings" viewBox="0 0 24 24"><path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></symbol><symbol id="i-level" viewBox="0 0 24 24"><path d="M3 20h18"/><path d="m12 8-4 12"/><path d="m12 8 4 12"/><path d="M12 8v12"/><rect x="7" y="3" width="10" height="5"/><path d="M12 5.5h.01"/></symbol><symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol><symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol><symbol id="i-file" viewBox="0 0 24 24"><path d="M15 3H6v18h12V6z"/><path d="M14 3v4h4"/><path d="M9 13h6M9 17h6"/></symbol><symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></symbol><symbol id="i-printer" viewBox="0 0 24 24"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8"/><path d="M6 14h12v7H6z"/></symbol><symbol id="i-close" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
 <symbol id="i-check" viewBox="0 0 24 24"><path pathLength="1" d="M20 6 9 17l-5-5"/></symbol>
 <symbol id="i-chev-l" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
 <symbol id="i-chev-r" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
@@ -60,6 +61,7 @@
           <button class="rail-button" :class="{active: view==='ledger'}" @click="view='ledger'" title="Aylık takvim"><span class="rail-icon"><svg class="ic" aria-hidden="true"><use href="#i-calendar"/></svg></span><span>Takvim</span></button>
           <button class="rail-button" :class="{active: view==='people'}" @click="view='people'" title="Personel"><span class="rail-icon"><svg class="ic" aria-hidden="true"><use href="#i-users"/></svg></span><span>Personel</span></button>
           <button class="rail-button" :class="{active: view==='chart'}" @click="view='chart'" title="Ekip tablosu"><span class="rail-icon"><svg class="ic" aria-hidden="true"><use href="#i-table"/></svg></span><span>Tablo</span></button>
+          <button class="rail-button" :class="{active: modal==='tools' || tools.some(t => t.id===view)}" @click="modal='tools'" title="Ayarlar ve araçlar"><span class="rail-icon"><svg class="ic" aria-hidden="true"><use href="#i-settings"/></svg></span><span>Ayarlar</span></button>
         </div>
       </nav>
 
@@ -107,6 +109,51 @@
         <div class="people-foot"><div class="sync-state"><i class="live-dot" :class="{offline:!online||syncError, pending:online&&!syncError&&syncPending}"></i><span x-text="syncLabel"></span></div><div class="people-foot-actions"><button class="btn danger" x-show="hasExamples" @click="clearExamples()"><svg class="ic" aria-hidden="true"><use href="#i-trash"/></svg>Örnek verileri sil</button></div></div>
       </main>
 
+      <main class="main-panel nv-panel" x-show="view==='nivelman'" x-cloak x-data="nivelman()" x-init="nvInit()">
+        <div class="page-heading"><div><div class="heading-row"><h1>Nivelman</h1></div></div><div class="heading-actions nv-actions"><button class="btn" type="button" @click="newSurvey()"><svg class="ic" aria-hidden="true"><use href="#i-file"/></svg>Yeni ölçü</button><button class="btn" type="button" @click="csv()"><svg class="ic" aria-hidden="true"><use href="#i-download"/></svg>CSV</button><button class="btn" type="button" @click="print()"><svg class="ic" aria-hidden="true"><use href="#i-printer"/></svg>Yazdır</button></div></div>
+        <div class="mode-switch nv-tabs" role="tablist"><button type="button" role="tab" :aria-selected="nv.tab==='gidis'" :class="{chosen: nv.tab==='gidis'}" @click="nv.tab='gidis';nvFocus=null">Gidiş</button><button type="button" role="tab" :aria-selected="nv.tab==='donus'" :class="{chosen: nv.tab==='donus'}" @click="nv.tab='donus';nvFocus=null">Dönüş</button></div>
+        <section class="nv-card">
+          <div class="nv-scroll"><table class="nv-table">
+            <thead><tr><th class="nv-no">Nokta No</th><th>Geri <i>m</i></th><th>İleri <i>m</i></th><th>Mesafe <i>m</i></th><th>Fark ΔH</th><th x-show="nv.mode==='kot'">Kot</th><th x-show="showCorr">Düz. kot</th></tr></thead>
+            <tbody><template x-for="(r,i) in rows" :key="nv.tab+i"><tr class="nv-row" :class="{focus: nvFocus===i}">
+              <td class="nv-c nv-no"><input type="text" enterkeyhint="next" autocapitalize="characters" autocomplete="off" :aria-label="'Nokta no '+(i+1)" x-model="r.no" :placeholder="i===0 ? 'Başlangıç' : i===rows.length-1 ? 'Bitiş' : 'D'+i" @focus="nvFocus=i" @keydown.enter.prevent="nextCell($event)"></td>
+              <td class="nv-c " :class="{warn: res.warn[i].geri}"><input type="text" inputmode="decimal" enterkeyhint="next" autocomplete="off" :aria-label="'Geri '+(i+1)" x-model="r.geri" :disabled="off(i,'geri')" :placeholder="off(i,'geri') ? '' : '0,000'" @focus="nvFocus=i" @blur="tidy(r,'geri')" @keydown.enter.prevent="nextCell($event)"></td><td class="nv-c " :class="{warn: res.warn[i].ileri}"><input type="text" inputmode="decimal" enterkeyhint="next" autocomplete="off" :aria-label="'İleri '+(i+1)" x-model="r.ileri" :disabled="off(i,'ileri')" :placeholder="off(i,'ileri') ? '' : '0,000'" @focus="nvFocus=i" @blur="tidy(r,'ileri')" @keydown.enter.prevent="nextCell($event)"></td><td class="nv-c" :class="{warn: res.warn[i].mesafe}"><input type="text" inputmode="decimal" enterkeyhint="next" autocomplete="off" :aria-label="'Mesafe '+(i+1)" x-model="r.mesafe" :disabled="off(i,'mesafe')" @focus="nvFocus=i" @blur="tidy(r,'mesafe')" @keydown.enter.prevent="nextCell($event)"></td>
+              <td class="nv-out" x-text="signed(res.dH[i])"></td><td class="nv-out nv-kot" x-show="nv.mode==='kot'" x-text="fmt(res.kot[i])"></td><td class="nv-out nv-corr" x-show="showCorr" x-text="fmt(res.corr?.[i])"></td>
+            </tr></template></tbody>
+          </table></div>
+          <div class="nv-rowbtns"><button class="btn" type="button" @click="addRow()"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg>Satır ekle</button><button class="btn" type="button" @click="delRow()" :disabled="rows.length<=2"><svg class="ic" aria-hidden="true"><use href="#i-minus"/></svg><span x-text="nvFocus!=null && nvFocus<rows.length ? 'Satır '+(nvFocus+1)+' sil' : 'Satır sil'"></span></button></div>
+        </section>
+        <section class="nv-card nv-settings">
+          <div class="nv-head">HESAP</div>
+          <div class="mode-switch nv-mode"><button type="button" :class="{chosen: nv.mode==='kot'}" @click="nv.mode='kot'">Kot ile</button><button type="button" :class="{chosen: nv.mode==='fark'}" @click="nv.mode='fark'">Yükseklik farkı</button></div>
+          <div class="nv-grid">
+            <label class="field-label" x-show="nv.mode==='kot'">Başlangıç kotu <span class="input-unit">M</span><input class="form-input" type="text" inputmode="decimal" x-model="nv.startKot" placeholder="0,000" @blur="Number.isFinite(nvNum(nv.startKot)) && (nv.startKot=fmt(nvNum(nv.startKot)))"></label>
+            <label class="field-label" x-show="nv.mode==='kot'">Bitiş kotu <span class="input-unit">İSTEĞE BAĞLI</span><input class="form-input" type="text" inputmode="decimal" x-model="nv.endKot" placeholder="Bilinen kot" @blur="Number.isFinite(nvNum(nv.endKot)) && (nv.endKot=fmt(nvNum(nv.endKot)))"></label>
+            <label class="field-label">k katsayısı <span class="input-unit">MM/√KM</span><input class="form-input" type="text" inputmode="decimal" x-model="nv.k" placeholder="12"></label>
+            <label class="field-label">Hat uzunluğu L <span class="input-unit">KM</span><input class="form-input" type="text" inputmode="decimal" x-model="nv.lManual" :disabled="res.distM!=null" :placeholder="res.distM!=null ? fmt(res.L) : 'Mesafe yoksa girin'"></label>
+          </div>
+        </section>
+        <section class="nv-card">
+          <div class="nv-head" x-text="(nv.tab==='gidis' ? 'GİDİŞ' : 'DÖNÜŞ')+' · KONTROL'"></div>
+          <dl class="nv-sums">
+            <div><dt>ΣGeri</dt><dd x-text="fmt(res.sumG)"></dd></div>
+            <div><dt>Σİleri</dt><dd x-text="fmt(res.sumI)"></dd></div>
+            <div><dt>ΣGeri − Σİleri</dt><dd x-text="signed(res.sumG-res.sumI)"></dd></div>
+            <div x-show="nv.mode==='fark'"><dt>Toplam yükseklik farkı</dt><dd x-text="signed(res.total) || '—'"></dd></div>
+            <div x-show="nv.mode==='kot'"><dt>Son kot − ilk kot</dt><dd><span x-text="res.total==null || res.kot[0]==null ? '—' : signed(res.total)"></span><b class="nv-ok" x-show="res.okSums && res.total!=null && res.kot[0]!=null" :class="{bad: Math.abs(res.sumG-res.sumI-res.total)>5e-7}" x-text="Math.abs(res.sumG-res.sumI-res.total)>5e-7 ? 'UYUMSUZ' : 'TUTARLI'"></b></dd></div>
+            <div><dt>İzin f<sub>izin</sub> = ±k√L</dt><dd x-text="res.tolMm==null ? 'L gerekli' : '±'+res.tolMm.toFixed(1).replace('.',',')+' mm'"></dd></div>
+            <div x-show="nv.mode==='kot'"><dt>Kapanma hatası</dt><dd><span x-text="res.closureMm==null ? 'Bitiş kotu yok' : mm(res.closureMm)"></span><b class="nv-ok" x-show="res.closureMm!=null && res.tolMm!=null" :class="{bad: !res.within}" x-text="res.within ? 'İZİN İÇİNDE' : 'İZİN DIŞI'"></b></dd></div>
+          </dl>
+          <div class="nv-fix" x-show="nv.mode==='kot' && res.within"><button class="button-primary" type="button" x-show="!nv.fixed[nv.tab]" @click="fix()">Düzelt</button><span x-show="nv.fixed[nv.tab]">Hata ters işaretle <b x-text="res.distM!=null ? 'mesafeyle orantılı' : 'eşit'"></b> dağıtıldı. <button type="button" class="link-btn" @click="nv.fixed[nv.tab]=false">Geri al</button></span></div>
+        </section>
+        <section class="nv-card" x-show="pairs.length">
+          <div class="nv-head">GİDİŞ – DÖNÜŞ</div>
+          <div class="nv-scroll"><table class="nv-table nv-pairs"><thead><tr><th>Aralık</th><th>Gidiş ΔH</th><th>Dönüş ΔH</th><th>Fark</th><th>İzin</th></tr></thead>
+          <tbody><template x-for="(x,j) in pairs" :key="j"><tr :class="{bad: x.bad}"><td x-text="x.from+' – '+x.to"></td><td x-text="signed(x.gd) || '—'"></td><td x-text="signed(x.dd) || '—'"></td><td x-text="mm(x.diff)"></td><td x-text="x.tol==null ? '—' : '±'+x.tol.toFixed(1).replace('.',',')"></td></tr></template></tbody></table></div>
+        </section>
+        <div class="nv-print" aria-hidden="true"><h2>Nivelman</h2><template x-for="tab in ['gidis','donus']" :key="tab"><div x-show="nv.runs[tab].some(x => x.no || x.geri || x.ileri)"><h3 x-text="tab==='gidis' ? 'Gidiş' : 'Dönüş'"></h3><table><thead><tr><th>Nokta No</th><th>Geri</th><th>İleri</th><th>Mesafe</th><th>ΔH</th><th x-show="nv.mode==='kot'">Kot</th></tr></thead><tbody><template x-for="(r,i) in nv.runs[tab]" :key="i"><tr><td x-text="r.no"></td><td x-text="r.geri"></td><td x-text="r.ileri"></td><td x-text="r.mesafe"></td><td x-text="signed(calc(tab).dH[i])"></td><td x-show="nv.mode==='kot'" x-text="fmt(calc(tab).kot[i])"></td></tr></template></tbody></table><p x-text="'ΣGeri '+fmt(calc(tab).sumG)+' · Σİleri '+fmt(calc(tab).sumI)+' · Fark '+signed(calc(tab).sumG-calc(tab).sumI)+(calc(tab).closureMm!=null ? ' · Kapanma '+mm(calc(tab).closureMm) : '')+(calc(tab).tolMm!=null ? ' · İzin ±'+calc(tab).tolMm.toFixed(1).replace('.',',')+' mm' : '')"></p></div></template></div>
+      </main>
+
       <main class="main-panel chart-panel" x-show="view==='chart'" x-cloak>
         <div class="chart-rotate" role="status"><svg class="rot-anim" viewBox="0 0 120 120" aria-hidden="true">
             <circle class="rot-track" cx="60" cy="60" r="50"/>
@@ -134,7 +181,7 @@
   </div>
 
 
-    <div class="modal-backdrop" x-show="modal==='entry' || modal==='person' || modal==='crew' || modal==='picker' || modal==='leave' || modal==='photo' || modal==='crop'" x-transition:enter="bd-in" x-transition:enter-start="bd-from" x-transition:enter-end="bd-to" x-transition:leave="bd-out" x-transition:leave-start="bd-to" x-transition:leave-end="bd-from" @click.self="closeModal()" x-cloak>
+    <div class="modal-backdrop" x-show="modal==='entry' || modal==='person' || modal==='crew' || modal==='tools' || modal==='picker' || modal==='leave' || modal==='photo' || modal==='crop'" x-transition:enter="bd-in" x-transition:enter-start="bd-from" x-transition:enter-end="bd-to" x-transition:leave="bd-out" x-transition:leave-start="bd-to" x-transition:leave-end="bd-from" @click.self="closeModal()" x-cloak>
     <section class="dialog photo-dialog" x-show="modal==='photo'" x-transition:enter="dlg-in" x-transition:enter-start="dlg-from" x-transition:enter-end="dlg-to" x-transition:leave="dlg-out" x-transition:leave-start="dlg-to" x-transition:leave-end="dlg-from" @click.stop aria-modal="true" role="dialog" aria-labelledby="photo-title">
       <template x-if="photoPerson"><div>
         <div class="dialog-head"><div><div class="eyebrow"><span class="eyebrow-line"></span> PERSONEL <span class="eyebrow-slash">/</span> <span class="eyebrow-name" x-text="photoPerson.role || 'Görev girilmedi'"></span></div><h2 id="photo-title" x-text="photoPerson.name"></h2></div><button type="button" class="btn btn-icon close-button" @click="closeModal()" aria-label="Kapat"><svg class="ic" aria-hidden="true"><use href="#i-close"/></svg></button></div>
@@ -154,6 +201,10 @@
                 <p class="leave-note" x-show="leaveBalance.skipped" x-text="'Hafta tatili ya da resmî tatile denk gelen '+leaveBalance.skipped+' gün sayılmadı'"></p>
               </div></template>
             </div>
+    </section>
+    <section class="dialog picker-dialog" x-show="modal==='tools'" x-transition:enter="dlg-in" x-transition:enter-start="dlg-from" x-transition:enter-end="dlg-to" x-transition:leave="dlg-out" x-transition:leave-start="dlg-to" x-transition:leave-end="dlg-from" @click.stop aria-modal="true" role="dialog" aria-labelledby="tools-title">
+      <div class="dialog-head"><div><div class="eyebrow"><span class="eyebrow-line"></span> AYARLAR</div><h2 id="tools-title">Araçlar</h2></div><button type="button" class="btn btn-icon close-button" @click="closeModal()" aria-label="Kapat"><svg class="ic" aria-hidden="true"><use href="#i-close"/></svg></button></div>
+      <div class="picker-list tool-list"><template x-for="t in tools" :key="t.id"><button type="button" class="multi-person tool-option" :class="{chosen: view===t.id}" @click="view=t.id;closeModal()"><span class="crew-ic"><svg class="ic" aria-hidden="true"><use :href="'#'+t.icon"/></svg></span><span class="tool-text"><b x-text="t.label"></b><small x-text="t.desc"></small></span><svg class="ic tool-go" aria-hidden="true"><use href="#i-chev-r"/></svg></button></template></div>
     </section>
     <section class="dialog picker-dialog" x-show="modal==='crew'" x-transition:enter="dlg-in" x-transition:enter-start="dlg-from" x-transition:enter-end="dlg-to" x-transition:leave="dlg-out" x-transition:leave-start="dlg-to" x-transition:leave-end="dlg-from" @click.stop aria-modal="true" role="dialog" aria-labelledby="crew-title">
       <div class="dialog-head"><div><div class="eyebrow"><span class="eyebrow-line"></span> EKİP</div><h2 id="crew-title">Ekip seçin</h2></div><button type="button" class="btn btn-icon close-button" @click="closeModal()" aria-label="Kapat"><svg class="ic" aria-hidden="true"><use href="#i-close"/></svg></button></div>

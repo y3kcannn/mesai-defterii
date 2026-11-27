@@ -171,6 +171,8 @@ function mesaiDefteri() {
     // ── Kişi ve kilit ───────────────────────────────────────────────────────
 
     // Ekip: Yol (açık saha) ya da Tünel; seçilen ekibin dışındakiler hiçbir listede görünmez
+    // Ayarlar menüsündeki araçlar (yenileri buraya eklenir; her araç kendi görünümünü açar)
+    tools: [{id: 'nivelman', label: 'Nivelman Hesabı', desc: 'Kot, kapanma hatası, gidiş–dönüş', icon: 'i-level'}],
     crews: [{id: 'yol', label: 'Yol ekibi', icon: 'i-road'}, {id: 'tunel', label: 'Tünel ekibi', icon: 'i-tunnel'}],
     get crewInfo() { return this.crews.find(c => c.id === this.crew) || this.crews[0]; },
     crewCount(id) { return this.people.filter(p => (p.team === 'tunel' ? 'tunel' : 'yol') === id).length; },
