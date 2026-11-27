@@ -910,7 +910,7 @@ html[data-theme="dark"] .theme-btn .moon{opacity:0;transform:rotate(-70deg) scal
 @keyframes rt-turn{0%,16%{transform:rotate(0)}44%,84%{transform:rotate(-90deg)}100%{transform:rotate(0)}}
 @keyframes rt-lines{0%,30%{opacity:1}40%,88%{opacity:0}100%{opacity:1}}
 @keyframes rt-cell{0%,44%{opacity:0;transform:translateY(3px)}54%,82%{opacity:1;transform:none}92%,100%{opacity:0}}
-@media (prefers-reduced-motion:reduce){.rt-phone,.rt-arc,.rt-head,.rt-lines,.rt-cell{animation:none!important}}
+@media (prefers-reduced-motion:reduce){.rt-phone,.rt-lines,.rt-cell{animation:none!important}}
 
 /* Ayarlar sayfası */
 .tool-cards{display:grid;gap:0;background:var(--surface);border:1px solid var(--line);box-shadow:var(--elev-1)}
