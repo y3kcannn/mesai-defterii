@@ -871,6 +871,13 @@ function mesaiDefteri() {
       t.style.setProperty('--col', ((w - (n - 1)) / n).toFixed(2) + 'px');
     },
     // Bugünün sütunu görünür alanın ortasına kaydırılır
+    // Kişinin bu ayki satırı (1. günden son güne, sekmeyle ayrılmış) Excel'e yapıştırılacak biçimde kopyalanır.
+    // Yalnız saatler alınır (izin harfleri ve önceki ay günleri hariç); Excel'de 1. gün hücresine yapıştırılır.
+    async copyRow(r) {
+      const text = r.cells.filter(c => !c.lead).map(c => /^[\d.,]+$/.test(c.text) ? c.text : '').join('\t');
+      try { await navigator.clipboard.writeText(text); this.notify(`${r.first} kopyalandı · Excel'de 1. güne yapıştır`); }
+      catch { this.notify('Kopyalanamadı'); }
+    },
     chartScroll() {
       clearTimeout(chartTimer);
       chartTimer = setTimeout(() => {

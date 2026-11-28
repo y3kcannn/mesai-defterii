@@ -855,3 +855,26 @@ html[data-theme="light"] .theme-btn .moon,html[data-theme="dark"] .theme-btn .su
 .chart-wrap .page-heading .chart-toggle{height:var(--ctl);padding:0 10px;font-size:11px}
 .chart-wrap .cg-table{grid-auto-rows:minmax(30px,1fr)}
 @media (orientation:landscape) and (max-height:540px){.chart-wrap .page-heading .chart-toggle{height:30px;padding:0 7px;gap:5px}.chart-wrap .page-heading h1 .year{display:none}}
+/* Toplam hücresi: dokununca satır Excel için kopyalanır */
+.cg-row>button.cg-total{grid-auto-flow:column;gap:5px;cursor:pointer;transition:background-color var(--dur-2)}
+.cg-total .ic{width:12px;height:12px;color:var(--dim);opacity:.7}
+.cg-row>button.cg-total:active{background:var(--mint-wash)}
+@media (hover:hover){.cg-row>button.cg-total:hover{background:var(--mint-wash)}.cg-row>button.cg-total:hover .ic{color:var(--mint-ink);opacity:1}}
+/* Bilgisayar: tablo ekran genişliğine sığar, yatay kaydırma yok; hücreler ve yazılar büyür */
+@media (min-width:900px) and (min-height:541px){
+  .chart-grid{scroll-snap-type:none;max-height:calc(100dvh - 130px)}
+  .cg-table,.cg-table.has-carry{width:100%;min-width:0;--col:minmax(0,1fr)}
+  .cg-table{grid-template-columns:clamp(90px,8vw,130px) repeat(var(--days),minmax(0,1fr)) clamp(76px,6vw,96px);grid-template-rows:52px;grid-auto-rows:clamp(52px,7vh,72px)}
+  .cg-table.has-carry{grid-template-columns:clamp(90px,8vw,130px) repeat(var(--days),minmax(0,1fr)) 84px clamp(76px,6vw,96px)}
+  .chart-wrap .cg-table{grid-auto-rows:clamp(52px,7vh,72px)}
+  .cg-row>:not(template){font-size:clamp(12px,1vw,16px)}
+  .cg-day b{font-size:clamp(12px,.95vw,16px)}
+  .cg-day small{font-size:clamp(9px,.7vw,11px)}
+  .cg-row>.cg-name{grid-auto-flow:column;justify-content:start;gap:8px;padding:0 10px;font-size:13px}
+  .cg-name .avatar{width:30px;height:30px}
+  .cg-name .cg-first{max-width:none}
+  .cg-head>.cg-total,.cg-head>.cg-carry{font-size:11px}
+  .cg-total .ic{width:14px;height:14px}
+}
+.cg-row>button.cg-total{justify-content:center}
+@media (min-width:900px) and (min-height:541px){.app-shell.wide{max-width:none}}
