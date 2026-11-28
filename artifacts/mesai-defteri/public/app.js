@@ -136,7 +136,15 @@ function mesaiDefteri() {
         try { if (id && this.chartPrev === null) localStorage.setItem('mesai-defteri-secili', id); } catch {}
         this.calculate();
       });
-      this.$watch('month', () => { this.calculate(); if (this.view === 'chart') this.chartScroll(); });
+      this.$watch('sel', v => { if (!v) this.selTouch = false; });
+      this.$watch('view', () => { this.sel = null; });
+      addEventListener('pointerup', () => { this.selecting = false; });
+      addEventListener('keydown', e => {
+        if (this.view !== 'chart' || !this.sel || this.modal) return;
+        if (e.key === 'Escape') { this.sel = null; return; }
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c' && !String(getSelection()).trim()) { e.preventDefault(); this.copySel(); }
+      });
+      this.$watch('month', () => { this.sel = null;  this.calculate(); if (this.view === 'chart') this.chartScroll(); });
       this.$watch('year', () => this.calculate());
       this.$watch('view', v => { if (v === 'chart') this.chartScroll(); });
       this.netShown = this.netSlip?.net || 0;
@@ -871,6 +879,47 @@ function mesaiDefteri() {
       t.style.setProperty('--col', ((w - (n - 1)) / n).toFixed(2) + 'px');
     },
     // Bugünün sütunu görünür alanın ortasına kaydırılır
+    // ── Tabloda Excel gibi alan seçimi ──
+    // Fare: sürükle ya da Shift+tıkla; gün başlığı tüm sütunu seçer. Dokunmatik: basılı tut, sonra uç hücreye dokun.
+    // Ctrl/Cmd+C ya da Kopyala: seçili dikdörtgen sekme/satır ayrımlı (Excel'e yapıştırılır) panoya alınır.
+    sel: null, selecting: false, selDragged: false, selSkip: false, selTouch: false, selStart: null, lpTimer: null,
+    get selBox() { const s = this.sel; return s && {r0: Math.min(s.ar, s.fr), r1: Math.max(s.ar, s.fr), c0: Math.min(s.ac, s.fc), c1: Math.max(s.ac, s.fc)}; },
+    get selCount() { const b = this.selBox; return b ? (b.r1 - b.r0 + 1) * (b.c1 - b.c0 + 1) : 0; },
+    inSel(ri, ci) { const b = this.selBox; return !!b && ri >= b.r0 && ri <= b.r1 && ci >= b.c0 && ci <= b.c1; },
+    selDown(e, ri, ci) {
+      if (e.button > 0) return;
+      if (e.pointerType === 'mouse') {
+        if (e.shiftKey && this.sel) { this.sel.fr = ri; this.sel.fc = ci; this.selSkip = true; return; }
+        this.selecting = true; this.selDragged = false; this.selStart = {ri, ci};
+        return;
+      }
+      clearTimeout(this.lpTimer);
+      this.lpTimer = setTimeout(() => { this.sel = {ar: ri, ac: ci, fr: ri, fc: ci}; this.selTouch = true; this.selSkip = true; navigator.vibrate?.(12); }, 450);
+    },
+    selOver(ri, ci) {
+      if (!this.selecting) return;
+      if (!this.selDragged) { this.selDragged = true; this.sel = {ar: this.selStart.ri, ac: this.selStart.ci, fr: ri, fc: ci}; }
+      else { this.sel.fr = ri; this.sel.fc = ci; }
+    },
+    selCancel(leave) { if (!leave || !this.selecting) clearTimeout(this.lpTimer); },
+    cellClick(e, r, ri, c, ci) {
+      clearTimeout(this.lpTimer);
+      if (this.selSkip) { this.selSkip = false; return; }
+      if (this.selDragged) { this.selDragged = false; return; }
+      if (this.selTouch && this.sel) { this.sel.fr = ri; this.sel.fc = ci; return; }
+      this.sel = null; this.chartCell(r.id, c);
+    },
+    selCol(ci, e) {
+      const n = this.chartRows.length; if (!n) return;
+      if (e.shiftKey && this.sel) Object.assign(this.sel, {ar: 0, fr: n - 1, fc: ci});
+      else this.sel = {ar: 0, ac: ci, fr: n - 1, fc: ci};
+    },
+    async copySel() {
+      const b = this.selBox; if (!b) return;
+      const text = this.chartRows.slice(b.r0, b.r1 + 1).map(r => r.cells.slice(b.c0, b.c1 + 1).map(c => c.text).join('\t')).join('\n');
+      try { await navigator.clipboard.writeText(text); this.notify(`${this.selCount} hücre kopyalandı · Excel'e yapıştır`); }
+      catch { this.notify('Kopyalanamadı'); }
+    },
     // Kişinin bu ayki satırı (1. günden son güne, sekmeyle ayrılmış) Excel'e yapıştırılacak biçimde kopyalanır.
     // Yalnız saatler alınır (izin harfleri ve önceki ay günleri hariç); Excel'de 1. gün hücresine yapıştırılır.
     async copyRow(r) {

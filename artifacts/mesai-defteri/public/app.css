@@ -871,3 +871,16 @@ html[data-theme="light"] .theme-btn .moon,html[data-theme="dark"] .theme-btn .su
 .cg-row>button.cg-total{justify-content:center}
 @media (min-width:900px) and (min-height:541px){.app-shell.wide{max-width:none}}
 @keyframes fade-in-only{from{opacity:0}}
+/* Tablo alan seçimi (Excel gibi) */
+.cg-table{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.cg-cell.sel{background-image:linear-gradient(color-mix(in srgb,var(--mint) 30%,transparent),color-mix(in srgb,var(--mint) 30%,transparent));color:var(--ink)}
+.cg-head>.cg-day{cursor:pointer}
+.chart-wrap{position:relative}
+.sel-bar{align-self:flex-end;margin-top:8px;display:flex;flex:none;align-items:center;gap:8px;padding:6px 6px 6px 12px;background:var(--surface-raised);border:1px solid var(--line-strong);box-shadow:var(--elev-2);font:12px var(--mono);color:var(--soft)}
+.sel-bar .btn{height:34px}
+.sel-bar .icon-button{width:34px;height:34px}
+/* Yan çevrilmiş tabloda iOS sağa yapışan sütunları yanlış yere koyuyor: toplam sütunu normal akışta */
+@media (max-width:760px) and (orientation:portrait){
+  .chart-wrap .cg-row>.cg-total,.chart-wrap .cg-row>.cg-carry{position:static}
+  .chart-wrap{position:fixed}
+}
