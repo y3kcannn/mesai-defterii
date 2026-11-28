@@ -1,4 +1,4 @@
-// Saha araçları (Ayarlar): dilim dönüşümü, noktaya git (pusula), temel ödevler, alan hesabı.
+// Saha araçları (Ayarlar): dilim ve datum dönüşümü, noktaya git (pusula), semt-mesafe, alan, trigonometrik yükseklik.
 // Mesai hesabından bağımsızdır; girdiler tarayıcıda saklanır.
 
 // ── Jeodezi ────────────────────────────────────────────────────────────
@@ -8,6 +8,27 @@ const ELLIPSOIDS = {
   hayford: {label: 'ED50', a: 6378388, f: 1 / 297},
 };
 const toRad = d => d * Math.PI / 180, toDeg = r => r * 180 / Math.PI;
+
+// ED50 ↔ WGS84/ITRF96 datum dönüşümü: EPSG:1784 (Türkiye, Position Vector, 7 parametre, ~2 m doğruluk).
+// Uygulama içinde coğrafi koordinatlar hep WGS84'tür; ED50 girdi/çıktı bu dönüşümle çevrilir.
+const ED50_WGS = {tx: -84.1, ty: -101.8, tz: -129.7, rx: 0, ry: 0, rz: 0.468, s: 1.05};
+function geoToEcef(lat, lon, {a, f}) {
+  const e2 = f * (2 - f), p = toRad(lat), l = toRad(lon), N = a / Math.sqrt(1 - e2 * Math.sin(p) ** 2);
+  return [N * Math.cos(p) * Math.cos(l), N * Math.cos(p) * Math.sin(l), N * (1 - e2) * Math.sin(p)];
+}
+function ecefToGeo([X, Y, Z], {a, f}) {
+  const e2 = f * (2 - f), p = Math.hypot(X, Y); let lat = Math.atan2(Z, p * (1 - e2));
+  for (let i = 0; i < 6; i++) { const N = a / Math.sqrt(1 - e2 * Math.sin(lat) ** 2); lat = Math.atan2(Z + e2 * N * Math.sin(lat), p); }
+  return {lat: toDeg(lat), lon: toDeg(Math.atan2(Y, X))};
+}
+function helmert([X, Y, Z], dir) {
+  const k = ED50_WGS, as = Math.PI / 648000, rx = dir * k.rx * as, ry = dir * k.ry * as, rz = dir * k.rz * as, m = 1 + dir * k.s * 1e-6;
+  return [dir * k.tx + m * (X - rz * Y + ry * Z), dir * k.ty + m * (rz * X + Y - rx * Z), dir * k.tz + m * (-ry * X + rx * Y + Z)];
+}
+const WGS84 = {a: 6378137, f: 1 / 298.257223563};
+// Seçili datumdaki coğrafi → WGS84 ve tersi
+const toWgs = (g, ell) => ell === 'hayford' ? ecefToGeo(helmert(geoToEcef(g.lat, g.lon, ELLIPSOIDS.hayford), 1), WGS84) : g;
+const fromWgs = (g, ell) => ell === 'hayford' ? ecefToGeo(helmert(geoToEcef(g.lat, g.lon, WGS84), -1), ELLIPSOIDS.hayford) : g;
 
 // Transversal Merkatör (Krüger n-serisi, 6. derece; dilim içinde mm altı doğruluk)
 function tmSeries(ell) {
@@ -74,7 +95,7 @@ function distBearing(lat1, lon1, lat2, lon2) {
 }
 
 // ── Biçim ──────────────────────────────────────────────────────────────
-const sNum = v => { const s = String(v ?? '').trim().replace(/\s/g, '').replace(',', '.'); return s === '' ? null : /^[-+]?\d*\.?\d+$/.test(s) ? Number(s) : NaN; };
+const sNum = v => { let s = String(v ?? '').trim().replace(/\s/g, ''); const c = s.lastIndexOf(','), d = s.lastIndexOf('.'); s = c > d ? s.replace(/\./g, '').replace(',', '.') : s.replace(/,/g, ''); return s === '' ? null : /^[-+]?\d*\.?\d+$/.test(s) ? Number(s) : NaN; };
 const sFix = (v, d = 3) => v == null || !Number.isFinite(v) ? '—' : v.toFixed(d).replace('.', ',');
 const sGroup = (v, d = 3) => { if (v == null || !Number.isFinite(v)) return '—'; const [i, f] = Math.abs(v).toFixed(d).split('.'); return (v < 0 ? '−' : '') + i.replace(/\B(?=(\d{3})+(?!\d))/g, '.') + (f ? ',' + f : ''); };
 const dms = deg => { if (!Number.isFinite(deg)) return '—'; const s = deg < 0 ? '−' : '', a = Math.abs(deg); let d = Math.floor(a), m = Math.floor((a - d) * 60), x = ((a - d) * 60 - m) * 60; if (x >= 59.9995) { x = 0; m++; } if (m === 60) { m = 0; d++; } return `${s}${d}° ${String(m).padStart(2, '0')}′ ${x.toFixed(3).replace('.', ',').padStart(6, '0')}″`; };
@@ -86,30 +107,36 @@ const norm = (v, unit) => { const full = unit === 'grad' ? 400 : 360; return ((v
 
 // Ortak: bir sistemdeki girdiyi coğrafiye çevir
 function readPoint(p) {
-  if (p.kind === 'geo') { const lat = sNum(p.a), lon = sNum(p.b); return Number.isFinite(lat) && Number.isFinite(lon) ? {lat, lon} : null; }
+  const ell = p.ell || 'grs80';
+  if (p.kind === 'geo') { const lat = sNum(p.a), lon = sNum(p.b); return Number.isFinite(lat) && Number.isFinite(lon) ? toWgs({lat, lon}, ell) : null; }
   const y = sNum(p.a), x = sNum(p.b);
   if (!Number.isFinite(y) || !Number.isFinite(x)) return null;
-  return tmInverse(y, x, sys(p.kind, p.zone, p.ell || 'grs80'));
+  return toWgs(tmInverse(y, x, sys(p.kind, p.zone, ell)), ell);
+}
+// WGS84 coğrafi → istenen sistem ve datum (dilim otomatik ya da verilen)
+function writePoint(g, kind, zone, ell) {
+  const d = fromWgs(g, ell);
+  if (kind === 'geo') return {geo: d};
+  const z = zone === 'auto' || zone == null ? (kind === 'tm3' ? nearestDom(d.lon) : utmZoneOf(d.lon)) : Number(zone);
+  return {zone: z, ...tmForward(d.lat, d.lon, sys(kind, z, ell))};
 }
 
 // ── Dilim dönüşümü ─────────────────────────────────────────────────────
 function dilimTool() {
   return {
-    d: sStore('saha-dilim', {ell: 'grs80', from: 'tm3', fromZone: '33', to: 'utm', toZone: 'auto', a: '', b: ''}),
+    d: sStore('saha-dilim', {ell: 'grs80', toEll: 'grs80', from: 'tm3', fromZone: '33', to: 'utm', toZone: 'auto', a: '', b: ''}),
     init() { this.$watch('d', v => sSave('saha-dilim', v)); },
     doms: TM3_DOMS, zones: UTM_ZONES, ells: ELLIPSOIDS, fix: sFix, grp: sGroup, dms,
     get geo() { return readPoint({kind: this.d.from, zone: this.d.fromZone, ell: this.d.ell, a: this.d.a, b: this.d.b}); },
     get target() {
       const g = this.geo; if (!g) return null;
-      if (this.d.to === 'geo') return {geo: g};
-      const z = this.d.toZone === 'auto' ? (this.d.to === 'tm3' ? nearestDom(g.lon) : utmZoneOf(g.lon)) : Number(this.d.toZone);
-      return {zone: z, ...tmForward(g.lat, g.lon, sys(this.d.to, z, this.d.ell))};
+      return writePoint(g, this.d.to, this.d.toZone, this.d.toEll || 'grs80');
     },
     get labels() { return this.d.from === 'geo' ? ['Enlem (°)', 'Boylam (°)'] : ['Sağa (Y)', 'Yukarı (X)']; },
     swap() {
       const t = this.target; if (!t) { [this.d.from, this.d.to] = [this.d.to, this.d.from]; return; }
       const from = this.d.to, zone = t.zone;
-      Object.assign(this.d, {to: this.d.from, toZone: 'auto', from, fromZone: String(zone || this.d.fromZone),
+      Object.assign(this.d, {to: this.d.from, toZone: 'auto', from, fromZone: String(zone || this.d.fromZone), ell: this.d.toEll || 'grs80', toEll: this.d.ell,
         a: from === 'geo' ? sFix(t.geo.lat, 9) : sFix(t.y, 3), b: from === 'geo' ? sFix(t.geo.lon, 9) : sFix(t.x, 3)});
     },
     clear() { this.d.a = ''; this.d.b = ''; },
@@ -120,9 +147,9 @@ function dilimTool() {
       this.locating = true;
       navigator.geolocation.getCurrentPosition(({coords: c}) => {
         this.locating = false;
-        if (this.d.from === 'geo') return Object.assign(this.d, {a: sFix(c.latitude, 8), b: sFix(c.longitude, 8)});
-        const z = this.d.from === 'tm3' ? nearestDom(c.longitude) : utmZoneOf(c.longitude), r = tmForward(c.latitude, c.longitude, sys(this.d.from, z, this.d.ell));
-        Object.assign(this.d, {fromZone: String(z), a: sFix(r.y, 3), b: sFix(r.x, 3)});
+        const r = writePoint({lat: c.latitude, lon: c.longitude}, this.d.from, 'auto', this.d.ell);
+        if (r.geo) Object.assign(this.d, {a: sFix(r.geo.lat, 8), b: sFix(r.geo.lon, 8)});
+        else Object.assign(this.d, {fromZone: String(r.zone), a: sFix(r.y, 3), b: sFix(r.x, 3)});
         this.$dispatch('toast', `Konum alındı · ±${Math.round(c.accuracy)} m`);
       }, () => { this.locating = false; this.$dispatch('toast', 'Konum alınamadı'); }, {enableHighAccuracy: true, timeout: 20000, maximumAge: 0});
     },
@@ -140,7 +167,7 @@ function gitTool() {
     roseRot: 0, arrowRot: 0, arrived: false, raf: 0, buzzed: false,
     init() { this.$watch('g', v => { sSave('saha-git', v); this.arrived = false; }); },
     clear() { if (this.running) this.stop(); this.g.a = ''; this.g.b = ''; },
-    doms: TM3_DOMS, zones: UTM_ZONES, fix: sFix, grp: sGroup,
+    doms: TM3_DOMS, zones: UTM_ZONES, ells: ELLIPSOIDS, fix: sFix, grp: sGroup,
     get labels() { return this.g.kind === 'geo' ? ['Enlem (°)', 'Boylam (°)'] : ['Sağa (Y)', 'Yukarı (X)']; },
     get target() { return readPoint(this.g); },
     get nav() { return this.pos && this.target ? distBearing(this.pos.lat, this.pos.lon, this.target.lat, this.target.lon) : null; },
