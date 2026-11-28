@@ -746,18 +746,6 @@ html[data-theme="light"] .theme-btn .moon,html[data-theme="dark"] .theme-btn .su
   .page-heading:has(.month-controls) .month-controls{justify-content:space-between}
   .page-heading:has(.month-controls) .controls-sep{display:none}
 }
-/* Telefon dikey: tablo yan çevrilmiş açılır (telefonu çevirmeye gerek yok); alt menünün üstündeki alanı kaplar */
-@media (max-width:760px) and (orientation:portrait){
-  .app-shell.wide{--avh:calc(100dvh - var(--nav-h) - 28px - env(safe-area-inset-top) - env(safe-area-inset-bottom));--avw:calc(100vw - 16px)}
-  html:has(.app-shell.wide),html:has(.app-shell.wide) body{overflow:hidden}
-  .chart-wrap{position:fixed;z-index:5;left:50%;top:calc(env(safe-area-inset-top) + 8px + var(--avh) / 2);width:var(--avh);height:var(--avw);translate:-50% -50%;rotate:90deg;animation-name:fade-in-only;display:flex;flex-direction:column;padding:6px 4px 0;background:var(--bg)}
-  .chart-wrap .page-heading{margin:0 0 6px;align-items:center;flex-direction:row}
-  .chart-wrap h1{font-size:20px}.chart-wrap h1 .year{display:none}
-  .chart-wrap .page-heading .chart-toggle{height:30px;padding:0 7px;gap:5px}
-  .chart-wrap .month-controls{gap:4px}
-  .chart-wrap .chart-grid{flex:1;min-height:0}
-  .chart-wrap .cg-table{grid-template-rows:32px;grid-auto-rows:minmax(38px,1fr)}
-}
 @media (max-width:430px){
   .month-controls{gap:4px}
   .month-current{padding:0 9px}
@@ -870,7 +858,6 @@ html[data-theme="light"] .theme-btn .moon,html[data-theme="dark"] .theme-btn .su
 }
 .cg-row>button.cg-total{justify-content:center}
 @media (min-width:900px) and (min-height:541px){.app-shell.wide{max-width:none}}
-@keyframes fade-in-only{from{opacity:0}}
 /* Tablo alan seçimi (Excel gibi) */
 .cg-table{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .cg-cell.sel{background-image:linear-gradient(color-mix(in srgb,var(--mint) 30%,transparent),color-mix(in srgb,var(--mint) 30%,transparent));color:var(--ink)}
@@ -879,8 +866,27 @@ html[data-theme="light"] .theme-btn .moon,html[data-theme="dark"] .theme-btn .su
 .sel-bar{align-self:flex-end;margin-top:8px;display:flex;flex:none;align-items:center;gap:8px;padding:6px 6px 6px 12px;background:var(--surface-raised);border:1px solid var(--line-strong);box-shadow:var(--elev-2);font:12px var(--mono);color:var(--soft)}
 .sel-bar .btn{height:34px}
 .sel-bar .icon-button{width:34px;height:34px}
-/* Yan çevrilmiş tabloda iOS sağa yapışan sütunları yanlış yere koyuyor: toplam sütunu normal akışta */
+/* Yan çevir animasyonu */
+.chart-rotate{display:none;min-height:calc(100dvh - var(--nav-h) - 40px - env(safe-area-inset-top) - env(safe-area-inset-bottom) - max(8px,env(safe-area-inset-bottom)));flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:0 32px;text-align:center;color:var(--muted)}
+.chart-rotate b{margin-top:14px;color:var(--ink);font-size:17px;font-weight:600;letter-spacing:-.01em}
+.chart-rotate p{margin:0;max-width:240px;font-size:13px;line-height:1.5}
+.rt{width:150px;height:150px;overflow:visible}
+.rt-phone{transform-box:view-box;transform-origin:70px 70px;animation:rt-turn 3.2s cubic-bezier(.5,-.25,.25,1.35) infinite}
+.rt-body{fill:var(--surface-raised);stroke:var(--soft);stroke-width:2}
+.rt-scr{fill:var(--field)}
+.rt-lines{fill:none;stroke:var(--line-strong);stroke-width:3;stroke-linecap:round;animation:rt-lines 3.2s ease infinite}
+.rt-pill{fill:var(--line-strong)}
+.rt-table{transform-box:view-box;transform-origin:70px 70px}
+.rt-cell{opacity:0;fill:var(--line);animation:rt-cell 3.2s ease infinite;animation-delay:var(--d)}
+.rt-cell.c1{fill:color-mix(in srgb,var(--mint) 55%,var(--field))}
+.rt-cell.c2{fill:color-mix(in srgb,var(--rest) 50%,var(--field))}
+.rt-cell.c3{fill:color-mix(in srgb,var(--amber) 55%,var(--field))}
+@keyframes rt-turn{0%,16%{transform:rotate(0)}44%,84%{transform:rotate(-90deg)}100%{transform:rotate(0)}}
+@keyframes rt-lines{0%,30%{opacity:1}40%,88%{opacity:0}100%{opacity:1}}
+@keyframes rt-cell{0%,44%{opacity:0;transform:translateY(3px)}54%,82%{opacity:1;transform:none}92%,100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.rt-phone,.rt-lines,.rt-cell{animation:none!important}}
+/* Telefon dikey: tablo yerine "yan çevirin" uyarısı */
 @media (max-width:760px) and (orientation:portrait){
-  .chart-wrap .cg-row>.cg-total,.chart-wrap .cg-row>.cg-carry{position:static}
-  .chart-wrap{position:fixed}
+  .chart-rotate{display:flex}
+  .chart-wrap{display:none}
 }
