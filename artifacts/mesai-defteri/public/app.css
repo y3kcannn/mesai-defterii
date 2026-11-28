@@ -832,67 +832,6 @@ html[data-theme="light"] .theme-btn .moon,html[data-theme="dark"] .theme-btn .su
 .crew-option .type-check{display:block!important;visibility:hidden;margin-left:0;width:16px}.crew-option.chosen .type-check{visibility:visible}
 @media (max-width:760px){.rail::after{content:"";position:absolute;left:-1px;right:-1px;top:calc(100% + 1px);height:160px;background:var(--bg);pointer-events:none}}
 
-/* ── Ayarlar menüsü ── */
-.tool-option{align-items:center}
-.tool-text{display:flex;flex-direction:column;gap:2px;min-width:0;text-align:left}
-.tool-text b{font-weight:600;color:var(--text)}
-.tool-text small{font-size:11px;color:var(--dim)}
-.tool-go{margin-left:auto;color:var(--dim)}
-
-/* ── Nivelman ── */
-.nv-actions{flex-wrap:wrap}
-.nv-tabs{margin:0 0 12px}
-.nv-card{background:var(--surface);border:1px solid var(--line);box-shadow:var(--elev-1);margin-bottom:12px}
-.nv-head{padding:12px var(--pad);border-bottom:1px solid var(--line);font-size:11px;letter-spacing:var(--track);color:var(--soft)}
-.nv-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
-.nv-table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
-.nv-table th{position:sticky;top:0;padding:10px 8px;background:var(--surface-2);border-bottom:1px solid var(--line);font:500 10px var(--mono);letter-spacing:var(--track);color:var(--dim);text-align:right;white-space:nowrap;text-transform:uppercase}
-.nv-table th i{font-style:normal;color:var(--faint);text-transform:none}
-.nv-table th.nv-no,.nv-table td.nv-no{text-align:left}
-.nv-table td{border-bottom:1px solid var(--line-soft);padding:0}
-.nv-c input{width:100%;min-width:88px;height:48px;padding:0 10px;border:0;border-right:1px solid var(--line-soft);background:transparent;color:var(--ink);font:500 16px var(--mono);text-align:right;outline:none;border-radius:0}
-.nv-no input{min-width:96px;text-align:left;font-family:var(--sans);font-weight:600;text-transform:uppercase}
-.nv-c input:focus{background:var(--mint-wash);box-shadow:inset 0 0 0 2px var(--mint)}
-.nv-c input:disabled{background:repeating-linear-gradient(135deg,transparent 0 6px,var(--outside-bg) 6px 7px);cursor:default}
-.nv-c input::placeholder{color:var(--faint)}
-.nv-c.warn input{background:color-mix(in srgb,var(--amber) 22%,transparent);box-shadow:inset 0 0 0 1px var(--amber)}
-.nv-table td.nv-no{position:sticky;left:0;z-index:1;background:var(--surface)}
-.nv-table th.nv-no{position:sticky;left:0;z-index:2}
-.nv-out{padding:0 10px!important;min-width:84px;height:48px;text-align:right;font:500 15px var(--mono);color:var(--soft);white-space:nowrap}
-.nv-kot{color:var(--ink)}
-.nv-corr{color:var(--mint-ink);background:var(--mint-wash)}
-.nv-row.focus td{background-color:color-mix(in srgb,var(--mint-wash) 45%,transparent)}
-.nv-rowbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px var(--pad)}
-.nv-settings .nv-mode{margin:12px var(--pad) 0}
-.nv-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;padding:12px var(--pad) 16px}
-.nv-grid .form-input{font-family:var(--mono);font-size:16px}
-.nv-sums{margin:0;padding:4px var(--pad) 10px}
-.nv-sums>div{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line-soft)}
-.nv-sums>div:last-child{border-bottom:0}
-.nv-sums dt{font-size:13px;color:var(--muted)}
-.nv-sums dd{margin:0;display:flex;gap:8px;align-items:center;font:500 15px var(--mono);color:var(--ink);text-align:right}
-.nv-ok{font:500 10px var(--mono);letter-spacing:var(--track);padding:3px 6px;border:1px solid var(--mint-line);color:var(--mint-ink);background:var(--mint-wash)}
-.nv-ok.bad{border-color:var(--red-line);color:var(--red-ink);background:color-mix(in srgb,var(--red) 12%,transparent)}
-.nv-fix{display:flex;align-items:center;gap:10px;padding:0 var(--pad) 14px;font-size:13px;color:var(--muted)}
-.link-btn{border:0;background:none;padding:0;color:var(--mint-ink);text-decoration:underline;font:inherit;cursor:pointer}
-.nv-pairs td{padding:12px 10px;text-align:right;font:500 14px var(--mono);white-space:nowrap}
-.nv-pairs td:first-child,.nv-pairs th:first-child{text-align:left;font-family:var(--sans);font-weight:600}
-.nv-pairs tr.bad td{color:var(--red-ink);background:color-mix(in srgb,var(--red) 14%,transparent)}
-.nv-print{display:none}
-@media (max-width:520px){.nv-actions{display:grid!important;grid-template-columns:repeat(3,1fr)}}
-@media print{
-  html.print-nv body *{visibility:hidden}
-  html.print-nv .nv-print,html.print-nv .nv-print *{visibility:visible}
-  html.print-nv .nv-print{display:block;position:absolute;left:0;top:0;width:100%;color:#000;background:#fff;font:12px/1.4 var(--sans)}
-  .nv-print table{width:100%;border-collapse:collapse;margin:6px 0}
-  .nv-print th,.nv-print td{border:1px solid #999;padding:4px 6px;text-align:right;font-family:var(--mono)}
-  .nv-print th:first-child,.nv-print td:first-child{text-align:left}
-}
-@media (max-width:520px){.page-heading:has(.nv-actions){flex-direction:column;align-items:stretch;gap:10px}}
-@media (max-width:520px){.nv-pairs td{padding:11px 6px;font-size:12.5px}.nv-pairs th{padding:9px 6px}.nv-pairs td:first-child{font-size:13px}}
-.heading-row .tools-btn{margin-left:auto;align-self:center;flex:none}
-@media (max-width:760px){.page-heading>div:first-child:has(.tools-btn){width:100%}}
-
 /* Telefonu yan çevir: telefon yaylanarak yatar, ekranında tablo açılır */
 .rt{width:150px;height:150px;overflow:visible}
 .rt-phone{transform-box:view-box;transform-origin:70px 70px;animation:rt-turn 3.2s cubic-bezier(.5,-.25,.25,1.35) infinite}
@@ -910,96 +849,9 @@ html[data-theme="light"] .theme-btn .moon,html[data-theme="dark"] .theme-btn .su
 @keyframes rt-cell{0%,44%{opacity:0;transform:translateY(3px)}54%,82%{opacity:1;transform:none}92%,100%{opacity:0}}
 @media (prefers-reduced-motion:reduce){.rt-phone,.rt-lines,.rt-cell{animation:none!important}}
 
-/* Ayarlar sayfası */
-.tool-cards{display:grid;gap:0;background:var(--surface);border:1px solid var(--line);box-shadow:var(--elev-1)}
-.tool-card{display:flex;align-items:center;gap:14px;width:100%;padding:16px var(--pad);border:0;border-bottom:1px solid var(--line-soft);background:transparent;color:inherit;text-align:left;cursor:pointer;transition:background-color var(--dur-2),transform var(--dur-press-out) var(--ease-spring)}
-.tool-card:last-child{border-bottom:0}
-.tool-card:hover{background:var(--surface-2)}
-.tool-card:active{transform:scale(.985);transition-duration:var(--dur-press-in)}
-.tool-card-ic{display:grid;place-items:center;width:44px;height:44px;flex:none;border:1px solid var(--mint-line);background:var(--mint-wash);color:var(--mint-ink)}
-.tool-card .tool-text b{font-size:15px}
-.tool-card .tool-text small{font-size:12px}
-.back-link{display:inline-flex;align-items:center;gap:4px;margin:0 0 4px -4px;padding:4px;border:0;background:none;color:var(--mint-ink);font:500 13px var(--sans);cursor:pointer}
-
 /* Tablo: tür filtreleri başlıkta, ay geçişinin yanında; tablo kalan yüksekliğe sığar */
 .chart-wrap .page-heading{flex-wrap:nowrap}
 .chart-wrap .page-heading .chart-legend{display:flex;flex-wrap:nowrap;gap:4px;margin:0 6px 0 auto;grid-template-columns:none}
 .chart-wrap .page-heading .chart-toggle{height:var(--ctl);padding:0 10px;font-size:11px}
 .chart-wrap .cg-table{grid-auto-rows:minmax(30px,1fr)}
 @media (orientation:landscape) and (max-height:540px){.chart-wrap .page-heading .chart-toggle{height:30px;padding:0 7px;gap:5px}.chart-wrap .page-heading h1 .year{display:none}}
-/* ── Saha araçları: tek kart, iki sütunlu alanlar, dokununca kopyalanan sonuç ── */
-.sa-card{display:grid;gap:12px;margin-bottom:12px;padding:16px var(--pad);background:var(--surface);border:1px solid var(--line);box-shadow:var(--elev-1)}
-.sa-cap{font:11px var(--mono);letter-spacing:var(--track);text-transform:uppercase;color:var(--dim)}
-.sa-seg{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);border:1px solid var(--line-field)}
-.sa-seg button{height:40px;padding:0 6px;border:0;border-left:1px solid var(--line-field);background:var(--surface-raised);color:var(--muted);font:12px var(--mono);letter-spacing:var(--track);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;transition:background-color var(--dur-2),color var(--dur-2)}
-.sa-seg button:first-child{border-left:0}
-.sa-seg button.on{background:var(--mint-wash);color:var(--mint-ink);box-shadow:inset 0 -2px 0 var(--mint)}
-.sa-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:10px}
-.sa-row:not(:has(>:not([style*="none"]))){display:none}
-.sa-f{display:grid;gap:6px;min-width:0}
-.sa-f>span{font-size:11px;line-height:14px;color:var(--soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sa-num{font-family:var(--mono);font-size:16px;min-width:0;width:100%}
-.sa-card select.form-input{min-width:0;width:100%}
-.sa-swap{display:flex;justify-content:center;margin:-4px 0 8px}
-/* Nokta satırları: harf · Y · X */
-.sa-pts{display:grid;grid-template-columns:28px minmax(0,1fr) minmax(0,1fr);gap:8px;align-items:center}
-.sa-pts>span{font-size:11px;line-height:14px;color:var(--soft)}
-.sa-pts>b{display:grid;place-items:center;height:100%;font:600 13px var(--mono);color:var(--mint-ink)}
-.sa-pt{display:contents}
-.alan-i{position:relative;display:grid;place-items:center;width:28px;height:100%;border:0;background:none;color:var(--dim);font:500 12px var(--mono);cursor:pointer}
-.alan-i .ic{display:none;width:14px;height:14px;color:var(--red-ink)}
-.alan-i:not(:disabled):hover em,.alan-i:not(:disabled):focus-visible em{display:none}
-.alan-i:not(:disabled):hover .ic,.alan-i:not(:disabled):focus-visible .ic{display:block}
-.alan-i:disabled{cursor:default}
-.alan-i em{font-style:normal}
-/* Sonuç: satıra dokununca değer kopyalanır */
-.sa-res{display:grid;border:1px solid var(--mint-line);background:var(--mint-wash)}
-.sa-line{display:flex;align-items:center;gap:10px;width:100%;min-height:50px;padding:8px 12px;border:0;border-top:1px solid var(--mint-edge);background:none;color:inherit;text-align:left;font:inherit}
-.sa-res>.sa-line:first-child,.sa-res>[style*="none"]+.sa-line{border-top:0}
-button.sa-line{cursor:pointer;transition:background-color var(--dur-2)}
-button.sa-line:active{background:var(--mint-wash-2)}
-.sa-line span{font-size:12px;color:var(--muted)}
-.sa-line b{margin-left:auto;font:500 18px var(--mono);color:var(--mint-ink);letter-spacing:-.01em;white-space:nowrap}
-.sa-line .ic{width:14px;height:14px;color:var(--mint-mute)}
-.sa-empty{margin:0;font-size:13px;color:var(--dim)}
-.sa-warn{margin:0;padding:10px 12px;border:1px solid var(--holiday-line);background:color-mix(in srgb,var(--amber) 14%,transparent);color:var(--holiday-ink);font-size:12px}
-.sa-go{height:46px;justify-content:center}
-.git-stats{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line-soft)}
-.git-stats>div{display:flex;justify-content:space-between;align-items:baseline;padding:10px 12px}
-.git-stats>div+div{border-left:1px solid var(--line-soft)}
-.git-stats span{font-size:12px;color:var(--muted)}
-.git-stats b{font:500 14px var(--mono);color:var(--ink)}
-.set-label{margin:4px 2px 8px;font:11px var(--mono);letter-spacing:var(--track);color:var(--dim)}
-/* Pusula */
-.git-card{padding-top:20px}
-.git-card .git-hint{margin:4px 0 0}
-.git-dial{--sz:min(74vw,280px);position:relative;width:var(--sz);aspect-ratio:1;margin:0 auto;border-radius:50%;background:radial-gradient(circle,var(--surface-raised) 0 56%,var(--surface-2) 57% 100%);box-shadow:inset 0 0 0 1px var(--line-strong),0 10px 30px -18px var(--shadow);transition:box-shadow .4s var(--ease-out)}
-.git-rose{position:absolute;inset:0;width:100%;height:100%;will-change:transform}
-.git-rose line{stroke:var(--line-strong);stroke-width:1}
-.git-rose line.mid{stroke:var(--dim);stroke-width:1.5}
-.git-rose line.maj{stroke:var(--soft);stroke-width:2.5}
-.git-rose text{font:600 13px var(--mono);fill:var(--muted);text-anchor:middle;dominant-baseline:middle}
-.git-rose text.n{fill:var(--red-ink);font-size:15px}
-.git-arrow{position:absolute;inset:0;width:100%;height:100%;will-change:transform;filter:drop-shadow(0 3px 4px var(--shadow))}
-.git-arrow path{fill:var(--mint);stroke:var(--mint-ink);stroke-width:1.5;stroke-linejoin:round;transition:fill .35s,stroke .35s}
-.git-center{position:absolute;inset:33%;display:grid;place-items:center;text-align:center;border-radius:50%;background:var(--surface);box-shadow:0 0 0 1px var(--line),0 4px 14px -8px var(--shadow);transition:background-color .4s,box-shadow .4s}
-.git-center>div{display:flex;flex-direction:column;align-items:center;line-height:1}
-.git-center b{font:600 20px var(--mono);color:var(--ink);letter-spacing:-.02em;white-space:nowrap}
-.git-center em{margin-top:2px;font:500 11px var(--mono);font-style:normal;color:var(--dim)}
-.git-dial.aligned{box-shadow:inset 0 0 0 2px color-mix(in srgb,#3f9a63 60%,transparent),0 0 28px -10px color-mix(in srgb,#3f9a63 55%,transparent)}
-.git-dial.aligned .git-arrow path{fill:#3f9a63;stroke:#2c7349}
-/* Varış */
-.git-dial.arrived{box-shadow:inset 0 0 0 3px #3f9a63}
-.git-dial.arrived .git-center{background:#3f9a63;box-shadow:none}
-.git-done svg{width:44px;height:44px;fill:none;stroke:#fff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
-.git-done path{stroke-dasharray:1;stroke-dashoffset:1;animation:git-check .5s .1s var(--ease-out) forwards}
-@keyframes git-check{to{stroke-dashoffset:0}}
-.git-hint{margin:16px 0 4px;text-align:center;font:600 15px var(--sans);color:var(--muted);transition:color .3s}
-.git-hint.ok{color:#3f9a63}
-html[data-theme="dark"] .git-hint.ok{color:#7cc79a}
-
-.tool-card-ic{width:48px;height:48px}.tool-card-ic .ic{width:30px;height:30px;stroke-width:1.5}
-
-.tool-card-ic{width:52px;height:52px;display:grid;place-items:center;background:var(--surface-2);border:1px solid var(--line)}
-.tool-card-ic .tic{width:42px;height:42px;display:block}
-.sa-here{width:100%;justify-content:center;height:42px}
