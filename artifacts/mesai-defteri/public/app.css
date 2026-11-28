@@ -34,60 +34,60 @@ button{appearance:button}
 ::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}
 [hidden]:where(:not([hidden=until-found])){display:none!important}
 }
-:root{--dur-press-in:90ms;--dur-press-out:160ms;--ease-spring:cubic-bezier(.23,1,.32,1);--press-shade:rgba(16,24,40,.12);--press-dim:.95;
+:root{--dur-press-in:90ms;--dur-press-out:160ms;--ease-spring:cubic-bezier(.23,1,.32,1);--press-shade:rgba(60,45,20,.16);--press-dim:.95;
   color-scheme:light;
   /* Zeminler: sayfa < kart < yükseltilmiş; alanlar karttan bir tık içeride */
-  --bg:#f8f9fb;--surface:#ffffff;--surface-2:#f1f3f6;--surface-3:#e4e7ec;--surface-raised:#ffffff;--field:#f1f3f6;
-  --cell-bg:rgba(255,255,255,0);
+  --bg:#ece5d3;--surface:#f5efe1;--surface-2:#efe8d7;--surface-3:#e5dcc7;--surface-raised:#f7f2e6;--field:#f0e9d9;
+  --cell-bg:rgba(255,250,235,0);
   /* Dolgu oranları: zayıf = gün işareti (tatil, hafta tatili, izin), yarım = arife/ay dışı tatil, güçlü = mesai girilmiş gün, tablo = kişi×gün tablosu */
   --t-half:8%;--t-weak:14%;--t-strong:22%;--t-fill:26%;
   /* Çizgiler: sıcak gri, sert değil */
-  --line:#e4e7ec;--line-soft:#f1f3f6;--grid:#e4e7ec;--line-field:#d0d5dd;--line-strong:#98a2b3;--line-hover:#667085;
+  --line:#d6ccb4;--line-soft:#e0d7c2;--grid:#d9cfb8;--line-field:#cdc2a8;--line-strong:#b9ad92;--line-hover:#8a8270;
   /* Metin: saf siyah yok, sıcak grafit */
-  --ink:#121722;--text:#1d2433;--soft:#344054;--muted:#475467;--dim:#667085;--faint:#98a2b3;
-  /* Nova renk sistemi. Marka (indigo) = seçili, hafta içi mesai, birincil düğme */
-  --mint:#5340e3;--mint-ink:#4632c8;--mint-mute:#635bf1;--mint-soft:#8186f8;--mint-line:#c7ccfe;--mint-edge:#e0e4ff;--mint-deep:#c7ccfe;
-  --mint-wash:#eef0ff;--mint-wash-2:#e0e4ff;--on-mint:#ffffff;
-  /* Turuncu (chart-3) = resmî tatil, bekleyen eşitleme */
-  --amber:#dc6803;--holiday:var(--amber);--holiday-ink:#b54708;--holiday-line:#fec84b;
-  /* Kırmızı (danger) = bayram, tehlike, çevrimdışı/hata */
-  --red:#d92d20;--bayram:var(--red);--red-ink:#b42318;--bayram-ink:var(--red-ink);--red-line:#fda29b;
-  /* Camgöbeği (teal, chart-2) = hafta tatili */
-  --rest:#0b7d77;--rest-ink:#0b6460;
+  --ink:#2a2721;--text:#322f28;--soft:#45413a;--muted:#5c574c;--dim:#766f62;--faint:#a1988a;
+  /* Vurgu mavisi = seçili, normal mesai, eşitlendi */
+  --mint:#335989;--mint-ink:#20436e;--mint-mute:#627c9e;--mint-soft:#7595bd;--mint-line:#a5b9d4;--mint-edge:#c1cfe2;--mint-deep:#a5b9d4;
+  --mint-wash:#dbe6f3;--mint-wash-2:#cbd9ec;--on-mint:#f7f2e6;
+  /* Hardal = resmî tatil, bekleyen eşitleme */
+  --amber:#b58a3a;--holiday:var(--amber);--holiday-ink:#744c0e;--holiday-line:#d9c099;
+  /* Kiremit = bayram, tehlike, çevrimdışı/hata */
+  --red:#b35537;--bayram:var(--red);--red-ink:#853021;--bayram-ink:var(--red-ink);--red-line:#e1b1a2;
+  /* Mor = hafta tatili */
+  --rest:#7d5c92;--rest-ink:#5d3d70;
   /* Gri = izin günleri */
-  --leave-ink:#475467;
+  --leave-ink:#5c574c;
   /* Avatar tonları */
-  --av-1:#5340e3;--av-2:#0b7d77;--av-3:#dc6803;--av-4:#c11574;--av-5:#1570ef;--av-6:#667085;
+  --av-1:#739f7c;--av-2:#9b80ab;--av-3:#bf9f6a;--av-4:#bc7964;--av-5:#6b90b6;--av-6:#659e9e;
   /* Katmanlar ve derinlik (sıcak gölge, siyah değil) */
-  --backdrop:rgba(11,14,20,.5);--shadow:rgba(16,24,40,.1);--rail-bg:rgba(255,255,255,.96);--fade-0:rgba(248,249,251,0);--outside-bg:rgba(16,24,40,.03);
+  --backdrop:rgba(40,32,18,.3);--shadow:rgba(70,52,20,.14);--rail-bg:rgba(231,223,205,.96);--fade-0:rgba(236,229,211,0);--outside-bg:rgba(90,70,30,.045);
   /* Derinlik: parlak iç kenar yok; kartlar yumuşak, sıcak bir gölgeyle, düğmeler yalnız 1px taban çizgisiyle ayrılır */
-  --elev-1:0 1px 2px rgba(16,24,40,.06);
-  --elev-2:0 16px 32px -8px rgba(16,24,40,.16);
-  --btn-elev:0 1px 2px rgba(16,24,40,.05);--primary-elev:none;--field-inset:none;
+  --elev-1:0 1px 1px rgba(80,60,20,.05),0 8px 20px -12px rgba(80,60,20,.28);
+  --elev-2:0 2px 4px rgba(80,60,20,.06),0 28px 60px -24px rgba(80,60,20,.42);
+  --btn-elev:0 1px 0 rgba(80,60,20,.08);--primary-elev:none;--field-inset:inset 0 1px 0 rgba(80,60,20,.05);
   --mono:'DM Mono',ui-monospace,monospace;--sans:'Manrope',system-ui,sans-serif;
   /* --ctl: tüm düğmelerin ortak yüksekliği (dokunmatik ekranda 36px) */
-  --brand:#5340e3;--primary-bg:#5340e3;--on-primary:#ffffff;
+  --brand:#b35537;--primary-bg:#2a2721;--on-primary:#f5efe1;
   --pad:18px;--shell-x:30px;--nav-h:0px;--ctl:33px
 }
-/* ===== Koyu tema (Nova): marka 2 kademe açık, yüzeyler açıklıkla yükselir ===== */
+/* ===== Koyu tema: yeşil-siyah gece ===== */
 html[data-theme="dark"]{--press-shade:rgba(0,0,0,.45);--press-dim:1.12;
   color-scheme:dark;
-  --bg:#0b0e14;--surface:#121722;--surface-2:#171d2b;--surface-3:#1d2433;--surface-raised:#1d2433;--field:#171d2b;--cell-bg:rgba(255,255,255,0);
+  --bg:#1d1b17;--surface:#25221d;--surface-2:#2a2721;--surface-3:#312d26;--surface-raised:#2a2721;--field:#201e1a;--cell-bg:rgba(255,245,220,.01);
   --t-half:6%;--t-weak:11%;--t-strong:18%;--t-fill:22%;
-  --line:#344054;--line-soft:#1d2433;--grid:#1d2433;--line-field:#344054;--line-strong:#475467;--line-hover:#98a2b3;
-  --ink:#f8f9fb;--text:#f1f3f6;--soft:#e4e7ec;--muted:#d0d5dd;--dim:#98a2b3;--faint:#475467;
-  --mint:#8186f8;--mint-ink:#a5acfc;--mint-mute:#a5acfc;--mint-soft:#635bf1;--mint-line:#3a2ba2;--mint-edge:#322981;--mint-deep:#322981;
-  --mint-wash:#1e184b;--mint-wash-2:#322981;--on-mint:#0b0e14;
-  --amber:#fec84b;--holiday-ink:#fec84b;--holiday-line:#b54708;
-  --red:#fda29b;--red-ink:#fda29b;--red-line:#b42318;
-  --rest:#26b9ae;--rest-ink:#52d3c6;
-  --leave-ink:#d0d5dd;
-  --av-1:#8186f8;--av-2:#26b9ae;--av-3:#fec84b;--av-4:#f670c7;--av-5:#84caff;--av-6:#98a2b3;
-  --backdrop:rgba(0,0,0,.65);--shadow:rgba(0,0,0,.45);--rail-bg:rgba(18,23,34,.96);--fade-0:rgba(11,14,20,0);--outside-bg:rgba(0,0,0,.2);
-  --elev-1:0 1px 2px rgba(0,0,0,.4);
-  --elev-2:0 16px 32px -8px rgba(0,0,0,.6);
+  --line:#3a362e;--line-soft:#2f2b25;--grid:#36322a;--line-field:#423d34;--line-strong:#4f493e;--line-hover:#8a8270;
+  --ink:#ede6d4;--text:#e2dbc9;--soft:#cfc7b4;--muted:#b9b19e;--dim:#988f7c;--faint:#6f685a;
+  --mint:#91b4e1;--mint-ink:#b6d0f2;--mint-mute:#9eb3ce;--mint-soft:#81a1ca;--mint-line:#516b8b;--mint-edge:#3a4e68;--mint-deep:#32445a;
+  --mint-wash:#1e2733;--mint-wash-2:#243142;--on-mint:#1d1b17;
+  --amber:#dcb87a;--holiday-ink:#e9cd9d;--holiday-line:#846e49;
+  --red:#db8e76;--red-ink:#f3b2a4;--red-line:#8c5b4b;
+  --rest:#bc9dd0;--rest-ink:#dbc3eb;
+  --leave-ink:#cfc7b4;
+  --av-1:#90b697;--av-2:#b19ac0;--av-3:#cfb384;--av-4:#cc9685;--av-5:#88a8c9;--av-6:#86b5b4;
+  --backdrop:rgba(8,6,3,.62);--shadow:rgba(0,0,0,.45);--rail-bg:rgba(27,25,21,.96);--fade-0:rgba(29,27,23,0);--outside-bg:rgba(0,0,0,.2);
+  --elev-1:0 1px 1px rgba(0,0,0,.25),0 10px 24px -14px rgba(0,0,0,.6);
+  --elev-2:0 28px 70px -20px rgba(0,0,0,.75);
   --btn-elev:none;--primary-elev:none;--field-inset:inset 0 1px 0 rgba(0,0,0,.2)
-;--primary-bg:#8186f8;--on-primary:#0b0e14;--brand:#8186f8}
+;--primary-bg:#ede6d4;--on-primary:#1d1b17;--brand:#db8e76}
 
 
 /* Türetilmiş dolgular: iki temada da aynı formül (ana renk × --t-* oranı) */
@@ -102,17 +102,6 @@ html[data-theme="dark"]{--press-shade:rgba(0,0,0,.45);--press-dim:1.12;
   --rest-bg:color-mix(in srgb,var(--rest) var(--t-weak),transparent);
   --rest-bg-dim:color-mix(in srgb,var(--rest) var(--t-half),transparent);
   --leave-bg:color-mix(in srgb,var(--muted) var(--t-weak),transparent);
-}
-/* Hücre tonları: her tür aynı açıklıkta sakin bir "subtle" ton (Nova 50/100 ve 900/950 kademeleri); mesai yapılan gün bir kademe koyu */
-:root{
-  --today-bg:rgba(83,64,227,.06);
-  --work-bg:#e3e5fd;--holiday-bg:#fdf1e1;--holiday-bg-half:#fef8ef;--work-holiday-bg:#fbe2c4;
-  --bayram-bg:#fdecea;--work-bayram-bg:#fad5d1;--rest-bg:#e3f4f1;--rest-bg-dim:#f0f9f7;--leave-bg:#eef0f3}
-html[data-theme="dark"]{
-  --today-bg:rgba(129,134,248,.08);
-  --work-bg:#232052;--holiday-bg:#2c1f12;--holiday-bg-half:#1f1810;--work-holiday-bg:#3d2a14;
-  --bayram-bg:#2e1715;--work-bayram-bg:#41201c;--rest-bg:#0f2a29;--rest-bg-dim:#0d1d1e;--leave-bg:#171d2b}
-:root{
   /* İzin: gri dolgu + ince 45° tarama (renge ek olarak dokuyla da ayrılır) */
   --leave-hatch:repeating-linear-gradient(-45deg,color-mix(in srgb,var(--muted) 13%,transparent) 0 1px,transparent 1px 7px);
   --unpaid-hatch:repeating-linear-gradient(-45deg,color-mix(in srgb,var(--red) 17%,transparent) 0 1px,transparent 1px 7px);
