@@ -456,8 +456,6 @@ select.form-input{padding-right:32px;background-image:linear-gradient(45deg,tran
 .dialog .hours-block>.field-label{margin-top:14px}
 .dialog .form-grid.single{grid-template-columns:minmax(0,1fr)}
 .dialog .form-grid .field-label,.dialog form>label.field-label:has(input,select){margin-bottom:0}
-.carry-note{margin:14px 0 0;font-size:13px;line-height:1.6;color:var(--muted)}
-.carry-note span{color:var(--text)}
 .date-field{height:44px;display:flex;align-items:center;gap:10px;border:1px solid var(--line-field);background:var(--field);box-shadow:var(--field-inset);padding:0 12px;transition:border-color var(--dur-2)}
 .date-field>span{font-size:10px;color:var(--muted)}
 .date-field select{flex:1;min-width:0;height:42px;padding:0 4px;border:0;background:transparent;color:var(--text);font:13px var(--mono);appearance:none;cursor:pointer}
@@ -588,7 +586,6 @@ select.form-input{padding-right:32px;background-image:linear-gradient(45deg,tran
 .crop-zoom input::-moz-range-track{height:2px;background:var(--line-strong)}
 .crop-zoom input::-moz-range-thumb{width:16px;height:16px;border-radius:0;background:var(--mint);border:2px solid var(--surface);box-shadow:0 0 0 1px var(--mint);box-sizing:border-box}
 .crop-zoom span{font:500 12px var(--mono);color:var(--dim);min-width:32px;text-align:right}
-.crop-hint{margin:8px 0 0;font-size:12px;color:var(--dim)}
 /* Desen kilidi: ortalı; kilit ekranı ve form aynı boyut */
 .pattern-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:4px}
 .pattern-pad{position:relative;width:min(204px,60vw);aspect-ratio:1;background:transparent;touch-action:none;user-select:none;-webkit-user-select:none}

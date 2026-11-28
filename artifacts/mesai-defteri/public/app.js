@@ -917,14 +917,14 @@ function mesaiDefteri() {
     async copySel() {
       const b = this.selBox; if (!b) return;
       const text = this.chartRows.slice(b.r0, b.r1 + 1).map(r => r.cells.slice(b.c0, b.c1 + 1).map(c => c.text).join('\t')).join('\n');
-      try { await navigator.clipboard.writeText(text); this.notify(`${this.selCount} hücre kopyalandı · Excel'e yapıştır`); }
+      try { await navigator.clipboard.writeText(text); this.notify('Kopyalandı'); }
       catch { this.notify('Kopyalanamadı'); }
     },
     // Kişinin bu ayki satırı (1. günden son güne, sekmeyle ayrılmış) Excel'e yapıştırılacak biçimde kopyalanır.
     // Yalnız saatler alınır (izin harfleri ve önceki ay günleri hariç); Excel'de 1. gün hücresine yapıştırılır.
     async copyRow(r) {
       const text = r.cells.filter(c => !c.lead).map(c => /^[\d.,]+$/.test(c.text) ? c.text : '').join('\t');
-      try { await navigator.clipboard.writeText(text); this.notify(`${r.first} kopyalandı · Excel'de 1. güne yapıştır`); }
+      try { await navigator.clipboard.writeText(text); this.notify(`${r.first} kopyalandı`); }
       catch { this.notify('Kopyalanamadı'); }
     },
     chartScroll() {
