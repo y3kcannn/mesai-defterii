@@ -823,7 +823,7 @@ function mesaiDefteri() {
       const apply = () => {
         this.theme = t; r.dataset.theme = t;
         try { localStorage.setItem('mesai-tema', t); } catch {}
-        document.querySelector('meta[name=theme-color]')?.setAttribute('content', {light: '#f5f4ee', dark: '#262624'}[t]);
+        document.querySelector('meta[name=theme-color]')?.setAttribute('content', {light: '#f8f9fb', dark: '#0b0e14'}[t]);
         document.querySelector('meta[name=apple-mobile-web-app-status-bar-style]')?.setAttribute('content', t === 'light' ? 'default' : 'black-translucent');
       };
       if (document.startViewTransition && !reduceMotion()) document.startViewTransition(apply).ready.catch(() => {}); // yarıda kesilen geçiş hata sayılmasın
